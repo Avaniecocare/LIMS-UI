@@ -16328,6 +16328,9 @@
           "assignedToName": {
             "type": "string",
             "nullable": true
+          },
+          "version": {
+            "type": "number"
           }
         },
         "required": [
@@ -16338,7 +16341,8 @@
           "status",
           "planned",
           "dueDate",
-          "assignedToName"
+          "assignedToName",
+          "version"
         ]
       },
       "SampleDto": {
@@ -17691,6 +17695,33 @@
           "meta"
         ]
       },
+      "CalculationDto": {
+        "type": "object",
+        "properties": {
+          "inputs": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "working": {
+            "type": "string"
+          },
+          "result": {
+            "type": "string"
+          },
+          "formulaVersion": {
+            "type": "number",
+            "nullable": true
+          }
+        },
+        "required": [
+          "inputs",
+          "working",
+          "result",
+          "formulaVersion"
+        ]
+      },
       "LimitDto": {
         "type": "object",
         "properties": {
@@ -17737,36 +17768,18 @@
           "isPass"
         ]
       },
-      "CalculationDto": {
-        "type": "object",
-        "properties": {
-          "inputs": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          },
-          "working": {
-            "type": "string"
-          },
-          "result": {
-            "type": "string"
-          },
-          "formulaVersion": {
-            "type": "number",
-            "nullable": true
-          }
-        },
-        "required": [
-          "inputs",
-          "working",
-          "result",
-          "formulaVersion"
-        ]
-      },
       "ParameterResultDto": {
         "type": "object",
         "properties": {
+          "calculation": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CalculationDto"
+              }
+            ]
+          },
           "parameterId": {
             "type": "string"
           },
@@ -17821,21 +17834,13 @@
               "$ref": "#/components/schemas/ResultOptionViewDto"
             }
           },
-          "calculation": {
-            "nullable": true,
-            "type": "object",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/CalculationDto"
-              }
-            ]
-          },
           "error": {
             "type": "string",
             "nullable": true
           }
         },
         "required": [
+          "calculation",
           "parameterId",
           "code",
           "name",
@@ -17850,7 +17855,6 @@
           "passPrimary",
           "passDual",
           "options",
-          "calculation",
           "error"
         ]
       },
@@ -18216,6 +18220,9 @@
           "canEdit": {
             "type": "boolean"
           },
+          "assignedToMe": {
+            "type": "boolean"
+          },
           "blockOverdueInstruments": {
             "type": "boolean"
           },
@@ -18302,6 +18309,7 @@
           "notes",
           "conductedByName",
           "canEdit",
+          "assignedToMe",
           "blockOverdueInstruments",
           "instrumentWarning",
           "stages",
@@ -18511,47 +18519,6 @@
           "filename"
         ]
       },
-      "ReportRejectionDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "stage": {
-            "type": "string"
-          },
-          "action": {
-            "type": "string"
-          },
-          "reason": {
-            "type": "string"
-          },
-          "byName": {
-            "type": "string",
-            "nullable": true
-          },
-          "at": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "sampleTestIds": {
-            "nullable": true,
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        },
-        "required": [
-          "id",
-          "stage",
-          "action",
-          "reason",
-          "byName",
-          "at",
-          "sampleTestIds"
-        ]
-      },
       "SignatureDto": {
         "type": "object",
         "properties": {
@@ -18577,9 +18544,59 @@
           "contentSha256"
         ]
       },
+      "ReportRejectionDto": {
+        "type": "object",
+        "properties": {
+          "sampleTestIds": {
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "id": {
+            "type": "string"
+          },
+          "stage": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "byName": {
+            "type": "string",
+            "nullable": true
+          },
+          "at": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sampleTestIds",
+          "id",
+          "stage",
+          "action",
+          "reason",
+          "byName",
+          "at"
+        ]
+      },
       "RevisionDto": {
         "type": "object",
         "properties": {
+          "signature": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SignatureDto"
+              }
+            ]
+          },
           "id": {
             "type": "string"
           },
@@ -18648,18 +18665,10 @@
             "items": {
               "$ref": "#/components/schemas/ReportRejectionDto"
             }
-          },
-          "signature": {
-            "nullable": true,
-            "type": "object",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/SignatureDto"
-              }
-            ]
           }
         },
         "required": [
+          "signature",
           "id",
           "revisionNo",
           "status",
@@ -18674,8 +18683,7 @@
           "pdfReady",
           "pdfSha256",
           "version",
-          "rejections",
-          "signature"
+          "rejections"
         ]
       },
       "ReportTestDto": {

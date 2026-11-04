@@ -4391,6 +4391,7 @@ export interface components {
             /** Format: date-time */
             dueDate: string | null;
             assignedToName: string | null;
+            version: number;
         };
         SampleDto: {
             id: string;
@@ -4727,6 +4728,14 @@ export interface components {
             data: components["schemas"]["WorklistItemDto"][];
             meta: components["schemas"]["PageMetaDto"];
         };
+        CalculationDto: {
+            inputs: {
+                [key: string]: string;
+            };
+            working: string;
+            result: string;
+            formulaVersion: number | null;
+        };
         LimitDto: {
             spec: string;
             role: string;
@@ -4738,15 +4747,8 @@ export interface components {
             value: string;
             isPass: boolean | null;
         };
-        CalculationDto: {
-            inputs: {
-                [key: string]: string;
-            };
-            working: string;
-            result: string;
-            formulaVersion: number | null;
-        };
         ParameterResultDto: {
+            calculation: components["schemas"]["CalculationDto"] | null;
             parameterId: string;
             code: string;
             name: string;
@@ -4761,7 +4763,6 @@ export interface components {
             passPrimary: boolean | null;
             passDual: boolean | null;
             options: components["schemas"]["ResultOptionViewDto"][];
-            calculation: components["schemas"]["CalculationDto"] | null;
             error: string | null;
         };
         ApprovalItemDto: {
@@ -4859,6 +4860,7 @@ export interface components {
             notes: string | null;
             conductedByName: string | null;
             canEdit: boolean;
+            assignedToMe: boolean;
             blockOverdueInstruments: boolean;
             instrumentWarning: string | null;
             stages: components["schemas"]["StageDto"][];
@@ -4922,16 +4924,6 @@ export interface components {
             url: string;
             filename: string;
         };
-        ReportRejectionDto: {
-            id: string;
-            stage: string;
-            action: string;
-            reason: string;
-            byName: string | null;
-            /** Format: date-time */
-            at: string;
-            sampleTestIds: string[] | null;
-        };
         SignatureDto: {
             name: string;
             designation: string | null;
@@ -4939,7 +4931,18 @@ export interface components {
             signedAt: string;
             contentSha256: string;
         };
+        ReportRejectionDto: {
+            sampleTestIds: string[] | null;
+            id: string;
+            stage: string;
+            action: string;
+            reason: string;
+            byName: string | null;
+            /** Format: date-time */
+            at: string;
+        };
         RevisionDto: {
+            signature: components["schemas"]["SignatureDto"] | null;
             id: string;
             revisionNo: number;
             /** @enum {string} */
@@ -4960,7 +4963,6 @@ export interface components {
             pdfSha256: string | null;
             version: number;
             rejections: components["schemas"]["ReportRejectionDto"][];
-            signature: components["schemas"]["SignatureDto"] | null;
         };
         ReportTestDto: {
             sampleTestId: string;
