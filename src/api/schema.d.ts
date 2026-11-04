@@ -1657,6 +1657,570 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["OrdersController_list"];
+        put?: never;
+        post: operations["OrdersController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orders/pipeline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["OrdersController_pipeline"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orders/owners": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["OrdersController_owners"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["OrdersController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["OrdersController_update"];
+        trace?: never;
+    };
+    "/api/v1/quotations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["QuotationsController_list"];
+        put?: never;
+        post: operations["QuotationsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/quotations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["QuotationsController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["QuotationsController_update"];
+        trace?: never;
+    };
+    "/api/v1/quotations/{id}/revise": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["QuotationsController_revise"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/quotations/{id}/send": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["QuotationsController_send"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/quotations/{id}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["QuotationsController_accept"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/quotations/{id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["QuotationsController_reject"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/quotations/{id}/convert": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["QuotationsController_convert"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/quotations/{id}/emails": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["QuotationsController_emails"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/quotations/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["QuotationsController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/jobs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["JobsController_list"];
+        put?: never;
+        post: operations["JobsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/samples": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["JobsController_samples"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/jobs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["JobsController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["JobsController_update"];
+        trace?: never;
+    };
+    "/api/v1/samples/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["JobsController_updateSample"];
+        trace?: never;
+    };
+    "/api/v1/jobs/{id}/deviations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["JobsController_addDeviation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/jobs/{id}/hold": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["JobsController_hold"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/jobs/{id}/release": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["JobsController_release"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/jobs/{id}/timeline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["JobsController_timeline"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/jobs/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["JobsController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/samples/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["JobsController_sampleHistory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/jobs/{id}/acknowledgement": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["JobsController_acknowledge"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/jobs/{id}/emails": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["JobsController_emails"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/jobs/{id}/letter-pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["JobsController_combine"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/planning/tests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PlanningController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/planning/suggest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PlanningController_suggest"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/planning/plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["PlanningController_plan"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/planning/assign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["PlanningController_assign"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/planning/workload": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PlanningController_workload"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/planning/technicians": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PlanningController_technicians"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/planning/instruments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PlanningController_instruments"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["SearchController_search"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/search/scan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A keyboard-mode scanner types the code and presses Enter. Technicians can scan too, but only
+         *     reach tests assigned to them, and never the job or customer behind the sample.
+         */
+        get: operations["SearchController_scan"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2556,6 +3120,598 @@ export interface components {
             addresses?: components["schemas"]["AddressInput"][];
             version: number;
             isActive?: boolean;
+        };
+        OrderDto: {
+            id: string;
+            orderNo: string;
+            customerId: string;
+            customerName: string;
+            /** @enum {string} */
+            source: "EMAIL" | "PHONE" | "LETTER" | "WALK_IN";
+            reference: string | null;
+            description: string | null;
+            /** Format: date-time */
+            receivedOn: string;
+            /** @enum {string} */
+            stage: "NEW" | "QUOTED" | "WON" | "LOST";
+            ownerId: string | null;
+            ownerName: string | null;
+            version: number;
+            /** Format: date-time */
+            createdAt: string;
+            quotationCount: number;
+        };
+        OrderPageDto: {
+            data: components["schemas"]["OrderDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        PipelineStageDto: {
+            /** @enum {string} */
+            stage: "NEW" | "QUOTED" | "WON" | "LOST";
+            count: number;
+        };
+        OwnerDto: {
+            id: string;
+            name: string;
+        };
+        CreateOrderDto: {
+            /** Format: uuid */
+            customerId: string;
+            /** @enum {string} */
+            source: "EMAIL" | "PHONE" | "LETTER" | "WALK_IN";
+            reference?: string | null;
+            description?: string | null;
+            receivedOn: string;
+            /** Format: uuid */
+            ownerId?: string | null;
+        };
+        UpdateOrderDto: {
+            /** Format: uuid */
+            customerId: string;
+            /** @enum {string} */
+            source: "EMAIL" | "PHONE" | "LETTER" | "WALK_IN";
+            reference?: string | null;
+            description?: string | null;
+            receivedOn: string;
+            /** Format: uuid */
+            ownerId?: string | null;
+            version: number;
+            /** @enum {string} */
+            stage?: "NEW" | "QUOTED" | "WON" | "LOST";
+        };
+        QuotationSummaryDto: {
+            id: string;
+            quotationNo: string;
+            customerId: string;
+            customerName: string;
+            crn: string;
+            orderId: string | null;
+            /** @enum {string} */
+            status: "SENT" | "DRAFT" | "ACCEPTED" | "REJECTED" | "EXPIRED";
+            currentVersionNo: number;
+            /** Format: date-time */
+            validUntil: string;
+            grandTotal: string;
+            rejectReason: string | null;
+            /** Format: date-time */
+            sentAt: string | null;
+            /** Format: date-time */
+            acceptedAt: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            version: number;
+            jobId: string | null;
+        };
+        QuotationPageDto: {
+            data: components["schemas"]["QuotationSummaryDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        QuotationLineDto: {
+            id: string;
+            seq: number;
+            sampleDescription: string;
+            requiredQuantity: string | null;
+            testId: string;
+            testCode: string;
+            testName: string;
+            methodName: string | null;
+            quantity: number;
+            rate: string;
+            rateSource: string;
+            overrideReason: string | null;
+            discountPct: string;
+            amount: string;
+        };
+        QuotationVersionDto: {
+            id: string;
+            versionNo: number;
+            documentTitle: string;
+            /** Format: date-time */
+            validUntil: string;
+            estimatedDays: number | null;
+            paymentTerms: string | null;
+            deliveryAddress: string | null;
+            contactPerson: string | null;
+            revisionNote: string | null;
+            discountPct: string;
+            subtotal: string;
+            discountAmount: string;
+            taxableAmount: string;
+            gstRate: string;
+            cgst: string;
+            sgst: string;
+            igst: string;
+            roundOff: string;
+            grandTotal: string;
+            amountInWords: string;
+            /** Format: date-time */
+            createdAt: string;
+            lines: components["schemas"]["QuotationLineDto"][];
+        };
+        QuotationDto: {
+            id: string;
+            quotationNo: string;
+            customerId: string;
+            customerName: string;
+            crn: string;
+            orderId: string | null;
+            /** @enum {string} */
+            status: "SENT" | "DRAFT" | "ACCEPTED" | "REJECTED" | "EXPIRED";
+            currentVersionNo: number;
+            /** Format: date-time */
+            validUntil: string;
+            grandTotal: string;
+            rejectReason: string | null;
+            /** Format: date-time */
+            sentAt: string | null;
+            /** Format: date-time */
+            acceptedAt: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            version: number;
+            jobId: string | null;
+            versions: components["schemas"]["QuotationVersionDto"][];
+        };
+        QuotationLineInput: {
+            sampleDescription: string;
+            requiredQuantity?: string | null;
+            /** Format: uuid */
+            testId: string;
+            quantity: number;
+            /** @description Leave empty to use the looked-up rate. A different rate needs permission and a reason. */
+            rate?: string | null;
+            overrideReason?: string | null;
+            discountPct?: string | null;
+        };
+        SaveQuotationDto: {
+            /** Format: uuid */
+            customerId: string;
+            /** Format: uuid */
+            orderId?: string | null;
+            /** @enum {string} */
+            documentTitle?: "Quotation" | "Proforma Invoice";
+            validUntil?: string;
+            estimatedDays?: number | null;
+            paymentTerms?: string | null;
+            deliveryAddress?: string | null;
+            contactPerson?: string | null;
+            discountPct?: string | null;
+            lines: components["schemas"]["QuotationLineInput"][];
+        };
+        UpdateQuotationDto: {
+            /** Format: uuid */
+            customerId: string;
+            /** Format: uuid */
+            orderId?: string | null;
+            /** @enum {string} */
+            documentTitle?: "Quotation" | "Proforma Invoice";
+            validUntil?: string;
+            estimatedDays?: number | null;
+            paymentTerms?: string | null;
+            deliveryAddress?: string | null;
+            contactPerson?: string | null;
+            discountPct?: string | null;
+            lines: components["schemas"]["QuotationLineInput"][];
+            version: number;
+        };
+        ReasonDto: {
+            version: number;
+            reason: string;
+        };
+        SendQuotationDto: {
+            version: number;
+            /** Format: email */
+            to: string;
+            /** Format: email */
+            cc?: string | null;
+            message?: string | null;
+        };
+        VersionedActionDto: {
+            version: number;
+        };
+        ConvertedDto: {
+            jobId: string;
+            jobNo: string;
+        };
+        EmailLogDto: {
+            id: string;
+            toAddress: string;
+            ccAddress: string | null;
+            subject: string;
+            template: string;
+            status: string;
+            attempts: number;
+            lastError: string | null;
+            /** Format: date-time */
+            sentAt: string | null;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        StatusEventDto: {
+            id: string;
+            entity: string;
+            entityId: string;
+            fromStatus: string | null;
+            toStatus: string;
+            reason: string | null;
+            byName: string | null;
+            /** Format: date-time */
+            at: string;
+        };
+        JobSummaryDto: {
+            id: string;
+            jobNo: string;
+            customerId: string | null;
+            customerName: string | null;
+            crn: string | null;
+            /** @enum {string} */
+            status: "COMPLETED" | "PLANNED" | "ON_HOLD" | "CANCELLED" | "RECEIVED" | "IN_TESTING" | "REPORTING";
+            urgent: boolean;
+            /** Format: date-time */
+            receivedAt: string;
+            sampleCount: number;
+            quotationId: string | null;
+            holdReason: string | null;
+            cancelReason: string | null;
+            version: number;
+        };
+        JobPageDto: {
+            data: components["schemas"]["JobSummaryDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        SampleListItemDto: {
+            id: string;
+            sampleNo: string;
+            jobId: string;
+            jobNo: string;
+            description: string;
+            /** @enum {string} */
+            status: "COMPLETED" | "PLANNED" | "CANCELLED" | "RECEIVED" | "IN_TESTING" | "REPORTING";
+            returnable: boolean;
+            urgent: boolean;
+            /** Format: date-time */
+            receivedAt: string;
+            customerName: string | null;
+        };
+        SamplePageDto: {
+            data: components["schemas"]["SampleListItemDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        SampleTestBriefDto: {
+            id: string;
+            testId: string;
+            testCode: string;
+            testName: string;
+            status: string;
+            /** Format: date-time */
+            dueDate: string | null;
+            assignedToName: string | null;
+        };
+        SampleDto: {
+            id: string;
+            sampleNo: string;
+            jobId: string;
+            description: string;
+            condition: string | null;
+            quantity: string | null;
+            size: string | null;
+            returnable: boolean;
+            /** @enum {string} */
+            status: "COMPLETED" | "PLANNED" | "CANCELLED" | "RECEIVED" | "IN_TESTING" | "REPORTING";
+            cancelReason: string | null;
+            /** Format: date-time */
+            retentionUntil: string | null;
+            returnStatus: string | null;
+            /** Format: date-time */
+            returnedAt: string | null;
+            /** Format: date-time */
+            disposedAt: string | null;
+            specificationId: string | null;
+            dualSpecificationId: string | null;
+            version: number;
+            attributes: {
+                id: string;
+                label: string;
+                value: string;
+            }[];
+            tests: components["schemas"]["SampleTestBriefDto"][];
+        };
+        DeviationDto: {
+            id: string;
+            sampleId: string | null;
+            typeId: string;
+            typeLabel: string;
+            remark: string | null;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        JobDto: {
+            id: string;
+            jobNo: string;
+            customerId: string | null;
+            customerName: string | null;
+            crn: string | null;
+            /** @enum {string} */
+            status: "COMPLETED" | "PLANNED" | "ON_HOLD" | "CANCELLED" | "RECEIVED" | "IN_TESTING" | "REPORTING";
+            urgent: boolean;
+            /** Format: date-time */
+            receivedAt: string;
+            sampleCount: number;
+            quotationId: string | null;
+            holdReason: string | null;
+            cancelReason: string | null;
+            version: number;
+            noQuotationReason: string | null;
+            letterRef: string | null;
+            /** Format: date-time */
+            letterDate: string | null;
+            materialSpec: string | null;
+            poNumber: string | null;
+            /** Format: date-time */
+            poDate: string | null;
+            receiptModeId: string | null;
+            reportIssueDetails: string | null;
+            reportIssueAddress: string | null;
+            kindAttention: string | null;
+            contactEmail: string | null;
+            contactPhone: string | null;
+            sampleDrawnByLab: boolean;
+            /** @enum {string|null} */
+            statusBeforeHold: "COMPLETED" | "PLANNED" | "ON_HOLD" | "CANCELLED" | "RECEIVED" | "IN_TESTING" | "REPORTING" | null;
+            samples: components["schemas"]["SampleDto"][];
+            deviations: components["schemas"]["DeviationDto"][];
+        };
+        AttributeInput: {
+            label: string;
+            value: string;
+        };
+        SampleInput: {
+            description: string;
+            condition?: string | null;
+            quantity?: string | null;
+            size?: string | null;
+            returnable?: boolean;
+            attributes?: components["schemas"]["AttributeInput"][];
+            /** @description Tests requested by the customer; planned later */
+            testIds?: string[];
+        };
+        DeviationInput: {
+            /** Format: uuid */
+            typeId: string;
+            /** @description index into samples; empty means it applies to the whole job */
+            sampleIndex?: number | null;
+            remark?: string | null;
+        };
+        CreateJobDto: {
+            /** Format: uuid */
+            customerId: string;
+            /** @description Required when there is no quotation; needs extra permission */
+            noQuotationReason?: string | null;
+            samples: components["schemas"]["SampleInput"][];
+            deviations?: components["schemas"]["DeviationInput"][];
+            letterRef?: string | null;
+            letterDate?: string | null;
+            materialSpec?: string | null;
+            poNumber?: string | null;
+            poDate?: string | null;
+            /** Format: uuid */
+            receiptModeId?: string | null;
+            reportIssueDetails?: string | null;
+            reportIssueAddress?: string | null;
+            kindAttention?: string | null;
+            /** Format: email */
+            contactEmail?: string | null;
+            contactPhone?: string | null;
+            urgent?: boolean;
+            /** @description when true the report omits the "sample not drawn by our laboratory" statement */
+            sampleDrawnByLab?: boolean;
+        };
+        UpdateJobDto: {
+            version: number;
+            letterRef?: string | null;
+            letterDate?: string | null;
+            materialSpec?: string | null;
+            poNumber?: string | null;
+            poDate?: string | null;
+            /** Format: uuid */
+            receiptModeId?: string | null;
+            reportIssueDetails?: string | null;
+            reportIssueAddress?: string | null;
+            kindAttention?: string | null;
+            /** Format: email */
+            contactEmail?: string | null;
+            contactPhone?: string | null;
+            urgent?: boolean;
+            /** @description when true the report omits the "sample not drawn by our laboratory" statement */
+            sampleDrawnByLab?: boolean;
+        };
+        UpdateSampleDto: {
+            version: number;
+            description?: string;
+            condition?: string | null;
+            quantity?: string | null;
+            size?: string | null;
+            returnable?: boolean;
+            attributes?: components["schemas"]["AttributeInput"][];
+        };
+        AddDeviationDto: {
+            /** Format: uuid */
+            typeId: string;
+            /** Format: uuid */
+            sampleId?: string | null;
+            remark?: string | null;
+        };
+        ReasonOnlyDto: {
+            version: number;
+            reason: string;
+        };
+        VersionOnlyDto: {
+            version: number;
+        };
+        TimelineEventDto: {
+            id: string;
+            entity: string;
+            entityId: string;
+            label: string | null;
+            fromStatus: string | null;
+            toStatus: string;
+            reason: string | null;
+            byName: string | null;
+            /** Format: date-time */
+            at: string;
+        };
+        AuditHistoryDto: {
+            id: string;
+            /** Format: date-time */
+            at: string;
+            userName: string | null;
+            action: string;
+            before: Record<string, never>;
+            after: Record<string, never>;
+            reason: string | null;
+        };
+        SendAckDto: {
+            /** Format: email */
+            to: string;
+            /** Format: email */
+            cc?: string | null;
+        };
+        CombineLetterDto: {
+            fileIds: string[];
+        };
+        PlanningRowDto: {
+            id: string;
+            sampleId: string;
+            sampleNo: string;
+            sampleDescription: string;
+            jobId: string;
+            jobNo: string;
+            testId: string;
+            testCode: string;
+            testName: string;
+            methodName: string | null;
+            status: string;
+            urgent: boolean;
+            planned: boolean;
+            /** Format: date-time */
+            dueDate: string | null;
+            assignedToId: string | null;
+            assignedToName: string | null;
+            instrumentId: string | null;
+            instrumentName: string | null;
+            version: number;
+        };
+        PlanningPageDto: {
+            data: components["schemas"]["PlanningRowDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        SuggestedParameterDto: {
+            id: string;
+            code: string;
+            name: string;
+        };
+        SuggestedTestDto: {
+            testId: string;
+            testCode: string;
+            testName: string;
+            methodName: string | null;
+            category: string;
+            defaultTatDays: number;
+            parameters: components["schemas"]["SuggestedParameterDto"][];
+        };
+        PlanTestInput: {
+            /** Format: uuid */
+            testId: string;
+            /** @enum {string|null} */
+            analysisMode?: "SPECTRO" | "WET" | null;
+            officeInstructions?: string | null;
+            technicalData?: string | null;
+            /** Format: uuid */
+            assignedToId?: string | null;
+            /** Format: uuid */
+            instrumentId?: string | null;
+        };
+        PlanSamplesDto: {
+            /** @description one sample, or several planned as a group */
+            sampleIds: string[];
+            /** Format: uuid */
+            specificationId?: string | null;
+            /**
+             * Format: uuid
+             * @description second grade for dual grade reporting
+             */
+            dualSpecificationId?: string | null;
+            tests: components["schemas"]["PlanTestInput"][];
+            notes?: string | null;
+        };
+        PlanResultDto: {
+            planId: string;
+            planNo: string;
+            sampleTestIds: string[];
+        };
+        AssignDto: {
+            sampleTestIds: string[];
+            /** Format: uuid */
+            assignedToId: string;
+            /** Format: uuid */
+            instrumentId?: string | null;
+        };
+        WorkloadRowDto: {
+            id: string;
+            name: string;
+            openTests: number;
+            inProgress: number;
+            overdue: number;
+            urgent: number;
+        };
+        WorkloadDto: {
+            technicians: components["schemas"]["WorkloadRowDto"][];
+            instruments: components["schemas"]["WorkloadRowDto"][];
+        };
+        TechnicianDto: {
+            id: string;
+            name: string;
+            departmentId: string | null;
+        };
+        InstrumentOptionDto: {
+            id: string;
+            code: string;
+            name: string;
+            departmentId: string | null;
+            /** Format: date-time */
+            calibrationDueAt: string | null;
+            calibrationOverdue: boolean;
+        };
+        SearchResultDto: {
+            type: string;
+            id: string;
+            title: string;
+            subtitle: string | null;
+            link: string;
+        };
+        ScanResultDto: {
+            /** @description where the app should go after a barcode or QR scan; null if nothing matched */
+            link: string | null;
         };
     };
     responses: never;
@@ -6231,6 +7387,964 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HistoryEntryDto"][];
+                };
+            };
+        };
+    };
+    OrdersController_list: {
+        parameters: {
+            query?: {
+                stage?: "NEW" | "QUOTED" | "WON" | "LOST";
+                customerId?: string;
+                ownerId?: string;
+                from?: string;
+                to?: string;
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderPageDto"];
+                };
+            };
+        };
+    };
+    OrdersController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateOrderDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDto"];
+                };
+            };
+        };
+    };
+    OrdersController_pipeline: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PipelineStageDto"][];
+                };
+            };
+        };
+    };
+    OrdersController_owners: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OwnerDto"][];
+                };
+            };
+        };
+    };
+    OrdersController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDto"];
+                };
+            };
+        };
+    };
+    OrdersController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateOrderDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDto"];
+                };
+            };
+        };
+    };
+    QuotationsController_list: {
+        parameters: {
+            query?: {
+                status?: "SENT" | "DRAFT" | "ACCEPTED" | "REJECTED" | "EXPIRED";
+                customerId?: string;
+                orderId?: string;
+                from?: string;
+                to?: string;
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuotationPageDto"];
+                };
+            };
+        };
+    };
+    QuotationsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveQuotationDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuotationDto"];
+                };
+            };
+        };
+    };
+    QuotationsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuotationDto"];
+                };
+            };
+        };
+    };
+    QuotationsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateQuotationDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuotationDto"];
+                };
+            };
+        };
+    };
+    QuotationsController_revise: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReasonDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuotationDto"];
+                };
+            };
+        };
+    };
+    QuotationsController_send: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SendQuotationDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuotationDto"];
+                };
+            };
+        };
+    };
+    QuotationsController_accept: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VersionedActionDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuotationDto"];
+                };
+            };
+        };
+    };
+    QuotationsController_reject: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReasonDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuotationDto"];
+                };
+            };
+        };
+    };
+    QuotationsController_convert: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConvertedDto"];
+                };
+            };
+        };
+    };
+    QuotationsController_emails: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmailLogDto"][];
+                };
+            };
+        };
+    };
+    QuotationsController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StatusEventDto"][];
+                };
+            };
+        };
+    };
+    JobsController_list: {
+        parameters: {
+            query?: {
+                status?: "COMPLETED" | "PLANNED" | "ON_HOLD" | "CANCELLED" | "RECEIVED" | "IN_TESTING" | "REPORTING";
+                customerId?: string;
+                urgent?: string;
+                from?: string;
+                to?: string;
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobPageDto"];
+                };
+            };
+        };
+    };
+    JobsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateJobDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobDto"];
+                };
+            };
+        };
+    };
+    JobsController_samples: {
+        parameters: {
+            query?: {
+                status?: "COMPLETED" | "PLANNED" | "CANCELLED" | "RECEIVED" | "IN_TESTING" | "REPORTING";
+                returnable?: string;
+                from?: string;
+                to?: string;
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SamplePageDto"];
+                };
+            };
+        };
+    };
+    JobsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobDto"];
+                };
+            };
+        };
+    };
+    JobsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateJobDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobDto"];
+                };
+            };
+        };
+    };
+    JobsController_updateSample: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateSampleDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobDto"];
+                };
+            };
+        };
+    };
+    JobsController_addDeviation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddDeviationDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobDto"];
+                };
+            };
+        };
+    };
+    JobsController_hold: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReasonOnlyDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobDto"];
+                };
+            };
+        };
+    };
+    JobsController_release: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VersionOnlyDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobDto"];
+                };
+            };
+        };
+    };
+    JobsController_timeline: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TimelineEventDto"][];
+                };
+            };
+        };
+    };
+    JobsController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditHistoryDto"][];
+                };
+            };
+        };
+    };
+    JobsController_sampleHistory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditHistoryDto"][];
+                };
+            };
+        };
+    };
+    JobsController_acknowledge: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SendAckDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    JobsController_emails: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmailLogDto"][];
+                };
+            };
+        };
+    };
+    JobsController_combine: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CombineLetterDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentJobDto"];
+                };
+            };
+        };
+    };
+    PlanningController_list: {
+        parameters: {
+            query?: {
+                view?: "unplanned" | "unassigned" | "assigned";
+                departmentId?: string;
+                jobId?: string;
+                assignedToId?: string;
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanningPageDto"];
+                };
+            };
+        };
+    };
+    PlanningController_suggest: {
+        parameters: {
+            query?: {
+                specificationId?: string;
+                dualSpecificationId?: string;
+                groupId?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuggestedTestDto"][];
+                };
+            };
+        };
+    };
+    PlanningController_plan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlanSamplesDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanResultDto"];
+                };
+            };
+        };
+    };
+    PlanningController_assign: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    PlanningController_workload: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkloadDto"];
+                };
+            };
+        };
+    };
+    PlanningController_technicians: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TechnicianDto"][];
+                };
+            };
+        };
+    };
+    PlanningController_instruments: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InstrumentOptionDto"][];
+                };
+            };
+        };
+    };
+    SearchController_search: {
+        parameters: {
+            query?: {
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchResultDto"][];
+                };
+            };
+        };
+    };
+    SearchController_scan: {
+        parameters: {
+            query?: {
+                code?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScanResultDto"];
                 };
             };
         };
