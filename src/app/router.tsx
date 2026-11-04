@@ -44,6 +44,9 @@ function PublicOnly() {
 const Home = lazy(() => import('@/features/home/HomePage'));
 const Admin = lazy(() => import('@/features/admin/AdminPage'));
 const Account = lazy(() => import('@/features/account/AccountPage'));
+const Masters = lazy(() => import('@/features/masters/MastersPage'));
+const Customers = lazy(() => import('@/features/customers/CustomersPage'));
+const CustomerDetail = lazy(() => import('@/features/customers/CustomersPage').then((m) => ({ default: m.CustomerDetailPage })));
 
 export const router = createBrowserRouter([
   {
@@ -61,6 +64,10 @@ export const router = createBrowserRouter([
       { path: '/', element: page(Home) },
       { path: '/account', element: page(Account) },
       { path: '/admin', element: page(Admin, ['admin.users', 'admin.roles', 'admin.settings', 'admin.audit', 'admin.company.view']) },
+      { path: '/masters', element: page(Masters, ['masters.view', 'rates.view']) },
+      { path: '/masters/:key', element: page(Masters, ['masters.view', 'rates.view']) },
+      { path: '/customers', element: page(Customers, ['customers.view']) },
+      { path: '/customers/:id', element: page(CustomerDetail, ['customers.view']) },
       { path: '*', element: <EmptyState title="Page not found" /> },
     ],
   },

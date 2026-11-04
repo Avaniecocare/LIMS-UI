@@ -518,6 +518,1145 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Queue a PDF or Excel export; poll until status is DONE. */
+        post: operations["DocumentsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["DocumentsController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/files": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["FilesController_list"];
+        put?: never;
+        post: operations["FilesController_upload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/files/{id}/url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["FilesController_url"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/files/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["FilesController_remove"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/formula-console": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Test console for the formula master; also validates the expression. */
+        post: operations["MasterToolsController_formulaConsole"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/convert": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["MasterToolsController_convert"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/rate-lookup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Rate priority check: customer rate, then standard rate. */
+        get: operations["MasterToolsController_rateLookup"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/departments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["DepartmentsController_list"];
+        put?: never;
+        post: operations["DepartmentsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/departments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["DepartmentsController_get"];
+        put?: never;
+        post?: never;
+        delete: operations["DepartmentsController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["DepartmentsController_update"];
+        trace?: never;
+    };
+    "/api/v1/masters/departments/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["DepartmentsController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/departments/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["DepartmentsController_importFile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/units": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["UnitsController_list"];
+        put?: never;
+        post: operations["UnitsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/units/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["UnitsController_get"];
+        put?: never;
+        post?: never;
+        delete: operations["UnitsController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["UnitsController_update"];
+        trace?: never;
+    };
+    "/api/v1/masters/units/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["UnitsController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/units/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["UnitsController_importFile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/unit-conversions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["UnitConversionsController_list"];
+        put?: never;
+        post: operations["UnitConversionsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/unit-conversions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["UnitConversionsController_get"];
+        put?: never;
+        post?: never;
+        delete: operations["UnitConversionsController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["UnitConversionsController_update"];
+        trace?: never;
+    };
+    "/api/v1/masters/unit-conversions/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["UnitConversionsController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/unit-conversions/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["UnitConversionsController_importFile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/test-methods": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TestMethodsController_list"];
+        put?: never;
+        post: operations["TestMethodsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/test-methods/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TestMethodsController_get"];
+        put?: never;
+        post?: never;
+        delete: operations["TestMethodsController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["TestMethodsController_update"];
+        trace?: never;
+    };
+    "/api/v1/masters/test-methods/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TestMethodsController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/test-methods/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TestMethodsController_importFile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/tests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TestsController_list"];
+        put?: never;
+        post: operations["TestsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/tests/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TestsController_get"];
+        put?: never;
+        post?: never;
+        delete: operations["TestsController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["TestsController_update"];
+        trace?: never;
+    };
+    "/api/v1/masters/tests/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TestsController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/tests/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TestsController_importFile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/test-parameters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TestParametersController_list"];
+        put?: never;
+        post: operations["TestParametersController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/test-parameters/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TestParametersController_get"];
+        put?: never;
+        post?: never;
+        delete: operations["TestParametersController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["TestParametersController_update"];
+        trace?: never;
+    };
+    "/api/v1/masters/test-parameters/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TestParametersController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/test-parameters/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TestParametersController_importFile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/specifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["SpecificationsController_list"];
+        put?: never;
+        post: operations["SpecificationsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/specifications/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["SpecificationsController_get"];
+        put?: never;
+        post?: never;
+        delete: operations["SpecificationsController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["SpecificationsController_update"];
+        trace?: never;
+    };
+    "/api/v1/masters/specifications/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["SpecificationsController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/specifications/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SpecificationsController_importFile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/test-groups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TestGroupsController_list"];
+        put?: never;
+        post: operations["TestGroupsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/test-groups/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TestGroupsController_get"];
+        put?: never;
+        post?: never;
+        delete: operations["TestGroupsController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["TestGroupsController_update"];
+        trace?: never;
+    };
+    "/api/v1/masters/test-groups/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TestGroupsController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/test-groups/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TestGroupsController_importFile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/result-sets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ResultSetsController_list"];
+        put?: never;
+        post: operations["ResultSetsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/result-sets/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ResultSetsController_get"];
+        put?: never;
+        post?: never;
+        delete: operations["ResultSetsController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["ResultSetsController_update"];
+        trace?: never;
+    };
+    "/api/v1/masters/result-sets/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ResultSetsController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/result-sets/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ResultSetsController_importFile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/formulas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["FormulasController_list"];
+        put?: never;
+        post: operations["FormulasController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/formulas/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["FormulasController_get"];
+        put?: never;
+        post?: never;
+        delete: operations["FormulasController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["FormulasController_update"];
+        trace?: never;
+    };
+    "/api/v1/masters/formulas/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["FormulasController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/formulas/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["FormulasController_importFile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/instruments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["InstrumentsController_list"];
+        put?: never;
+        post: operations["InstrumentsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/instruments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["InstrumentsController_get"];
+        put?: never;
+        post?: never;
+        delete: operations["InstrumentsController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["InstrumentsController_update"];
+        trace?: never;
+    };
+    "/api/v1/masters/instruments/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["InstrumentsController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/instruments/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["InstrumentsController_importFile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/standard-rates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["StandardRatesController_list"];
+        put?: never;
+        post: operations["StandardRatesController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/standard-rates/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["StandardRatesController_get"];
+        put?: never;
+        post?: never;
+        delete: operations["StandardRatesController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["StandardRatesController_update"];
+        trace?: never;
+    };
+    "/api/v1/masters/standard-rates/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["StandardRatesController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/standard-rates/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["StandardRatesController_importFile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/customer-rates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["CustomerRatesController_list"];
+        put?: never;
+        post: operations["CustomerRatesController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/customer-rates/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["CustomerRatesController_get"];
+        put?: never;
+        post?: never;
+        delete: operations["CustomerRatesController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["CustomerRatesController_update"];
+        trace?: never;
+    };
+    "/api/v1/masters/customer-rates/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["CustomerRatesController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/customer-rates/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CustomerRatesController_importFile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/remark-templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["RemarkTemplatesController_list"];
+        put?: never;
+        post: operations["RemarkTemplatesController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/remark-templates/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["RemarkTemplatesController_get"];
+        put?: never;
+        post?: never;
+        delete: operations["RemarkTemplatesController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["RemarkTemplatesController_update"];
+        trace?: never;
+    };
+    "/api/v1/masters/remark-templates/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["RemarkTemplatesController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/remark-templates/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["RemarkTemplatesController_importFile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/lookups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["LookupsController_list"];
+        put?: never;
+        post: operations["LookupsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/lookups/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["LookupsController_get"];
+        put?: never;
+        post?: never;
+        delete: operations["LookupsController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["LookupsController_update"];
+        trace?: never;
+    };
+    "/api/v1/masters/lookups/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["LookupsController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/masters/lookups/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["LookupsController_importFile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/customers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["CustomersController_list"];
+        put?: never;
+        post: operations["CustomersController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/customers/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["CustomersController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["CustomersController_update"];
+        trace?: never;
+    };
+    "/api/v1/customers/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["CustomersController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -783,6 +1922,640 @@ export interface components {
             sampleRetentionDays?: number;
             reportRetentionYears?: number;
             terms?: components["schemas"]["WizardTermsDto"];
+        };
+        CreateDocumentDto: {
+            kind: string;
+            params?: {
+                [key: string]: unknown;
+            };
+        };
+        DocumentJobDto: {
+            id: string;
+            kind: string;
+            status: string;
+            error: string | null;
+            /** @description short-lived signed link, present when done */
+            url: string | null;
+            filename: string | null;
+        };
+        FileDto: {
+            id: string;
+            originalName: string;
+            mimeType: string;
+            sizeBytes: number;
+            sha256: string;
+            category: string;
+            entity: string | null;
+            entityId: string | null;
+            printWidthMm: number | null;
+            printHeightMm: number | null;
+            caption: string | null;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        SignedUrlDto: {
+            url: string;
+            expiresInSeconds: number;
+            originalName: string;
+            mimeType: string;
+        };
+        FormulaTestInput: {
+            expression: string;
+            inputs: {
+                [key: string]: string;
+            };
+            decimals?: number;
+        };
+        FormulaTestResultDto: {
+            valid: boolean;
+            variables: string[];
+            value: string | null;
+            working: string | null;
+            error: string | null;
+        };
+        ConvertInput: {
+            /** Format: uuid */
+            conversionId: string;
+            value: string;
+            decimals?: number;
+        };
+        ConvertResultDto: {
+            value: string;
+        };
+        RateLookupDto: {
+            /** @description decimal string; null when no rate is set */
+            rate: string | null;
+            source: string | null;
+        };
+        DepartmentDto: {
+            id: string;
+            code: string;
+            name: string;
+            isActive: boolean;
+            version: number;
+        };
+        DepartmentPageDto: {
+            data: components["schemas"]["DepartmentDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        DepartmentInput: {
+            code: string;
+            name: string;
+            /** @description Required on update for optimistic concurrency */
+            version?: number;
+            isActive?: boolean;
+        };
+        HistoryEntryDto: {
+            id: string;
+            /** Format: date-time */
+            at: string;
+            userName: string | null;
+            action: string;
+            before: Record<string, never>;
+            after: Record<string, never>;
+            reason: string | null;
+        };
+        ImportResultDto: {
+            created: number;
+            updated: number;
+            errors: {
+                row: number;
+                message: string;
+            }[];
+        };
+        UnitDto: {
+            id: string;
+            code: string;
+            name: string;
+            symbol: string;
+            isActive: boolean;
+            version: number;
+        };
+        UnitPageDto: {
+            data: components["schemas"]["UnitDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        UnitInput: {
+            code: string;
+            name: string;
+            symbol: string;
+            /** @description Required on update for optimistic concurrency */
+            version?: number;
+            isActive?: boolean;
+        };
+        UnitConversionDto: {
+            id: string;
+            fromUnitId: string;
+            toUnitId: string;
+            fromUnitCode: string;
+            toUnitCode: string;
+            factor: string;
+            isActive: boolean;
+            version: number;
+        };
+        UnitConversionPageDto: {
+            data: components["schemas"]["UnitConversionDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        UnitConversionInput: {
+            /** Format: uuid */
+            fromUnitId: string;
+            /** Format: uuid */
+            toUnitId: string;
+            factor: string;
+            /** @description Required on update for optimistic concurrency */
+            version?: number;
+            isActive?: boolean;
+        };
+        TestMethodDto: {
+            id: string;
+            code: string;
+            name: string;
+            standardRef: string | null;
+            accredited: boolean;
+            /** Format: date-time */
+            accreditedUntil: string | null;
+            isActive: boolean;
+            version: number;
+        };
+        TestMethodPageDto: {
+            data: components["schemas"]["TestMethodDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        TestMethodInput: {
+            code: string;
+            name: string;
+            standardRef?: string;
+            accredited?: boolean;
+            accreditedUntil?: string | null;
+            /** @description Required on update for optimistic concurrency */
+            version?: number;
+            isActive?: boolean;
+        };
+        TestMasterDto: {
+            id: string;
+            code: string;
+            name: string;
+            /** @enum {string} */
+            category: "CHEMICAL" | "MECHANICAL" | "PHYSICAL" | "OTHER";
+            departmentId: string | null;
+            departmentName: string | null;
+            methodId: string | null;
+            methodName: string | null;
+            defaultTatDays: number;
+            urgentTatDays: number;
+            accredited: boolean;
+            /** Format: date-time */
+            accreditedUntil: string | null;
+            stages: string[];
+            parameterCount: number;
+            isActive: boolean;
+            version: number;
+        };
+        TestMasterPageDto: {
+            data: components["schemas"]["TestMasterDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        TestMasterInput: {
+            code: string;
+            name: string;
+            /** @enum {string} */
+            category?: "CHEMICAL" | "MECHANICAL" | "PHYSICAL" | "OTHER";
+            /** Format: uuid */
+            departmentId?: string | null;
+            /** Format: uuid */
+            methodId?: string | null;
+            defaultTatDays?: number;
+            urgentTatDays?: number;
+            accredited?: boolean;
+            accreditedUntil?: string | null;
+            stages?: string[];
+            /** @description Required on update for optimistic concurrency */
+            version?: number;
+            isActive?: boolean;
+        };
+        TestParameterDto: {
+            id: string;
+            testId: string;
+            testCode: string;
+            code: string;
+            name: string;
+            /** @enum {string} */
+            kind: "NUMERIC" | "TEXT" | "RESULT_SET" | "CALCULATED";
+            unitId: string | null;
+            unitSymbol: string | null;
+            decimals: number;
+            resultSetId: string | null;
+            formulaId: string | null;
+            formulaBindings: {
+                [key: string]: string;
+            } | null;
+            accredited: boolean;
+            /** Format: date-time */
+            accreditedUntil: string | null;
+            sortOrder: number;
+            isActive: boolean;
+            version: number;
+        };
+        TestParameterPageDto: {
+            data: components["schemas"]["TestParameterDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        TestParameterInput: {
+            /** Format: uuid */
+            testId: string;
+            code: string;
+            name: string;
+            /** @enum {string} */
+            kind?: "NUMERIC" | "TEXT" | "RESULT_SET" | "CALCULATED";
+            /** Format: uuid */
+            unitId?: string | null;
+            decimals?: number;
+            /** Format: uuid */
+            resultSetId?: string | null;
+            /** Format: uuid */
+            formulaId?: string | null;
+            /** @description formula variable -> parameter code on the same test */
+            formulaBindings?: {
+                [key: string]: string;
+            } | null;
+            accredited?: boolean;
+            accreditedUntil?: string | null;
+            sortOrder?: number;
+            /** @description Required on update for optimistic concurrency */
+            version?: number;
+            isActive?: boolean;
+        };
+        SpecLimitDto: {
+            parameterId: string;
+            parameterCode: string;
+            parameterName: string;
+            testId: string;
+            testCode: string;
+            minValue: string | null;
+            maxValue: string | null;
+            textLimit: string | null;
+        };
+        SpecificationDto: {
+            id: string;
+            code: string;
+            name: string;
+            customerId: string | null;
+            limits: components["schemas"]["SpecLimitDto"][];
+            isActive: boolean;
+            version: number;
+        };
+        SpecificationPageDto: {
+            data: components["schemas"]["SpecificationDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        SpecLimitInput: {
+            /** Format: uuid */
+            parameterId: string;
+            minValue?: string | null;
+            maxValue?: string | null;
+            textLimit?: string | null;
+        };
+        SpecificationInput: {
+            code: string;
+            name: string;
+            /**
+             * Format: uuid
+             * @description leave empty for a general specification
+             */
+            customerId?: string | null;
+            limits?: components["schemas"]["SpecLimitInput"][];
+            /** @description Required on update for optimistic concurrency */
+            version?: number;
+            isActive?: boolean;
+        };
+        TestGroupItemDto: {
+            testId: string;
+            testCode: string;
+            testName: string;
+            parameterId: string | null;
+            parameterName: string | null;
+        };
+        TestGroupDto: {
+            id: string;
+            code: string;
+            name: string;
+            /** @enum {string} */
+            kind: "CHEMICAL" | "TEST";
+            items: components["schemas"]["TestGroupItemDto"][];
+            isActive: boolean;
+            version: number;
+        };
+        TestGroupPageDto: {
+            data: components["schemas"]["TestGroupDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        TestGroupItemInput: {
+            /** Format: uuid */
+            testId: string;
+            /** Format: uuid */
+            parameterId?: string | null;
+        };
+        TestGroupInput: {
+            code: string;
+            name: string;
+            /** @enum {string} */
+            kind?: "CHEMICAL" | "TEST";
+            items?: components["schemas"]["TestGroupItemInput"][];
+            /** @description Required on update for optimistic concurrency */
+            version?: number;
+            isActive?: boolean;
+        };
+        ResultOptionDto: {
+            value: string;
+            isPass: boolean | null;
+        };
+        ResultSetDto: {
+            id: string;
+            code: string;
+            name: string;
+            options: components["schemas"]["ResultOptionDto"][];
+            isActive: boolean;
+            version: number;
+        };
+        ResultSetPageDto: {
+            data: components["schemas"]["ResultSetDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        ResultOptionInput: {
+            value: string;
+            /** @description whether this outcome counts as a pass; empty when pass/fail does not apply */
+            isPass?: boolean | null;
+        };
+        ResultSetInput: {
+            code: string;
+            name: string;
+            options?: components["schemas"]["ResultOptionInput"][];
+            /** @description Required on update for optimistic concurrency */
+            version?: number;
+            isActive?: boolean;
+        };
+        FormulaVersionDto: {
+            id: string;
+            versionNo: number;
+            expression: string;
+            variables: string[];
+            decimals: number;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        FormulaDto: {
+            id: string;
+            code: string;
+            name: string;
+            description: string | null;
+            currentVersion: number;
+            expression: string;
+            variables: string[];
+            decimals: number;
+            versions: components["schemas"]["FormulaVersionDto"][];
+            isActive: boolean;
+            version: number;
+        };
+        FormulaPageDto: {
+            data: components["schemas"]["FormulaDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        FormulaInput: {
+            code: string;
+            name: string;
+            description?: string;
+            expression: string;
+            decimals?: number;
+            /** @description Required on update for optimistic concurrency */
+            version?: number;
+            isActive?: boolean;
+        };
+        InstrumentDto: {
+            id: string;
+            code: string;
+            name: string;
+            serialNo: string | null;
+            departmentId: string | null;
+            departmentName: string | null;
+            /** Format: date-time */
+            lastCalibratedAt: string | null;
+            /** Format: date-time */
+            calibrationDueAt: string | null;
+            certificateFileId: string | null;
+            calibrationOverdue: boolean;
+            isActive: boolean;
+            version: number;
+        };
+        InstrumentPageDto: {
+            data: components["schemas"]["InstrumentDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        InstrumentInput: {
+            code: string;
+            name: string;
+            serialNo?: string;
+            /** Format: uuid */
+            departmentId?: string | null;
+            lastCalibratedAt?: string | null;
+            calibrationDueAt?: string | null;
+            /** Format: uuid */
+            certificateFileId?: string | null;
+            /** @description Required on update for optimistic concurrency */
+            version?: number;
+            isActive?: boolean;
+        };
+        StandardRateDto: {
+            id: string;
+            testId: string;
+            testCode: string;
+            testName: string;
+            rate: string;
+            /** Format: date-time */
+            effectiveFrom: string;
+            /** Format: date-time */
+            effectiveTo: string | null;
+            isActive: boolean;
+            version: number;
+        };
+        StandardRatePageDto: {
+            data: components["schemas"]["StandardRateDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        StandardRateInput: {
+            /** Format: uuid */
+            testId: string;
+            rate: string;
+            effectiveFrom: string;
+            effectiveTo?: string | null;
+            /** @description Required on update for optimistic concurrency */
+            version?: number;
+            isActive?: boolean;
+        };
+        CustomerRateDto: {
+            id: string;
+            customerId: string;
+            customerName: string;
+            crn: string;
+            testId: string;
+            testCode: string;
+            testName: string;
+            rate: string;
+            /** Format: date-time */
+            effectiveFrom: string;
+            /** Format: date-time */
+            effectiveTo: string | null;
+            isActive: boolean;
+            version: number;
+        };
+        CustomerRatePageDto: {
+            data: components["schemas"]["CustomerRateDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        CustomerRateInput: {
+            /** Format: uuid */
+            customerId: string;
+            /** Format: uuid */
+            testId: string;
+            rate: string;
+            effectiveFrom: string;
+            effectiveTo?: string | null;
+            /** @description Required on update for optimistic concurrency */
+            version?: number;
+            isActive?: boolean;
+        };
+        RemarkTemplateDto: {
+            id: string;
+            code: string;
+            text: string;
+            testId: string | null;
+            outcome: string;
+            isActive: boolean;
+            version: number;
+        };
+        RemarkTemplatePageDto: {
+            data: components["schemas"]["RemarkTemplateDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        RemarkTemplateInput: {
+            code: string;
+            text: string;
+            /** Format: uuid */
+            testId?: string | null;
+            /** @enum {string} */
+            outcome?: "ANY" | "PASS" | "FAIL";
+            /** @description Required on update for optimistic concurrency */
+            version?: number;
+            isActive?: boolean;
+        };
+        LookupDto: {
+            id: string;
+            /** @enum {string} */
+            kind: "DEVIATION_TYPE" | "RECEIPT_MODE" | "DISPATCH_MODE";
+            code: string;
+            label: string;
+            isActive: boolean;
+            version: number;
+        };
+        LookupPageDto: {
+            data: components["schemas"]["LookupDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        LookupInput: {
+            /** @enum {string} */
+            kind: "DEVIATION_TYPE" | "RECEIPT_MODE" | "DISPATCH_MODE";
+            code: string;
+            label: string;
+            /** @description Required on update for optimistic concurrency */
+            version?: number;
+            isActive?: boolean;
+        };
+        ContactDto: {
+            id: string;
+            name: string;
+            email: string | null;
+            phone: string | null;
+            designation: string | null;
+            isPrimary: boolean;
+        };
+        AddressDto: {
+            id: string;
+            /** @enum {string} */
+            kind: "REPORT" | "OTHER" | "BILLING";
+            line1: string;
+            line2: string | null;
+            city: string;
+            stateName: string;
+            stateCode: string;
+            pincode: string | null;
+        };
+        CustomerDto: {
+            id: string;
+            crn: string;
+            name: string;
+            gstin: string | null;
+            pan: string | null;
+            stateName: string;
+            stateCode: string;
+            creditDays: number;
+            withholdReportUntilPaid: boolean;
+            notes: string | null;
+            isActive: boolean;
+            version: number;
+            contacts: components["schemas"]["ContactDto"][];
+            addresses: components["schemas"]["AddressDto"][];
+        };
+        CustomerPageDto: {
+            data: components["schemas"]["CustomerDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        ContactInput: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            /** Format: email */
+            email?: string | null;
+            phone?: string | null;
+            designation?: string | null;
+            isPrimary?: boolean;
+        };
+        AddressInput: {
+            /** Format: uuid */
+            id?: string;
+            /** @enum {string} */
+            kind: "REPORT" | "OTHER" | "BILLING";
+            line1: string;
+            line2?: string | null;
+            city: string;
+            stateName: string;
+            stateCode: string;
+            pincode?: string | null;
+        };
+        CreateCustomerDto: {
+            name: string;
+            gstin?: string | null;
+            pan?: string | null;
+            stateName: string;
+            stateCode: string;
+            creditDays?: number;
+            withholdReportUntilPaid?: boolean;
+            notes?: string | null;
+            contacts?: components["schemas"]["ContactInput"][];
+            addresses?: components["schemas"]["AddressInput"][];
+        };
+        UpdateCustomerDto: {
+            name: string;
+            gstin?: string | null;
+            pan?: string | null;
+            stateName: string;
+            stateCode: string;
+            creditDays?: number;
+            withholdReportUntilPaid?: boolean;
+            notes?: string | null;
+            contacts?: components["schemas"]["ContactInput"][];
+            addresses?: components["schemas"]["AddressInput"][];
+            version: number;
+            isActive?: boolean;
         };
     };
     responses: never;
@@ -1610,6 +3383,2855 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    DocumentsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateDocumentDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentJobDto"];
+                };
+            };
+        };
+    };
+    DocumentsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentJobDto"];
+                };
+            };
+        };
+    };
+    FilesController_list: {
+        parameters: {
+            query: {
+                entity: string;
+                entityId: string;
+                category?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FileDto"][];
+                };
+            };
+        };
+    };
+    FilesController_upload: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                    entity: string;
+                    entityId: string;
+                    category: string;
+                    caption?: string;
+                    printWidthMm?: number;
+                    printHeightMm?: number;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FileDto"];
+                };
+            };
+        };
+    };
+    FilesController_url: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SignedUrlDto"];
+                };
+            };
+        };
+    };
+    FilesController_remove: {
+        parameters: {
+            query?: {
+                reason?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    MasterToolsController_formulaConsole: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FormulaTestInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormulaTestResultDto"];
+                };
+            };
+        };
+    };
+    MasterToolsController_convert: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConvertInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConvertResultDto"];
+                };
+            };
+        };
+    };
+    MasterToolsController_rateLookup: {
+        parameters: {
+            query: {
+                testId: string;
+                customerId?: string;
+                on?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RateLookupDto"];
+                };
+            };
+        };
+    };
+    DepartmentsController_list: {
+        parameters: {
+            query?: {
+                active?: "true" | "false" | "all";
+                /** @description Filters for specific masters */
+                testId?: string;
+                customerId?: string;
+                departmentId?: string;
+                kind?: "DEVIATION_TYPE" | "RECEIPT_MODE" | "DISPATCH_MODE";
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DepartmentPageDto"];
+                };
+            };
+        };
+    };
+    DepartmentsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DepartmentInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DepartmentDto"];
+                };
+            };
+        };
+    };
+    DepartmentsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DepartmentDto"];
+                };
+            };
+        };
+    };
+    DepartmentsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    DepartmentsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DepartmentInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DepartmentDto"];
+                };
+            };
+        };
+    };
+    DepartmentsController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HistoryEntryDto"][];
+                };
+            };
+        };
+    };
+    DepartmentsController_importFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResultDto"];
+                };
+            };
+        };
+    };
+    UnitsController_list: {
+        parameters: {
+            query?: {
+                active?: "true" | "false" | "all";
+                /** @description Filters for specific masters */
+                testId?: string;
+                customerId?: string;
+                departmentId?: string;
+                kind?: "DEVIATION_TYPE" | "RECEIPT_MODE" | "DISPATCH_MODE";
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnitPageDto"];
+                };
+            };
+        };
+    };
+    UnitsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UnitInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnitDto"];
+                };
+            };
+        };
+    };
+    UnitsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnitDto"];
+                };
+            };
+        };
+    };
+    UnitsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    UnitsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UnitInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnitDto"];
+                };
+            };
+        };
+    };
+    UnitsController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HistoryEntryDto"][];
+                };
+            };
+        };
+    };
+    UnitsController_importFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResultDto"];
+                };
+            };
+        };
+    };
+    UnitConversionsController_list: {
+        parameters: {
+            query?: {
+                active?: "true" | "false" | "all";
+                /** @description Filters for specific masters */
+                testId?: string;
+                customerId?: string;
+                departmentId?: string;
+                kind?: "DEVIATION_TYPE" | "RECEIPT_MODE" | "DISPATCH_MODE";
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnitConversionPageDto"];
+                };
+            };
+        };
+    };
+    UnitConversionsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UnitConversionInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnitConversionDto"];
+                };
+            };
+        };
+    };
+    UnitConversionsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnitConversionDto"];
+                };
+            };
+        };
+    };
+    UnitConversionsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    UnitConversionsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UnitConversionInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnitConversionDto"];
+                };
+            };
+        };
+    };
+    UnitConversionsController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HistoryEntryDto"][];
+                };
+            };
+        };
+    };
+    UnitConversionsController_importFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResultDto"];
+                };
+            };
+        };
+    };
+    TestMethodsController_list: {
+        parameters: {
+            query?: {
+                active?: "true" | "false" | "all";
+                /** @description Filters for specific masters */
+                testId?: string;
+                customerId?: string;
+                departmentId?: string;
+                kind?: "DEVIATION_TYPE" | "RECEIPT_MODE" | "DISPATCH_MODE";
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestMethodPageDto"];
+                };
+            };
+        };
+    };
+    TestMethodsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TestMethodInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestMethodDto"];
+                };
+            };
+        };
+    };
+    TestMethodsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestMethodDto"];
+                };
+            };
+        };
+    };
+    TestMethodsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    TestMethodsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TestMethodInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestMethodDto"];
+                };
+            };
+        };
+    };
+    TestMethodsController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HistoryEntryDto"][];
+                };
+            };
+        };
+    };
+    TestMethodsController_importFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResultDto"];
+                };
+            };
+        };
+    };
+    TestsController_list: {
+        parameters: {
+            query?: {
+                active?: "true" | "false" | "all";
+                /** @description Filters for specific masters */
+                testId?: string;
+                customerId?: string;
+                departmentId?: string;
+                kind?: "DEVIATION_TYPE" | "RECEIPT_MODE" | "DISPATCH_MODE";
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestMasterPageDto"];
+                };
+            };
+        };
+    };
+    TestsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TestMasterInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestMasterDto"];
+                };
+            };
+        };
+    };
+    TestsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestMasterDto"];
+                };
+            };
+        };
+    };
+    TestsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    TestsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TestMasterInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestMasterDto"];
+                };
+            };
+        };
+    };
+    TestsController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HistoryEntryDto"][];
+                };
+            };
+        };
+    };
+    TestsController_importFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResultDto"];
+                };
+            };
+        };
+    };
+    TestParametersController_list: {
+        parameters: {
+            query?: {
+                active?: "true" | "false" | "all";
+                /** @description Filters for specific masters */
+                testId?: string;
+                customerId?: string;
+                departmentId?: string;
+                kind?: "DEVIATION_TYPE" | "RECEIPT_MODE" | "DISPATCH_MODE";
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestParameterPageDto"];
+                };
+            };
+        };
+    };
+    TestParametersController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TestParameterInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestParameterDto"];
+                };
+            };
+        };
+    };
+    TestParametersController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestParameterDto"];
+                };
+            };
+        };
+    };
+    TestParametersController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    TestParametersController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TestParameterInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestParameterDto"];
+                };
+            };
+        };
+    };
+    TestParametersController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HistoryEntryDto"][];
+                };
+            };
+        };
+    };
+    TestParametersController_importFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResultDto"];
+                };
+            };
+        };
+    };
+    SpecificationsController_list: {
+        parameters: {
+            query?: {
+                active?: "true" | "false" | "all";
+                /** @description Filters for specific masters */
+                testId?: string;
+                customerId?: string;
+                departmentId?: string;
+                kind?: "DEVIATION_TYPE" | "RECEIPT_MODE" | "DISPATCH_MODE";
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SpecificationPageDto"];
+                };
+            };
+        };
+    };
+    SpecificationsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SpecificationInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SpecificationDto"];
+                };
+            };
+        };
+    };
+    SpecificationsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SpecificationDto"];
+                };
+            };
+        };
+    };
+    SpecificationsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    SpecificationsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SpecificationInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SpecificationDto"];
+                };
+            };
+        };
+    };
+    SpecificationsController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HistoryEntryDto"][];
+                };
+            };
+        };
+    };
+    SpecificationsController_importFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResultDto"];
+                };
+            };
+        };
+    };
+    TestGroupsController_list: {
+        parameters: {
+            query?: {
+                active?: "true" | "false" | "all";
+                /** @description Filters for specific masters */
+                testId?: string;
+                customerId?: string;
+                departmentId?: string;
+                kind?: "DEVIATION_TYPE" | "RECEIPT_MODE" | "DISPATCH_MODE";
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestGroupPageDto"];
+                };
+            };
+        };
+    };
+    TestGroupsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TestGroupInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestGroupDto"];
+                };
+            };
+        };
+    };
+    TestGroupsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestGroupDto"];
+                };
+            };
+        };
+    };
+    TestGroupsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    TestGroupsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TestGroupInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestGroupDto"];
+                };
+            };
+        };
+    };
+    TestGroupsController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HistoryEntryDto"][];
+                };
+            };
+        };
+    };
+    TestGroupsController_importFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResultDto"];
+                };
+            };
+        };
+    };
+    ResultSetsController_list: {
+        parameters: {
+            query?: {
+                active?: "true" | "false" | "all";
+                /** @description Filters for specific masters */
+                testId?: string;
+                customerId?: string;
+                departmentId?: string;
+                kind?: "DEVIATION_TYPE" | "RECEIPT_MODE" | "DISPATCH_MODE";
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultSetPageDto"];
+                };
+            };
+        };
+    };
+    ResultSetsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResultSetInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultSetDto"];
+                };
+            };
+        };
+    };
+    ResultSetsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultSetDto"];
+                };
+            };
+        };
+    };
+    ResultSetsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    ResultSetsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResultSetInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultSetDto"];
+                };
+            };
+        };
+    };
+    ResultSetsController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HistoryEntryDto"][];
+                };
+            };
+        };
+    };
+    ResultSetsController_importFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResultDto"];
+                };
+            };
+        };
+    };
+    FormulasController_list: {
+        parameters: {
+            query?: {
+                active?: "true" | "false" | "all";
+                /** @description Filters for specific masters */
+                testId?: string;
+                customerId?: string;
+                departmentId?: string;
+                kind?: "DEVIATION_TYPE" | "RECEIPT_MODE" | "DISPATCH_MODE";
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormulaPageDto"];
+                };
+            };
+        };
+    };
+    FormulasController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FormulaInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormulaDto"];
+                };
+            };
+        };
+    };
+    FormulasController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormulaDto"];
+                };
+            };
+        };
+    };
+    FormulasController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    FormulasController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FormulaInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormulaDto"];
+                };
+            };
+        };
+    };
+    FormulasController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HistoryEntryDto"][];
+                };
+            };
+        };
+    };
+    FormulasController_importFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResultDto"];
+                };
+            };
+        };
+    };
+    InstrumentsController_list: {
+        parameters: {
+            query?: {
+                active?: "true" | "false" | "all";
+                /** @description Filters for specific masters */
+                testId?: string;
+                customerId?: string;
+                departmentId?: string;
+                kind?: "DEVIATION_TYPE" | "RECEIPT_MODE" | "DISPATCH_MODE";
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InstrumentPageDto"];
+                };
+            };
+        };
+    };
+    InstrumentsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InstrumentInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InstrumentDto"];
+                };
+            };
+        };
+    };
+    InstrumentsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InstrumentDto"];
+                };
+            };
+        };
+    };
+    InstrumentsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    InstrumentsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InstrumentInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InstrumentDto"];
+                };
+            };
+        };
+    };
+    InstrumentsController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HistoryEntryDto"][];
+                };
+            };
+        };
+    };
+    InstrumentsController_importFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResultDto"];
+                };
+            };
+        };
+    };
+    StandardRatesController_list: {
+        parameters: {
+            query?: {
+                active?: "true" | "false" | "all";
+                /** @description Filters for specific masters */
+                testId?: string;
+                customerId?: string;
+                departmentId?: string;
+                kind?: "DEVIATION_TYPE" | "RECEIPT_MODE" | "DISPATCH_MODE";
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StandardRatePageDto"];
+                };
+            };
+        };
+    };
+    StandardRatesController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StandardRateInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StandardRateDto"];
+                };
+            };
+        };
+    };
+    StandardRatesController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StandardRateDto"];
+                };
+            };
+        };
+    };
+    StandardRatesController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    StandardRatesController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StandardRateInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StandardRateDto"];
+                };
+            };
+        };
+    };
+    StandardRatesController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HistoryEntryDto"][];
+                };
+            };
+        };
+    };
+    StandardRatesController_importFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResultDto"];
+                };
+            };
+        };
+    };
+    CustomerRatesController_list: {
+        parameters: {
+            query?: {
+                active?: "true" | "false" | "all";
+                /** @description Filters for specific masters */
+                testId?: string;
+                customerId?: string;
+                departmentId?: string;
+                kind?: "DEVIATION_TYPE" | "RECEIPT_MODE" | "DISPATCH_MODE";
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomerRatePageDto"];
+                };
+            };
+        };
+    };
+    CustomerRatesController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CustomerRateInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomerRateDto"];
+                };
+            };
+        };
+    };
+    CustomerRatesController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomerRateDto"];
+                };
+            };
+        };
+    };
+    CustomerRatesController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    CustomerRatesController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CustomerRateInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomerRateDto"];
+                };
+            };
+        };
+    };
+    CustomerRatesController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HistoryEntryDto"][];
+                };
+            };
+        };
+    };
+    CustomerRatesController_importFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResultDto"];
+                };
+            };
+        };
+    };
+    RemarkTemplatesController_list: {
+        parameters: {
+            query?: {
+                active?: "true" | "false" | "all";
+                /** @description Filters for specific masters */
+                testId?: string;
+                customerId?: string;
+                departmentId?: string;
+                kind?: "DEVIATION_TYPE" | "RECEIPT_MODE" | "DISPATCH_MODE";
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RemarkTemplatePageDto"];
+                };
+            };
+        };
+    };
+    RemarkTemplatesController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RemarkTemplateInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RemarkTemplateDto"];
+                };
+            };
+        };
+    };
+    RemarkTemplatesController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RemarkTemplateDto"];
+                };
+            };
+        };
+    };
+    RemarkTemplatesController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    RemarkTemplatesController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RemarkTemplateInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RemarkTemplateDto"];
+                };
+            };
+        };
+    };
+    RemarkTemplatesController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HistoryEntryDto"][];
+                };
+            };
+        };
+    };
+    RemarkTemplatesController_importFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResultDto"];
+                };
+            };
+        };
+    };
+    LookupsController_list: {
+        parameters: {
+            query?: {
+                active?: "true" | "false" | "all";
+                /** @description Filters for specific masters */
+                testId?: string;
+                customerId?: string;
+                departmentId?: string;
+                kind?: "DEVIATION_TYPE" | "RECEIPT_MODE" | "DISPATCH_MODE";
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LookupPageDto"];
+                };
+            };
+        };
+    };
+    LookupsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LookupInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LookupDto"];
+                };
+            };
+        };
+    };
+    LookupsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LookupDto"];
+                };
+            };
+        };
+    };
+    LookupsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    LookupsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LookupInput"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LookupDto"];
+                };
+            };
+        };
+    };
+    LookupsController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HistoryEntryDto"][];
+                };
+            };
+        };
+    };
+    LookupsController_importFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResultDto"];
+                };
+            };
+        };
+    };
+    CustomersController_list: {
+        parameters: {
+            query?: {
+                active?: string;
+                stateCode?: string;
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomerPageDto"];
+                };
+            };
+        };
+    };
+    CustomersController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCustomerDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomerDto"];
+                };
+            };
+        };
+    };
+    CustomersController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomerDto"];
+                };
+            };
+        };
+    };
+    CustomersController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCustomerDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomerDto"];
+                };
+            };
+        };
+    };
+    CustomersController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HistoryEntryDto"][];
+                };
             };
         };
     };
