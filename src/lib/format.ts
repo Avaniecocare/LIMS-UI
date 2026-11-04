@@ -59,3 +59,12 @@ export function todayIso(): string {
   const p = istParts(new Date());
   return `${p.y}-${String(p.m).padStart(2, '0')}-${String(p.d).padStart(2, '0')}`;
 }
+
+/** A yyyy-mm month as Nov 2026. */
+export function formatMonth(value: string): string {
+  const [y, m] = value.split('-');
+  return MONTHS[Number(m) - 1] ? `${MONTHS[Number(m) - 1]} ${y}` : value;
+}
+
+/** First day of the current month in IST as yyyy-mm-dd. */
+export const monthStartIso = () => `${todayIso().slice(0, 8)}01`;

@@ -32,6 +32,47 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npm run size:check
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      packages: read
+    env:
+      E2E_BASE_URL: http://localhost:5173
+      E2E_API_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: npm }
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Start the pinned backend
+        run: docker compose -f e2e/docker-compose.ci.yml up -d --wait
+      - name: Load the demo data
+        run: docker compose -f e2e/docker-compose.ci.yml exec -T api node dist/seed/cli.js seed
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - name: Serve the built UI
+        run: |
+          npx vite preview --port 5173 --strictPort &
+          timeout 60 sh -c 'until curl -sf http://localhost:5173 >/dev/null; do sleep 1; done'
+      - run: npx playwright test
+      - name: Backend logs
+        if: failure()
+        run: docker compose -f e2e/docker-compose.ci.yml logs --no-color --tail=300 api worker
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
   image:
     if: github.event_name == 'push'
     needs: [gitleaks, verify]

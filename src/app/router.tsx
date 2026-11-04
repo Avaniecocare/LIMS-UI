@@ -4,6 +4,7 @@ import { createBrowserRouter, Navigate, Outlet, useLocation } from 'react-router
 import { EmptyState, Spinner } from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
 import { ForgotPasswordPage, LoginPage, RequiredPasswordChangePage, ResetPasswordPage, SetupPage } from '@/features/auth/AuthPages';
+import { RouteError } from './ErrorBoundary';
 import { Layout } from './Layout';
 import { useSession } from './providers';
 
@@ -43,7 +44,8 @@ function PublicOnly() {
   return user ? <Navigate to="/" replace /> : <Outlet />;
 }
 
-const Home = lazy(() => import('@/features/home/HomePage'));
+const Dashboard = lazy(() => import('@/features/dashboard/DashboardPage'));
+const Analytics = lazy(() => import('@/features/dashboard/AnalyticsPage'));
 const Admin = lazy(() => import('@/features/admin/AdminPage'));
 const Account = lazy(() => import('@/features/account/AccountPage'));
 const Masters = lazy(() => import('@/features/masters/MastersPage'));
@@ -62,8 +64,17 @@ const MyTests = lazy(() => import('@/features/testing/MyTestsPage'));
 const TestDetail = lazy(() => import('@/features/testing/TestDetailPage'));
 const Approvals = lazy(() => import('@/features/approvals/ApprovalsPage'));
 const ReportDetail = lazy(() => import('@/features/approvals/ReportDetailPage'));
+const ReportsCatalog = lazy(() => import('@/features/reports/ReportsPage'));
+const ReportView = lazy(() => import('@/features/reports/ReportViewPage'));
+const Dispatch = lazy(() => import('@/features/dispatch/DispatchPage'));
+const Invoices = lazy(() => import('@/features/invoices/InvoicesPage'));
+const InvoiceDetail = lazy(() => import('@/features/invoices/InvoiceDetailPage'));
+const DueInvoices = lazy(() => import('@/features/invoices/DueInvoicesPage'));
 
 export const router = createBrowserRouter([
+  {
+    errorElement: <RouteError />,
+    children: [
   {
     element: <PublicOnly />,
     children: [
@@ -77,7 +88,8 @@ export const router = createBrowserRouter([
   {
     element: <RequireAuth />,
     children: [
-      { path: '/', element: page(Home) },
+      { path: '/', element: page(Dashboard) },
+      { path: '/analytics', element: page(Analytics, ['analytics.operations', 'analytics.quality', 'analytics.people', 'analytics.commercial']) },
       { path: '/account', element: page(Account) },
       { path: '/admin', element: page(Admin, ['admin.users', 'admin.roles', 'admin.settings', 'admin.audit', 'admin.company.view']) },
       { path: '/masters', element: page(Masters, ['masters.view', 'rates.view']) },
@@ -98,7 +110,15 @@ export const router = createBrowserRouter([
       { path: '/my-tests/:id', element: page(TestDetail, ['tests.work', 'tests.viewAll']) },
       { path: '/approvals', element: page(Approvals, ['tests.approve', 'reports.review', 'reports.approve', 'reports.issue', 'reports.view']) },
       { path: '/approvals/reports/:id', element: page(ReportDetail, ['reports.view']) },
+      { path: '/reports', element: page(ReportsCatalog, ['mis.view', 'mis.commercial']) },
+      { path: '/reports/:key', element: page(ReportView, ['mis.view', 'mis.commercial']) },
+      { path: '/dispatch', element: page(Dispatch, ['dispatch.view']) },
+      { path: '/invoices', element: page(Invoices, ['invoices.view']) },
+      { path: '/invoices/:id', element: page(InvoiceDetail, ['invoices.view']) },
+      { path: '/due-invoices', element: page(DueInvoices, ['invoices.view']) },
       { path: '*', element: <EmptyState title="Page not found" /> },
+    ],
+  },
     ],
   },
 ]);

@@ -124,8 +124,7 @@ function SampleCard({ job, sample, highlighted, onCancel }: { job: Job; sample: 
   const client = useQueryClient();
   const [editing, setEditing] = useState(false);
   const canFiles = can('jobs.create', 'jobs.edit');
-  // A test's version is looked up from its own record when cancelling, which needs tests.viewAll.
-  const canCancelTests = can('jobs.cancel', 'planning.edit') && can('tests.viewAll');
+  const canCancelTests = can('jobs.cancel', 'planning.edit');
   return (
     <section id={`sample-${sample.id}`} tabIndex={-1} aria-label={`Sample ${sample.sampleNo}`} aria-current={highlighted ? 'true' : undefined} className={cn('scroll-mt-4 rounded-lg border bg-white outline-none', highlighted ? 'border-brand ring-2 ring-brand' : 'border-gray-200')}>
       <div className="flex flex-wrap items-start justify-between gap-2 border-b border-gray-200 px-4 py-3">
@@ -230,7 +229,7 @@ function SampleCard({ job, sample, highlighted, onCancel }: { job: Job; sample: 
                       {canCancelTests && (
                         <td className="px-2 py-1 text-right">
                           {!CLOSED_TEST.includes(t.status) && (
-                            <Button variant="ghost" size="sm" aria-label={`Cancel ${t.testCode} on ${sample.sampleNo}`} onClick={() => onCancel({ type: 'test', id: t.id, label: `${t.testCode} on ${sample.sampleNo}` })}>
+                            <Button variant="ghost" size="sm" aria-label={`Cancel ${t.testCode} on ${sample.sampleNo}`} onClick={() => onCancel({ type: 'test', id: t.id, version: t.version, label: `${t.testCode} on ${sample.sampleNo}` })}>
                               Cancel
                             </Button>
                           )}

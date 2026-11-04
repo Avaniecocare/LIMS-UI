@@ -6,7 +6,7 @@ import type { components } from '@/api/schema';
 import { useSession } from '@/app/providers';
 import { DataTable, type Col } from '@/components/DataTable';
 import { DateRangeFilter, SavedFilters, SearchBox, StatusBadge } from '@/components/shared';
-import { Badge, Button, PageHeader, Select, Tabs, TabsList, TabsTrigger } from '@/components/ui/primitives';
+import { Badge, Button, PageHeader, Select, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
 import { formatDate, humanize } from '@/lib/format';
 import { useListState } from '@/lib/use-list-state';
@@ -87,8 +87,7 @@ export default function SamplesPage() {
           <TabsTrigger value="jobs">Jobs</TabsTrigger>
           <TabsTrigger value="samples">Samples</TabsTrigger>
         </TabsList>
-      </Tabs>
-      <div className="space-y-3">
+      <TabsContent value={tab} className="space-y-3">
         <div className="flex flex-wrap items-center gap-2">
           <SearchBox value={list.q} onChange={list.setSearch} placeholder={tab === 'jobs' ? 'Search job or customer' : 'Search sample, description or job'} label={tab === 'jobs' ? 'Search jobs' : 'Search samples'} />
           {tab === 'jobs' ? (
@@ -123,7 +122,8 @@ export default function SamplesPage() {
         ) : (
           <DataTable ariaLabel="Samples" columns={sampleColumns} rows={samples.data?.data} meta={samples.data?.meta} loading={samples.isLoading} error={samples.error} onRetry={samples.refetch} sort={list.sort} onSortChange={list.setSort} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} onRowClick={(s) => navigate(`/samples/jobs/${s.jobId}?sample=${s.id}`)} getRowId={(s) => s.id} emptyTitle="No samples found" />
         )}
-      </div>
+      </TabsContent>
+      </Tabs>
     </>
   );
 }

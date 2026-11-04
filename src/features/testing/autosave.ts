@@ -97,7 +97,8 @@ export class AutosaveQueue<P, R> {
         const keep = this.options.onFailed ? this.options.onFailed(error, patch) : patch;
         if (keep !== null) this.pending = this.pending === null ? keep : this.options.merge(keep, this.pending);
         this.setStatus('failed');
-        if (keep !== null && (this.options.shouldRetry?.(error) ?? true)) this.arm(this.options.retryMs ?? 5000);
+        // Newer edits made while this save ran still need sending, even if this patch was dropped.
+        if (this.pending !== null && (this.options.shouldRetry?.(error) ?? true)) this.arm(this.options.retryMs ?? 5000);
         return false;
       },
     );

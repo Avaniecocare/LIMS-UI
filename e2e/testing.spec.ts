@@ -1,5 +1,5 @@
-import { expect, test, type Locator, type Page, type Route } from '@playwright/test';
-import { apiAs, DEMO_PASSWORD, plannedJob, signIn, unique } from './helpers';
+import { expect, test, type Locator, type Page } from '@playwright/test';
+import { apiAs, DEMO_PASSWORD, issuedJob, plannedJob, signIn, unique } from './helpers';
 
 /** The main area scrolls by itself, so a tall window is what shows the whole screen. */
 async function shot(page: Page, name: string, size = { width: 1280, height: 1500 }) {
@@ -31,14 +31,12 @@ async function openReport(page: Page, user: string, tab: string, sampleNo: strin
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Revision');
 }
 
-let finishedJobId = '';
-
 test('from result entry to an issued, then revised, report', async ({ page }) => {
-  const { job, sample } = await plannedJob(['TENS']);
+  const { sample } = await plannedJob(['TENS']);
 
   // The worklist: technician sees codes, never the customer
   await signIn(page, 'tech');
-  await expect(nav(page).getByRole('link')).toHaveText(['Home', 'My Tests']);
+  await expect(nav(page).getByRole('link')).toHaveText(['Dashboard', 'My Tests']);
   await nav(page).getByRole('link', { name: 'My Tests' }).click();
   await page.getByLabel('Search my tests').fill(sample.sampleNo);
   const worklist = page.getByRole('table', { name: 'My tests' });
@@ -345,7 +343,6 @@ test('from result entry to an issued, then revised, report', async ({ page }) =>
   await page.getByRole('tab', { name: 'History' }).click();
   await expect(page.getByText('Customer asked for a correction').first()).toBeVisible();
 
-  finishedJobId = job.id;
 });
 
 test('autosave: keeps what is being typed, warns on leaving, and reloads on a conflict', async ({ page }) => {
@@ -429,6 +426,70 @@ test('autosave: keeps what is being typed, warns on leaving, and reloads on a co
   await expect(row(page, 'WIDTH')).toContainText('12.75');
 });
 
+test('an entry the server refuses is shown on its own input, and the rest still saves', async ({ page }) => {
+  const { sampleTestIds } = await plannedJob(['TENS'], { technician: 'Tushar Technician' });
+  await signIn(page, 'tech2');
+  await page.goto(`/my-tests/${sampleTestIds[0]}`);
+  await page.getByRole('button', { name: 'Start test' }).click();
+  await expect(reading(row(page, 'WIDTH'))).toBeVisible();
+
+  // The browser's own check stops text reaching the server, so this swaps the value on its way out.
+  // The refusal is the real server's.
+  const results = '**/api/v1/tests/*/results';
+  await page.route(results, (route) => route.continue({ postData: route.request().postData()!.replace('"9.99"', '"not a number"') }));
+  const saved = page.waitForResponse((r) => r.url().endsWith('/results') && r.status() === 400);
+  await reading(row(page, 'WIDTH')).fill('9.99');
+  await reading(row(page, 'THICK')).fill('6.2');
+  await reading(row(page, 'THICK')).blur();
+  const refused = await (await saved).json();
+  expect(refused.error.code).toBe('RESULT_INVALID');
+  await page.unroute(results);
+  await expect(reading(row(page, 'WIDTH'))).toHaveAttribute('aria-invalid', 'true');
+  await expect(row(page, 'WIDTH')).toContainText(refused.error.fields[0].message);
+  await expect(reading(row(page, 'WIDTH'))).toHaveValue('9.99');
+  await expect(reading(row(page, 'THICK'))).toHaveAttribute('aria-invalid', 'false');
+
+  // The other value goes through on the retry without the refused one
+  await expect.poll(async () => {
+    const tech = await apiAs('tech2');
+    const test_ = await tech.get(`/tests/${sampleTestIds[0]}`);
+    await tech.dispose();
+    return test_.results.find((r: { code: string }) => r.code === 'THICK').numericValue;
+  }, { timeout: 15_000 }).toMatch(/^6\.2/);
+
+  // Correcting it clears the message and saves
+  await reading(row(page, 'WIDTH')).fill('12.5');
+  await reading(row(page, 'WIDTH')).blur();
+  await expect(reading(row(page, 'WIDTH'))).toHaveAttribute('aria-invalid', 'false');
+  await expect(page.getByRole('status').filter({ hasText: 'Saved' })).toBeVisible();
+  await expect(reading(row(page, 'WIDTH'))).toHaveValue('12.50');
+});
+
+test('a planner without tests.viewAll can still cancel a test from the job page', async ({ page }) => {
+  // No demo role can cancel without also holding tests.viewAll, so the session is narrowed for this one check.
+  const { job, sample } = await plannedJob(['DEN', 'FP'], { assign: false });
+  await page.route('**/api/v1/auth/*', async (route) => {
+    const res = await route.fetch();
+    if (route.request().method() === 'OPTIONS' || !res.ok()) return route.fulfill({ response: res });
+    const body = await res.json();
+    const narrow = (u: { permissions: string[] }) => ({ ...u, permissions: u.permissions.filter((p) => p !== 'tests.viewAll') });
+    return route.fulfill({ response: res, json: body.user ? { ...body, user: narrow(body.user) } : narrow(body) });
+  });
+  let readTest = false;
+  page.on('request', (r) => {
+    if (/\/tests\/[0-9a-f-]{36}$/.test(r.url())) readTest = true;
+  });
+  await signIn(page, 'planner');
+  await page.goto(`/samples/jobs/${job.id}`);
+  await page.getByRole('button', { name: `Cancel FP on ${sample.sampleNo}` }).click();
+  const dialog = page.getByRole('dialog');
+  await dialog.getByRole('button', { name: 'Continue' }).click();
+  await dialog.getByLabel(/Reason/).fill('Customer withdrew this test');
+  await dialog.getByRole('button', { name: 'Confirm cancellation' }).click();
+  await expect(page.getByRole('table', { name: `Tests on ${sample.sampleNo}` }).getByRole('row', { name: /FP/ })).toContainText('Cancelled');
+  expect(readTest).toBe(false);
+});
+
 test('cancelling shows the effect first, and blockers stop it', async ({ page }) => {
   const { job } = await plannedJob(['FP', 'DEN'], { samples: 2, assign: false });
   await signIn(page, 'planner');
@@ -478,8 +539,8 @@ test('cancelling shows the effect first, and blockers stop it', async ({ page })
   await expect(page.getByText('Cancelled: Order withdrawn')).toBeVisible();
 
   // An issued report blocks it
-  test.skip(!finishedJobId, 'needs the job from the report test');
-  await page.goto(`/samples/jobs/${finishedJobId}`);
+  const finished = await issuedJob();
+  await page.goto(`/samples/jobs/${finished.job.id}`);
   // A completed job cannot be cancelled at all, so its button is gone; its sample shows why.
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Completed');
   await expect(page.getByRole('button', { name: 'Cancel job' })).toHaveCount(0);
@@ -490,7 +551,8 @@ test('cancelling shows the effect first, and blockers stop it', async ({ page })
 });
 
 test('notifications: bell, mark read, and email preferences', async ({ page }) => {
-  const { sample } = await plannedJob(['DEN']);
+  // Two assignments: "Mark all read" is disabled once nothing is unread, so one must remain after the first is marked.
+  const { sample } = await plannedJob(['DEN', 'FP']);
   await signIn(page, 'tech');
   const bell = page.getByRole('button', { name: /^Notifications/ });
   await expect(bell).toHaveAccessibleName(/\d+ unread/);
@@ -558,20 +620,9 @@ test('reception books from an accepted quotation without seeing quotations', asy
   quotation = await sales.post(`/quotations/${quotation.id}/accept`, { version: quotation.version });
   await sales.dispose();
 
-  // Role mappings live in the database, and one seeded earlier can still grant quotations.view.
-  // The session is narrowed to the current default so the screens are tested against it either way.
-  const withoutView = async (route: Route) => {
-    const res = await route.fetch();
-    if (route.request().method() === 'OPTIONS' || !res.ok()) return route.fulfill({ response: res });
-    const body = await res.json();
-    const narrow = (u: { permissions: string[] }) => ({ ...u, permissions: u.permissions.filter((p) => p !== 'quotations.view') });
-    await route.fulfill({ response: res, json: body.user ? { ...body, user: narrow(body.user) } : narrow(body) });
-  };
-  await page.route('**/api/v1/auth/login', withoutView);
-  await page.route('**/api/v1/auth/me', withoutView);
   await signIn(page, 'reception');
   await expect(nav(page).getByRole('link', { name: 'Quotations' })).toHaveCount(0);
-  await expect(nav(page).getByRole('link')).toHaveText(['Home', 'Samples', 'Customers', 'Masters']);
+  await expect(nav(page).getByRole('link')).toHaveText(['Dashboard', 'Samples', 'Reports', 'Customers', 'Masters']);
   await page.getByRole('link', { name: 'Samples' }).click();
   await page.getByRole('button', { name: 'Book samples' }).click();
   const list = page.getByRole('region', { name: 'Book from an accepted quotation' });

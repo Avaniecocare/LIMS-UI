@@ -7,7 +7,7 @@ import type { components } from '@/api/schema';
 import { useSession } from '@/app/providers';
 import { DataTable, type Col } from '@/components/DataTable';
 import { ReasonDialog, SavedFilters, SearchBox, StatusBadge } from '@/components/shared';
-import { Badge, Button, Card, ConfirmDialog, EmptyState, PageHeader, Select, Tabs, TabsList, TabsTrigger } from '@/components/ui/primitives';
+import { Badge, Button, Card, ConfirmDialog, EmptyState, PageHeader, Select, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
 import { formatDate, formatDateTime } from '@/lib/format';
 import { toastError, writeError } from '@/lib/forms';
@@ -336,7 +336,7 @@ export default function ApprovalsPage() {
             </TabsTrigger>
           ))}
         </TabsList>
-      </Tabs>
+        <TabsContent value={tab}>
       {tab === 'results' && <ResultsTab />}
       {tab === 'review' && (
         <ReportsTab
@@ -351,6 +351,8 @@ export default function ApprovalsPage() {
       {tab === 'sign' && <ReportsTab key="sign" screen="approvals-sign" statuses={[{ status: 'PENDING_APPROVAL' }]} />}
       {tab === 'issue' && <ReportsTab key="issue" screen="approvals-issue" statuses={[{ status: 'APPROVED' }]} />}
       {tab === 'issued' && <ReportsTab key="issued" screen="approvals-issued" statuses={[{ status: 'ISSUED' }]} />}
+        </TabsContent>
+      </Tabs>
     </>
   );
 }

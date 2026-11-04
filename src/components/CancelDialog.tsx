@@ -11,8 +11,8 @@ export type CancelTarget = {
   id: string;
   /** Name shown in the dialog title. */
   label: string;
-  /** The version the user saw. A test on a job page has none in its row, so it is looked up on opening. */
-  version?: number;
+  /** The version the user saw. */
+  version: number;
 };
 
 function Effect({ title, count, children }: { title: string; count: number; children: ReactNode }) {
@@ -47,20 +47,12 @@ export function CancelDialog({ target, onClose, onCancelled }: { target: CancelT
     gcTime: 0,
     queryFn: async () => unwrap(await api.POST('/api/v1/cancellations/preview', { body: { type: target!.type, id: target!.id } })),
   });
-  const version = useQuery({
-    queryKey: ['cancel-version', target?.id],
-    enabled: open && target?.type === 'test' && target.version === undefined,
-    staleTime: 0,
-    gcTime: 0,
-    queryFn: async () => unwrap(await api.GET('/api/v1/tests/{id}', { params: { path: { id: target!.id } } })).version,
-  });
-  const currentVersion = target?.version ?? version.data;
 
   const refresh = () => {
     for (const k of ['job', 'jobs', 'samples', 'planning', 'planning-workload', 'test', 'my-tests', 'test-approvals', 'reports', 'report']) client.invalidateQueries({ queryKey: [k] });
   };
   const m = useMutation({
-    mutationFn: async () => unwrap(await api.POST('/api/v1/cancellations', { body: { type: target!.type, id: target!.id, version: currentVersion!, reason: reason.trim() } })),
+    mutationFn: async () => unwrap(await api.POST('/api/v1/cancellations', { body: { type: target!.type, id: target!.id, version: target!.version, reason: reason.trim() } })),
     onSuccess: () => {
       toast.success(`${target?.label} cancelled`);
       refresh();
@@ -83,7 +75,6 @@ export function CancelDialog({ target, onClose, onCancelled }: { target: CancelT
     <Dialog open={open} onOpenChange={(o) => !o && onClose()} title={`Cancel ${target?.label ?? ''}`} description={step === 'effect' ? 'Check what this affects before going on.' : 'This cannot be undone.'} wide>
       {impact.isLoading && <Spinner label="Working out the effect" />}
       {impact.error && <ErrorState error={impact.error} onRetry={impact.refetch} />}
-      {version.error && <ErrorState error={version.error} onRetry={version.refetch} />}
       {d && step === 'effect' && (
         <div className="space-y-4">
           {d.blockers.length > 0 && (
@@ -134,7 +125,7 @@ export function CancelDialog({ target, onClose, onCancelled }: { target: CancelT
             <Button variant="secondary" onClick={onClose}>
               Keep it
             </Button>
-            <Button variant="danger" disabled={!d.canCancel || currentVersion === undefined} onClick={() => setStep('reason')}>
+            <Button variant="danger" disabled={!d.canCancel} onClick={() => setStep('reason')}>
               Continue
             </Button>
           </div>

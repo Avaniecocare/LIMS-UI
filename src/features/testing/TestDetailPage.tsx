@@ -29,11 +29,13 @@ function serverValues(t: Test): Record<string, string> {
   return values;
 }
 
-function invalidKeys(t: Test | undefined, drafts: Record<string, string>) {
-  return (t?.results ?? []).filter((r) => r.kind === 'NUMERIC' && (drafts[r.parameterId] ?? '').trim() !== '' && !isNumberText(drafts[r.parameterId])).map((r) => r.parameterId);
+/** Fields holding what cannot be saved: not a number yet, or refused by the server with a message. */
+function invalidKeys(t: Test | undefined, drafts: Record<string, string>, refused: Record<string, string> = {}) {
+  return (t?.results ?? []).filter((r) => r.parameterId in refused || r.kind === 'NUMERIC' && (drafts[r.parameterId] ?? '').trim() !== '' && !isNumberText(drafts[r.parameterId])).map((r) => r.parameterId);
 }
 
-function SaveIndicator({ status, onRetry }: { status: SaveStatus; onRetry: () => void }) {
+
+function SaveIndicator({ status, canRetry, onRetry }: { status: SaveStatus; canRetry: boolean; onRetry: () => void }) {
   const failed = status === 'failed';
   return (
     <span className="flex items-center gap-2 text-[13px]">
@@ -57,7 +59,7 @@ function SaveIndicator({ status, onRetry }: { status: SaveStatus; onRetry: () =>
           </>
         )}
       </span>
-      {failed && (
+      {failed && canRetry && (
         <Button variant="secondary" size="sm" onClick={onRetry}>
           Retry save
         </Button>
@@ -227,7 +229,7 @@ function statusNote(t: Test, assignee: boolean): string | null {
 
 export default function TestDetailPage() {
   const { id } = useParams();
-  const { user, can } = useSession();
+  const { can } = useSession();
   const client = useQueryClient();
   const key = ['test', id];
   const q = useQuery({ queryKey: key, queryFn: async () => unwrap(await api.GET('/api/v1/tests/{id}', { params: { path: { id: id! } } })) });
@@ -236,6 +238,13 @@ export default function TestDetailPage() {
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<SaveStatus>('idle');
   const [instrumentError, setInstrumentError] = useState<string | null>(null);
+  const [refused, setRefused] = useState<Record<string, string>>({});
+  // Read when a save answers, which can be before React has rendered the state, so both are set together.
+  const refusedRef = useRef(refused);
+  const markRefused = (next: Record<string, string>) => {
+    refusedRef.current = next;
+    setRefused(next);
+  };
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [tab, setTab] = useState('results');
   const [dialog, setDialog] = useState<'hold' | 'release' | 'submit' | null>(null);
@@ -243,6 +252,9 @@ export default function TestDetailPage() {
   const focused = useRef<string | null>(null);
   const draftsRef = useRef(drafts);
   draftsRef.current = drafts;
+
+  const markRefusedRef = useRef(markRefused);
+  markRefusedRef.current = markRefused;
 
   const queueRef = useRef<AutosaveQueue<EntryPatch, Test> | null>(null);
   const refetch = q.refetch;
@@ -252,7 +264,7 @@ export default function TestDetailPage() {
     (t: Test | undefined) => {
       const keep = new Set<string>(patchKeys(queueRef.current?.unsent ?? null));
       if (focused.current) keep.add(focused.current);
-      for (const k of invalidKeys(t, draftsRef.current)) keep.add(k);
+      for (const k of invalidKeys(t, draftsRef.current, refusedRef.current)) keep.add(k);
       return keep;
     },
     [],
@@ -282,15 +294,25 @@ export default function TestDetailPage() {
         delete rest.instrumentId;
         return Object.keys(rest).length ? rest : null;
       }
+      if (error.code === 'RESULT_INVALID' && error.fields.length) {
+        // The server refused the whole save. Mark those inputs, keep what was typed in them, and send the rest again.
+        const bad = Object.fromEntries(error.fields.map((f) => [f.field, f.message]));
+        markRefusedRef.current({ ...refusedRef.current, ...bad });
+        const values = Object.fromEntries(Object.entries(patch.values ?? {}).filter(([k]) => !(k in bad)));
+        const rest: EntryPatch = { ...patch, values };
+        if (!Object.keys(values).length) delete rest.values;
+        return Object.keys(rest).length ? rest : null;
+      }
       if (isConflict(error)) toast.error('This test was changed elsewhere. The latest version has been loaded; please check your last entries.');
       else toastError(error);
       // The data may come back unchanged, so put the fields back explicitly.
       void refetch().then((r) => {
         if (r.data) setDrafts(serverValues(r.data));
+        markRefusedRef.current({});
       });
       return null;
     },
-    shouldRetry: (error) => !(error instanceof ApiError) || error.status >= 500 || error.code === 'INSTRUMENT_OVERDUE',
+    shouldRetry: (error) => !(error instanceof ApiError) || error.status >= 500 || error.code === 'INSTRUMENT_OVERDUE' || error.code === 'RESULT_INVALID',
     onStatus: setStatus,
   });
   const queue = queueRef.current;
@@ -310,7 +332,7 @@ export default function TestDetailPage() {
     [queue],
   );
 
-  const unsaved = () => queue.hasUnsaved() || invalidKeys(client.getQueryData<Test>(key), draftsRef.current).length > 0;
+  const unsaved = () => queue.hasUnsaved() || invalidKeys(client.getQueryData<Test>(key), draftsRef.current, refusedRef.current).length > 0;
 
   const blocker = useBlocker(({ currentLocation, nextLocation }) => currentLocation.pathname !== nextLocation.pathname && unsaved());
   useEffect(() => {
@@ -318,7 +340,7 @@ export default function TestDetailPage() {
     let live = true;
     void queue.flush().then((ok) => {
       if (!live) return;
-      if (ok && !invalidKeys(client.getQueryData<Test>(key), draftsRef.current).length) blocker.proceed();
+      if (ok && !invalidKeys(client.getQueryData<Test>(key), draftsRef.current, refusedRef.current).length) blocker.proceed();
       else setLeaving(true);
     });
     return () => {
@@ -370,7 +392,7 @@ export default function TestDetailPage() {
 
   const submit = useMutation({
     mutationFn: async () => {
-      if (invalidKeys(test, draftsRef.current).length) throw new Error('INVALID');
+      if (invalidKeys(test, draftsRef.current, refusedRef.current).length) throw new Error('INVALID');
       if (!(await queue.flush())) throw new Error('UNSAVED');
       return unwrap(await api.POST('/api/v1/tests/{id}/submit', { ...path, body: { version: queue.version } }));
     },
@@ -387,7 +409,7 @@ export default function TestDetailPage() {
       } else if (error instanceof ApiError) {
         setSubmitError(error.message);
       } else if (error instanceof Error && error.message === 'INVALID') {
-        setSubmitError('Some results are not numbers. Correct the marked fields before submitting.');
+        setSubmitError('Some results cannot be saved. Correct the marked fields before submitting.');
       } else {
         setSubmitError('Your latest entries have not been saved. Try again once they are saved.');
       }
@@ -397,7 +419,7 @@ export default function TestDetailPage() {
   if (q.isLoading) return <Spinner />;
   if (q.error || !test) return <ErrorState error={q.error} onRetry={q.refetch} />;
 
-  const assignee = can('tests.work') && test.assignedToName === user?.name;
+  const assignee = test.assignedToMe;
   const canHold = can('tests.hold') || assignee;
   const note = statusNote(test, assignee);
   const entering = test.canEdit;
@@ -407,6 +429,7 @@ export default function TestDetailPage() {
     queue.edit(patch);
   };
   const onResult = (r: ParameterResult, text: string) => {
+    markRefused(Object.fromEntries(Object.entries(refusedRef.current).filter(([k]) => k !== r.parameterId)));
     if (r.kind === 'NUMERIC' && text.trim() !== '' && !isNumberText(text)) {
       setDrafts((d) => ({ ...d, [r.parameterId]: text }));
       return;
@@ -420,7 +443,7 @@ export default function TestDetailPage() {
       if (latest) setDrafts((d) => reconcileDrafts(d, serverValues(latest), keepKeys(latest)));
     });
   };
-  const entry = { drafts, onChange: onResult, onFocus: (k: string) => (focused.current = k), onBlur };
+  const entry = { drafts, errors: refused, onChange: onResult, onFocus: (k: string) => (focused.current = k), onBlur };
   const chosenInstrument = test.instruments.find((i) => i.id === drafts[INSTRUMENT]);
   const hasInstructions = test.officeInstructions || test.technicalData || test.analysisMode;
 
@@ -616,7 +639,7 @@ export default function TestDetailPage() {
       </Tabs>
       {entering && (
         <div className="sticky bottom-0 z-10 mt-4 flex items-center justify-end gap-3 rounded-lg border border-gray-200 bg-white px-4 py-2 shadow-sm">
-          <SaveIndicator status={status} onRetry={() => void queue.flush()} />
+          <SaveIndicator status={status} canRetry={queue.hasUnsaved()} onRetry={() => void queue.flush()} />
           <Button className="h-11" loading={submit.isPending} onClick={() => setDialog('submit')}>
             Submit results
           </Button>

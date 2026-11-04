@@ -116,7 +116,7 @@ export function useTests() {
   return useQuery({ queryKey: ['test-options'], staleTime: STALE, queryFn: async () => unwrap(await api.GET('/api/v1/masters/tests', { params: { query: { pageSize: 200 } } })).data });
 }
 
-export function useLookups(kind: 'DEVIATION_TYPE' | 'RECEIPT_MODE') {
+export function useLookups(kind: 'DEVIATION_TYPE' | 'RECEIPT_MODE' | 'DISPATCH_MODE') {
   const { can } = useSession();
   return useQuery({ queryKey: ['lookups', kind], enabled: can('masters.view'), staleTime: STALE, queryFn: async () => unwrap(await api.GET('/api/v1/masters/lookups', { params: { query: { kind, pageSize: 200 } } })).data });
 }

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import type { components } from '@/api/schema';
 import { DataTable, type Col } from '@/components/DataTable';
 import { SavedFilters, SearchBox, StatusBadge } from '@/components/shared';
-import { Badge, PageHeader, Tabs, TabsList, TabsTrigger } from '@/components/ui/primitives';
+import { Badge, PageHeader, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
 import { formatDate } from '@/lib/format';
 import { useListState } from '@/lib/use-list-state';
@@ -79,14 +79,14 @@ export default function MyTestsPage() {
           <TabsTrigger value="open">To do</TabsTrigger>
           <TabsTrigger value="done">Submitted and approved</TabsTrigger>
         </TabsList>
-      </Tabs>
-      <div className="space-y-3">
+      <TabsContent value={view} className="space-y-3">
         <div className="flex flex-wrap items-center gap-2">
           <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search test, sample or job" label="Search my tests" />
           <SavedFilters screen="my-tests" current={list.allParams} onApply={list.applyFilters} />
         </div>
         <DataTable ariaLabel="My tests" columns={columns} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} onRowClick={(t) => navigate(`/my-tests/${t.id}`)} getRowId={(t) => t.id} emptyTitle={view === 'open' ? 'Nothing is waiting for you' : 'Nothing submitted yet'} />
-      </div>
+      </TabsContent>
+      </Tabs>
     </>
   );
 }

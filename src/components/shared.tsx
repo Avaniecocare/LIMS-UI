@@ -387,3 +387,12 @@ export function SearchBox({ value, onChange, placeholder, label }: { value: stri
   }, [text]);
   return <Input className="w-full max-w-xs" type="search" placeholder={placeholder} aria-label={label} value={text} onChange={(e) => setText(e.target.value)} />;
 }
+
+/** Buttons inside a clickable row: pressing one must not also open the row. */
+export function RowActions({ children, stack }: { children: ReactNode; stack?: boolean }) {
+  return (
+    <div className={stack ? 'flex flex-col items-start gap-1' : 'flex items-center gap-1.5'} onClick={(e) => e.stopPropagation()}>
+      {children}
+    </div>
+  );
+}

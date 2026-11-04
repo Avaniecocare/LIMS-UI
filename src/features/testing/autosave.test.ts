@@ -35,6 +35,27 @@ describe('AutosaveQueue', () => {
     vi.useRealTimers();
   });
 
+  it('still sends an edit made during a save whose own patch was refused and dropped', async () => {
+    const { queue, calls } = setup({ onFailed: () => null, shouldRetry: () => true });
+    queue.edit({ values: { a: 'bad' } });
+    await vi.advanceTimersByTimeAsync(800);
+    queue.edit({ values: { b: '2' } });
+    calls[0].fail(new Error('refused'));
+    await settle();
+    await vi.advanceTimersByTimeAsync(5000);
+    expect(calls).toHaveLength(2);
+    expect(calls[1].patch).toEqual({ values: { b: '2' } });
+  });
+
+  it('does not retry when nothing is left to send', async () => {
+    const { queue, calls } = setup({ onFailed: () => null, shouldRetry: () => true });
+    queue.edit({ values: { a: 'bad' } });
+    await vi.advanceTimersByTimeAsync(800);
+    calls[0].fail(new Error('refused'));
+    await vi.advanceTimersByTimeAsync(20_000);
+    expect(calls).toHaveLength(1);
+  });
+
   it('waits for a pause in typing, then saves the latest values together', async () => {
     const { queue, calls } = setup();
     queue.edit({ values: { a: '1' } });

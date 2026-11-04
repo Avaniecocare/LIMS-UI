@@ -7,8 +7,11 @@ test.use({ launchOptions: { args: ['--use-fake-device-for-media-stream', '--use-
 const shot = (page: Page, name: string) => page.screenshot({ path: `test-results/screens/${name}.png`, fullPage: true });
 
 async function pick(page: Page, label: RegExp, text: string) {
-  await page.getByRole('combobox', { name: label }).fill(text);
-  await page.getByRole('option', { name: new RegExp(text) }).first().click();
+  // A failed submit moves focus to the first invalid field a moment later, which closes a picker opened in between.
+  await expect(async () => {
+    await page.getByRole('combobox', { name: label }).fill(text);
+    await page.getByRole('option', { name: new RegExp(text) }).first().click({ timeout: 3_000 });
+  }).toPass({ timeout: 20_000 });
 }
 
 /** Clicks a document button: a tab opens at once, then goes to the signed link when the worker finishes. */
@@ -217,7 +220,7 @@ test('order to quotation to job, then plan and assign', async ({ page }) => {
 
 test('booking without a quotation, deviations, camera, letter and scanning', async ({ page }) => {
   await signIn(page, 'reception');
-  await expect(page.getByRole('link', { name: 'Quotations' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Quotations' })).toHaveCount(0);
   await expect(page.getByRole('link', { name: 'Orders' })).toHaveCount(0);
   await page.getByRole('link', { name: 'Samples' }).click();
   await page.getByRole('button', { name: 'Book samples' }).click();
@@ -225,6 +228,7 @@ test('booking without a quotation, deviations, camera, letter and scanning', asy
   // The client catches the missing reason at once
   await page.getByRole('button', { name: 'Book job', exact: true }).click();
   await expect(page.getByText('Say why there is no quotation')).toBeVisible();
+  await expect(page.getByLabel('Reason for no quotation')).toBeFocused();
 
   await pick(page, /^Customer/, 'Contoso');
   await expect(page.getByLabel('Contact email')).toHaveValue('rohan@contoso.example');
@@ -328,7 +332,7 @@ test('booking without a quotation, deviations, camera, letter and scanning', asy
   await expect(page.getByText('Job.update')).toBeVisible();
 
   // A scan from any screen, with no field focused, lands on the sample
-  await page.getByRole('link', { name: 'Home' }).click();
+  await page.getByRole('link', { name: 'Dashboard' }).click();
   await scan(page, sampleNo);
   await expect(page).toHaveURL(new RegExp(`/samples/jobs/${jobId}\\?sample=`));
   const selected = page.getByRole('region', { name: `Sample ${sampleNo}` });
@@ -425,7 +429,7 @@ test('a planner never sees the customer', async ({ page }) => {
   await search.fill('Contoso');
   await expect(page.getByRole('listbox', { name: 'Search results' })).toContainText('Nothing found');
   await search.fill('');
-  await page.getByRole('link', { name: 'Home' }).click();
+  await page.getByRole('link', { name: 'Dashboard' }).click();
   await scan(page, sampleNo);
   await expect(page).toHaveURL(new RegExp(`/samples/jobs/${jobId}`));
   await expect(page.locator('main')).not.toContainText('Contoso');

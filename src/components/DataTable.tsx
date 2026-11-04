@@ -120,7 +120,7 @@ export function DataTable<T>({
           {bulkActions}
         </div>
       )}
-      <div ref={scrollRef} className={cn('overflow-auto', maxHeightClass)}>
+      <div ref={scrollRef} className={cn('overflow-auto', maxHeightClass)} tabIndex={0} role="group" aria-label={`${ariaLabel}, scrollable`}>
         <table className="w-full border-collapse text-[13px]" aria-label={ariaLabel} aria-rowcount={meta?.total}>
           <thead className="sticky top-0 z-10 bg-gray-50">
             {table.getHeaderGroups().map((group) => (

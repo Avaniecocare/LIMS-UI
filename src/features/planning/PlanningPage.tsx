@@ -9,7 +9,7 @@ import { CancelDialog, type CancelTarget } from '@/components/CancelDialog';
 import { DataTable, type Col } from '@/components/DataTable';
 import { JobPicker, useTests } from '@/components/pickers';
 import { DocumentButton, SavedFilters, SearchBox, StatusBadge } from '@/components/shared';
-import { Badge, Button, Checkbox, Dialog, ErrorState, Field, Input, PageHeader, Select, Spinner, Tabs, TabsList, TabsTrigger, Textarea } from '@/components/ui/primitives';
+import { Badge, Button, Checkbox, Dialog, ErrorState, Field, Input, PageHeader, Select, Spinner, Tabs, TabsContent, TabsList, TabsTrigger, Textarea } from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
 import { cn, formatDate } from '@/lib/format';
 import { toastError, writeError } from '@/lib/forms';
@@ -528,8 +528,7 @@ export default function PlanningPage() {
             </TabsTrigger>
           ))}
         </TabsList>
-      </Tabs>
-      <div className="space-y-3">
+      <TabsContent value={view} className="space-y-3">
         <div className="flex flex-wrap items-center gap-2">
           <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search test, sample or job" label="Search tests" />
           <div className="w-52">
@@ -597,7 +596,8 @@ export default function PlanningPage() {
           emptyTitle={view === 'unplanned' ? 'No tests waiting to be planned' : view === 'unassigned' ? 'No planned tests waiting for a technician' : 'No tests are assigned'}
           emptyHint={view === 'unplanned' && jobFilter && canEdit ? 'A sample booked without requested tests can still be planned with Plan samples.' : undefined}
         />
-      </div>
+      </TabsContent>
+      </Tabs>
       {dialog === 'plan' && singleJob && <PlanDialog open jobId={singleJob} sampleIds={[...new Set(rows.map((r) => r.sampleId))]} testIds={[...new Set(rows.map((r) => r.testId))]} onOpenChange={(o) => !o && setDialog(null)} onPlanned={() => afterChange(singleJob)} />}
       {dialog === 'plan-job' && jobFilter && <PlanDialog open jobId={jobFilter} testIds={[]} onOpenChange={(o) => !o && setDialog(null)} onPlanned={() => afterChange(jobFilter)} />}
       <CancelDialog target={cancelling} onClose={() => setCancelling(null)} onCancelled={clear} />

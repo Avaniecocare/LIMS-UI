@@ -92,6 +92,8 @@ function Calculation({ result }: { result: ParameterResult }) {
 
 export interface EntryHandlers {
   drafts: Record<string, string>;
+  /** The server's message for an entry it refused, by parameter id. */
+  errors?: Record<string, string>;
   onChange: (result: ParameterResult, text: string) => void;
   onFocus: (key: string) => void;
   onBlur: () => void;
@@ -117,9 +119,12 @@ function ResultInput({ result, entry }: { result: ParameterResult; entry: EntryH
   const value = entry.drafts[result.parameterId] ?? '';
   const label = `${result.name}${result.unit ? ` in ${result.unit}` : ''}`;
   const shared = { 'data-entry': true, 'aria-label': label, className: 'h-11', onFocus: () => entry.onFocus(result.parameterId), onBlur: entry.onBlur };
+  const errorId = `${result.parameterId}-error`;
+  const refused = entry.errors?.[result.parameterId];
   if (result.kind === 'RESULT_SET') {
     return (
-      <Select {...shared} value={value} onChange={(e) => entry.onChange(result, e.target.value)}>
+      <>
+      <Select {...shared} value={value} aria-invalid={!!refused} aria-describedby={refused ? errorId : undefined} onChange={(e) => entry.onChange(result, e.target.value)}>
         <option value="">Choose…</option>
         {result.options.map((o) => (
           <option key={o.value} value={o.value}>
@@ -127,11 +132,16 @@ function ResultInput({ result, entry }: { result: ParameterResult; entry: EntryH
           </option>
         ))}
       </Select>
+      {refused && (
+        <p id={errorId} className="mt-1 text-xs text-red-800">
+          {refused}
+        </p>
+      )}
+      </>
     );
   }
   const invalid = result.kind === 'NUMERIC' && value.trim() !== '' && !isNumberText(value);
-  const errorId = `${result.parameterId}-error`;
-  const error = invalid ? 'Enter a number' : result.error;
+  const error = invalid ? 'Enter a number' : (refused ?? result.error);
   return (
     <>
       <Input {...shared} className={cn('h-11', result.kind === 'NUMERIC' && 'tabular-nums')} inputMode={result.kind === 'NUMERIC' ? 'decimal' : undefined} autoComplete="off" value={value} aria-invalid={!!error} aria-describedby={error ? errorId : undefined} onChange={(e) => entry.onChange(result, e.target.value)} />
