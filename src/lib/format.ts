@@ -51,6 +51,9 @@ export const humanize = (value: string | null | undefined) =>
     .replace(/_/g, ' ')
     .replace(/\b\w/g, (c) => c.toUpperCase());
 
+/** A stored date as yyyy-mm-dd for a date input. Dates are stored at UTC midnight, so no zone shift. */
+export const toDateInput = (value: string | null | undefined) => (value ? value.slice(0, 10) : '');
+
 /** Today's date in IST as yyyy-mm-dd, for date inputs. */
 export function todayIso(): string {
   const p = istParts(new Date());

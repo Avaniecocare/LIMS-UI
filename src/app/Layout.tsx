@@ -5,6 +5,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { Button, DropdownContent, DropdownItem, DropdownMenu, DropdownTrigger } from '@/components/ui/primitives';
 import { api } from '@/lib/api';
 import { cn } from '@/lib/format';
+import { GlobalSearch } from './GlobalSearch';
 import { NAV } from './nav';
 import { useBranding, useSession } from './providers';
 
@@ -58,7 +59,9 @@ export function Layout() {
           <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open menu" onClick={() => setOpen(true)}>
             <Menu aria-hidden />
           </Button>
-          <div className="flex-1" id="header-slot" />
+          <div className="flex-1" id="header-slot">
+            <GlobalSearch />
+          </div>
           <DropdownMenu>
             <DropdownTrigger asChild>
               <Button variant="ghost" size="sm">

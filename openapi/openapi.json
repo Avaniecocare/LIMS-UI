@@ -1,286 +1,6 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/api/v1/auth/login": {
-      "post": {
-        "operationId": "AuthController_login",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LoginDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LoginResultDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/v1/auth/login/totp": {
-      "post": {
-        "operationId": "AuthController_loginTotp",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LoginTotpDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LoginResultDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/v1/auth/logout": {
-      "post": {
-        "operationId": "AuthController_logout",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OkDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/v1/auth/me": {
-      "get": {
-        "operationId": "AuthController_me",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SessionUserDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/v1/auth/change-password": {
-      "post": {
-        "operationId": "AuthController_changePassword",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ChangePasswordDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OkDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/v1/auth/forgot-password": {
-      "post": {
-        "operationId": "AuthController_forgot",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ForgotPasswordDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OkDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/v1/auth/reset-password": {
-      "post": {
-        "operationId": "AuthController_reset",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ResetPasswordDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OkDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/v1/auth/totp/setup": {
-      "post": {
-        "operationId": "AuthController_totpSetup",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TotpSetupDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/v1/auth/totp/enable": {
-      "post": {
-        "operationId": "AuthController_totpEnable",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TotpEnableDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OkDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/v1/auth/totp/disable": {
-      "post": {
-        "operationId": "AuthController_totpDisable",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TotpDisableDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OkDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
     "/api/v1/admin/users": {
       "get": {
         "operationId": "AdminController_listUsers",
@@ -1204,6 +924,286 @@
         },
         "tags": [
           "health"
+        ]
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResultDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/login/totp": {
+      "post": {
+        "operationId": "AuthController_loginTotp",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginTotpDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResultDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "operationId": "AuthController_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionUserDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/change-password": {
+      "post": {
+        "operationId": "AuthController_changePassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/forgot-password": {
+      "post": {
+        "operationId": "AuthController_forgot",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/reset-password": {
+      "post": {
+        "operationId": "AuthController_reset",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/totp/setup": {
+      "post": {
+        "operationId": "AuthController_totpSetup",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TotpSetupDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/totp/enable": {
+      "post": {
+        "operationId": "AuthController_totpEnable",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TotpEnableDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/totp/disable": {
+      "post": {
+        "operationId": "AuthController_totpDisable",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TotpDisableDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
         ]
       }
     },
@@ -7070,6 +7070,30 @@
         ]
       }
     },
+    "/api/v1/quotations/convertible": {
+      "get": {
+        "operationId": "QuotationsController_convertible",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ConvertibleQuotationDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "quotations"
+        ]
+      }
+    },
     "/api/v1/quotations/{id}": {
       "get": {
         "operationId": "QuotationsController_get",
@@ -7569,6 +7593,15 @@
           },
           {
             "name": "returnable",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 5,
+              "type": "string"
+            }
+          },
+          {
+            "name": "urgent",
             "required": false,
             "in": "query",
             "schema": {
@@ -8113,9 +8146,9 @@
               "maxLength": 20,
               "type": "string",
               "enum": [
+                "assigned",
                 "unplanned",
-                "unassigned",
-                "assigned"
+                "unassigned"
               ]
             }
           },
@@ -8461,6 +8494,3023 @@
           "search"
         ]
       }
+    },
+    "/api/v1/tests/my": {
+      "get": {
+        "operationId": "TestingController_worklist",
+        "parameters": [
+          {
+            "name": "view",
+            "required": false,
+            "in": "query",
+            "description": "open (default) or done",
+            "schema": {
+              "maxLength": 10,
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 200,
+              "default": 25,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 120,
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 200,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorklistPageDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Assigned tests only",
+        "tags": [
+          "tests"
+        ]
+      }
+    },
+    "/api/v1/tests/approvals": {
+      "get": {
+        "operationId": "TestingController_approvals",
+        "parameters": [
+          {
+            "name": "departmentId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 200,
+              "default": 25,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 120,
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 200,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprovalPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tests"
+        ]
+      }
+    },
+    "/api/v1/tests/approvals/bulk": {
+      "post": {
+        "operationId": "TestingController_bulk",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkApproveDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkApproveResultDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tests"
+        ]
+      }
+    },
+    "/api/v1/tests/{id}": {
+      "get": {
+        "operationId": "TestingController_detail",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tests"
+        ]
+      }
+    },
+    "/api/v1/tests/{id}/history": {
+      "get": {
+        "operationId": "TestingController_history",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AuditHistoryDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tests"
+        ]
+      }
+    },
+    "/api/v1/tests/{id}/start": {
+      "post": {
+        "operationId": "TestingController_start",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tests"
+        ]
+      }
+    },
+    "/api/v1/tests/{id}/stages/{seq}/complete": {
+      "post": {
+        "operationId": "TestingController_stage",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "seq",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tests"
+        ]
+      }
+    },
+    "/api/v1/tests/{id}/results": {
+      "put": {
+        "operationId": "TestingController_save",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveResultsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Saves values, including autosaved drafts, and returns the server's calculations and pass/fail.",
+        "tags": [
+          "tests"
+        ]
+      }
+    },
+    "/api/v1/tests/{id}/submit": {
+      "post": {
+        "operationId": "TestingController_submit",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tests"
+        ]
+      }
+    },
+    "/api/v1/tests/{id}/hold": {
+      "post": {
+        "operationId": "TestingController_hold",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestReasonDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tests"
+        ]
+      }
+    },
+    "/api/v1/tests/{id}/release": {
+      "post": {
+        "operationId": "TestingController_release",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tests"
+        ]
+      }
+    },
+    "/api/v1/tests/{id}/approve": {
+      "post": {
+        "operationId": "TestingController_approve",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tests"
+        ]
+      }
+    },
+    "/api/v1/tests/{id}/reject": {
+      "post": {
+        "operationId": "TestingController_reject",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestReasonDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tests"
+        ]
+      }
+    },
+    "/api/v1/reports": {
+      "get": {
+        "operationId": "ReportsController_list",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "APPROVED",
+                "DRAFT",
+                "ISSUED",
+                "IN_REVIEW",
+                "PENDING_APPROVAL",
+                "SUPERSEDED"
+              ]
+            }
+          },
+          {
+            "name": "jobId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 200,
+              "default": 25,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 120,
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 200,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/reports/revisions/{revisionId}/pdf": {
+      "get": {
+        "operationId": "ReportsController_pdf",
+        "parameters": [
+          {
+            "name": "revisionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignedPdfDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/reports/{id}": {
+      "get": {
+        "operationId": "ReportsController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/reports/{id}/preview": {
+      "get": {
+        "operationId": "ReportsController_preview",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "revisionNo",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportPreviewDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/reports/{id}/history": {
+      "get": {
+        "operationId": "ReportsController_history",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AuditHistoryDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/reports/{id}/emails": {
+      "get": {
+        "operationId": "ReportsController_emails",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EmailLogDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/reports/{id}/submit": {
+      "post": {
+        "operationId": "ReportsController_submit",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportActionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/reports/{id}/pass-review": {
+      "post": {
+        "operationId": "ReportsController_pass",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportActionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/reports/{id}/reject": {
+      "post": {
+        "operationId": "ReportsController_reject",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportRejectDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/reports/{id}/draft": {
+      "patch": {
+        "operationId": "ReportsController_correct",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportCorrectDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/reports/{id}/approve": {
+      "post": {
+        "operationId": "ReportsController_approve",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportApproveDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/reports/{id}/issue": {
+      "post": {
+        "operationId": "ReportsController_issue",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportIssueDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/reports/{id}/email": {
+      "post": {
+        "operationId": "ReportsController_email",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportEmailDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/reports/{id}/revise": {
+      "post": {
+        "operationId": "ReportsController_revise",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportReviseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/invoices": {
+      "get": {
+        "operationId": "InvoicesController_list",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "CANCELLED",
+                "DRAFT",
+                "ISSUED",
+                "PARTIALLY_PAID",
+                "PAID"
+              ]
+            }
+          },
+          {
+            "name": "customerId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 200,
+              "default": 25,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 120,
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 200,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoicePageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "invoices"
+        ]
+      },
+      "post": {
+        "operationId": "InvoicesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateInvoiceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "invoices"
+        ]
+      }
+    },
+    "/api/v1/invoices/ready": {
+      "get": {
+        "operationId": "InvoicesController_ready",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "CANCELLED",
+                "DRAFT",
+                "ISSUED",
+                "PARTIALLY_PAID",
+                "PAID"
+              ]
+            }
+          },
+          {
+            "name": "customerId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 200,
+              "default": 25,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 120,
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 200,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadyPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "invoices"
+        ]
+      }
+    },
+    "/api/v1/invoices/due": {
+      "get": {
+        "operationId": "InvoicesController_due",
+        "parameters": [
+          {
+            "name": "customerId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "bucket",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "Not Due",
+                "0-30",
+                "31-60",
+                "61-90",
+                "90+"
+              ]
+            }
+          },
+          {
+            "name": "overdue",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 200,
+              "default": 25,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 120,
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 200,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoicePageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "invoices"
+        ]
+      }
+    },
+    "/api/v1/invoices/due/summary": {
+      "get": {
+        "operationId": "InvoicesController_dueSummary",
+        "parameters": [
+          {
+            "name": "customerId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DueSummaryDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "invoices"
+        ]
+      }
+    },
+    "/api/v1/invoices/{id}": {
+      "get": {
+        "operationId": "InvoicesController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "invoices"
+        ]
+      },
+      "patch": {
+        "operationId": "InvoicesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDraftInvoiceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "invoices"
+        ]
+      }
+    },
+    "/api/v1/invoices/{id}/issue": {
+      "post": {
+        "operationId": "InvoicesController_issue",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IssueInvoiceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "invoices"
+        ]
+      }
+    },
+    "/api/v1/invoices/{id}/cancel": {
+      "post": {
+        "operationId": "InvoicesController_cancel",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelInvoiceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "invoices"
+        ]
+      }
+    },
+    "/api/v1/invoices/{id}/email": {
+      "post": {
+        "operationId": "InvoicesController_email",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailInvoiceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "invoices"
+        ]
+      }
+    },
+    "/api/v1/invoices/{id}/emails": {
+      "get": {
+        "operationId": "InvoicesController_emails",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EmailLogDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "invoices"
+        ]
+      }
+    },
+    "/api/v1/invoices/{id}/history": {
+      "get": {
+        "operationId": "InvoicesController_history",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AuditHistoryDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "invoices"
+        ]
+      }
+    },
+    "/api/v1/invoices/{id}/credit-notes": {
+      "post": {
+        "operationId": "InvoicesController_creditNote",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCreditNoteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "invoices"
+        ]
+      }
+    },
+    "/api/v1/invoices/{id}/remind": {
+      "post": {
+        "operationId": "InvoicesController_remind",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemindDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "invoices"
+        ]
+      }
+    },
+    "/api/v1/payments": {
+      "get": {
+        "operationId": "InvoicesController_payments",
+        "parameters": [
+          {
+            "name": "customerId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "unapplied",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 200,
+              "default": 25,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 120,
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 200,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "invoices"
+        ]
+      },
+      "post": {
+        "operationId": "InvoicesController_createPayment",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePaymentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "invoices"
+        ]
+      }
+    },
+    "/api/v1/payments/{id}": {
+      "get": {
+        "operationId": "InvoicesController_payment",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "invoices"
+        ]
+      }
+    },
+    "/api/v1/payments/{id}/apply": {
+      "post": {
+        "operationId": "InvoicesController_apply",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplyAdvanceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "invoices"
+        ]
+      }
+    },
+    "/api/v1/payments/{id}/reverse": {
+      "post": {
+        "operationId": "InvoicesController_reverse",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReversePaymentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "invoices"
+        ]
+      }
+    },
+    "/api/v1/dispatch": {
+      "get": {
+        "operationId": "DispatchController_list",
+        "parameters": [
+          {
+            "name": "jobId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 200,
+              "default": 25,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 120,
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 200,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DispatchPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dispatch"
+        ]
+      },
+      "post": {
+        "operationId": "DispatchController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDispatchDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DispatchDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dispatch"
+        ]
+      }
+    },
+    "/api/v1/dispatch/pending": {
+      "get": {
+        "operationId": "DispatchController_pending",
+        "parameters": [
+          {
+            "name": "jobId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 200,
+              "default": 25,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 120,
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 200,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DispatchablePageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dispatch"
+        ]
+      }
+    },
+    "/api/v1/dispatch/returnables": {
+      "get": {
+        "operationId": "DispatchController_returnables",
+        "parameters": [
+          {
+            "name": "view",
+            "required": false,
+            "in": "query",
+            "description": "pending | returned | disposed | due-for-disposal",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "returned",
+                "disposed",
+                "due-for-disposal"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 200,
+              "default": 25,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 120,
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 200,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReturnablePageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dispatch"
+        ]
+      }
+    },
+    "/api/v1/dispatch/samples/{id}/return": {
+      "post": {
+        "operationId": "DispatchController_returned",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SampleReturnDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dispatch"
+        ]
+      }
+    },
+    "/api/v1/dispatch/samples/{id}/dispose": {
+      "post": {
+        "operationId": "DispatchController_disposed",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SampleDisposeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dispatch"
+        ]
+      }
+    },
+    "/api/v1/dispatch/{id}": {
+      "get": {
+        "operationId": "DispatchController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DispatchDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dispatch"
+        ]
+      }
+    },
+    "/api/v1/cancellations/preview": {
+      "post": {
+        "operationId": "CancellationsController_preview",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelPreviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CancelImpactDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "The downstream effect, shown before confirming.",
+        "tags": [
+          "cancellations"
+        ]
+      }
+    },
+    "/api/v1/cancellations": {
+      "post": {
+        "operationId": "CancellationsController_cancel",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "cancellations"
+        ]
+      }
+    },
+    "/api/v1/mis": {
+      "get": {
+        "operationId": "MisController_catalog",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MisCatalogItemDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "reports-module"
+        ]
+      }
+    },
+    "/api/v1/mis/{key}": {
+      "get": {
+        "operationId": "MisController_run",
+        "parameters": [
+          {
+            "name": "key",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "customerId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "departmentId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "technicianId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 30,
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 200,
+              "default": 25,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 120,
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 200,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MisResultDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "reports-module"
+        ]
+      }
+    },
+    "/api/v1/dashboard": {
+      "get": {
+        "operationId": "DashboardController_get",
+        "parameters": [
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Sections follow the caller's permissions; every user at least gets \"My work\".",
+        "tags": [
+          "dashboard"
+        ]
+      }
+    },
+    "/api/v1/notifications": {
+      "get": {
+        "operationId": "NotificationsController_list",
+        "parameters": [
+          {
+            "name": "unreadOnly",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 200,
+              "default": 25,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 120,
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 200,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/v1/notifications/read-all": {
+      "post": {
+        "operationId": "NotificationsController_readAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/v1/notifications/{id}/read": {
+      "post": {
+        "operationId": "NotificationsController_read",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/v1/notifications/preferences": {
+      "get": {
+        "operationId": "NotificationsController_preferences",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PreferenceDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "notifications"
+        ]
+      },
+      "put": {
+        "operationId": "NotificationsController_update",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePreferencesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PreferenceDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "notifications"
+        ]
+      }
     }
   },
   "info": {
@@ -8480,219 +11530,6 @@
       }
     },
     "schemas": {
-      "LoginDto": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "maxLength": 254,
-            "format": "email"
-          },
-          "password": {
-            "type": "string",
-            "maxLength": 200
-          }
-        },
-        "required": [
-          "email",
-          "password"
-        ]
-      },
-      "SessionUserDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "designation": {
-            "type": "string",
-            "nullable": true
-          },
-          "roles": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "permissions": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "csrfToken": {
-            "type": "string"
-          },
-          "totpEnabled": {
-            "type": "boolean"
-          },
-          "mustChangePassword": {
-            "type": "boolean"
-          },
-          "totpAvailable": {
-            "type": "boolean",
-            "description": "Admin, Signatory and Accounts may enrol in TOTP"
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "email",
-          "designation",
-          "roles",
-          "permissions",
-          "csrfToken",
-          "totpEnabled",
-          "mustChangePassword",
-          "totpAvailable"
-        ]
-      },
-      "LoginResultDto": {
-        "type": "object",
-        "properties": {
-          "totpChallenge": {
-            "type": "string",
-            "nullable": true,
-            "description": "present when a TOTP code is needed to finish signing in"
-          },
-          "user": {
-            "nullable": true,
-            "type": "object",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/SessionUserDto"
-              }
-            ]
-          }
-        }
-      },
-      "LoginTotpDto": {
-        "type": "object",
-        "properties": {
-          "challenge": {
-            "type": "string",
-            "maxLength": 200
-          },
-          "code": {
-            "type": "string",
-            "minLength": 6,
-            "maxLength": 6
-          }
-        },
-        "required": [
-          "challenge",
-          "code"
-        ]
-      },
-      "OkDto": {
-        "type": "object",
-        "properties": {
-          "ok": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "ok"
-        ]
-      },
-      "ChangePasswordDto": {
-        "type": "object",
-        "properties": {
-          "currentPassword": {
-            "type": "string",
-            "maxLength": 200
-          },
-          "newPassword": {
-            "type": "string",
-            "maxLength": 200
-          }
-        },
-        "required": [
-          "currentPassword",
-          "newPassword"
-        ]
-      },
-      "ForgotPasswordDto": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "maxLength": 254,
-            "format": "email"
-          }
-        },
-        "required": [
-          "email"
-        ]
-      },
-      "ResetPasswordDto": {
-        "type": "object",
-        "properties": {
-          "token": {
-            "type": "string",
-            "maxLength": 200
-          },
-          "newPassword": {
-            "type": "string",
-            "maxLength": 200
-          }
-        },
-        "required": [
-          "token",
-          "newPassword"
-        ]
-      },
-      "TotpSetupDto": {
-        "type": "object",
-        "properties": {
-          "secret": {
-            "type": "string"
-          },
-          "otpauthUrl": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "secret",
-          "otpauthUrl"
-        ]
-      },
-      "TotpEnableDto": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "minLength": 6,
-            "maxLength": 6
-          }
-        },
-        "required": [
-          "code"
-        ]
-      },
-      "TotpDisableDto": {
-        "type": "object",
-        "properties": {
-          "password": {
-            "type": "string",
-            "maxLength": 200
-          },
-          "code": {
-            "type": "string",
-            "minLength": 6,
-            "maxLength": 6
-          }
-        },
-        "required": [
-          "password"
-        ]
-      },
       "UserDto": {
         "type": "object",
         "properties": {
@@ -8905,6 +11742,17 @@
         },
         "required": [
           "newPassword"
+        ]
+      },
+      "OkDto": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok"
         ]
       },
       "PermissionDto": {
@@ -9531,6 +12379,208 @@
           "adminEmail",
           "adminName",
           "adminPassword"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "SessionUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "designation": {
+            "type": "string",
+            "nullable": true
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "csrfToken": {
+            "type": "string"
+          },
+          "totpEnabled": {
+            "type": "boolean"
+          },
+          "mustChangePassword": {
+            "type": "boolean"
+          },
+          "totpAvailable": {
+            "type": "boolean",
+            "description": "Admin, Signatory and Accounts may enrol in TOTP"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "email",
+          "designation",
+          "roles",
+          "permissions",
+          "csrfToken",
+          "totpEnabled",
+          "mustChangePassword",
+          "totpAvailable"
+        ]
+      },
+      "LoginResultDto": {
+        "type": "object",
+        "properties": {
+          "totpChallenge": {
+            "type": "string",
+            "nullable": true,
+            "description": "present when a TOTP code is needed to finish signing in"
+          },
+          "user": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SessionUserDto"
+              }
+            ]
+          }
+        }
+      },
+      "LoginTotpDto": {
+        "type": "object",
+        "properties": {
+          "challenge": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "code": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 6
+          }
+        },
+        "required": [
+          "challenge",
+          "code"
+        ]
+      },
+      "ChangePasswordDto": {
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "newPassword": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "currentPassword",
+          "newPassword"
+        ]
+      },
+      "ForgotPasswordDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "format": "email"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "newPassword": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "token",
+          "newPassword"
+        ]
+      },
+      "TotpSetupDto": {
+        "type": "object",
+        "properties": {
+          "secret": {
+            "type": "string"
+          },
+          "otpauthUrl": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "secret",
+          "otpauthUrl"
+        ]
+      },
+      "TotpEnableDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 6
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "TotpDisableDto": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "code": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 6
+          }
+        },
+        "required": [
+          "password"
         ]
       },
       "CreateDocumentDto": {
@@ -10381,10 +13431,10 @@
           },
           "kind": {
             "enum": [
-              "NUMERIC",
-              "TEXT",
               "RESULT_SET",
-              "CALCULATED"
+              "CALCULATED",
+              "NUMERIC",
+              "TEXT"
             ],
             "type": "string"
           },
@@ -10489,10 +13539,10 @@
           },
           "kind": {
             "enum": [
-              "NUMERIC",
-              "TEXT",
               "RESULT_SET",
-              "CALCULATED"
+              "CALCULATED",
+              "NUMERIC",
+              "TEXT"
             ],
             "type": "string"
           },
@@ -12379,6 +15429,46 @@
           "meta"
         ]
       },
+      "ConvertibleQuotationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "quotationNo": {
+            "type": "string"
+          },
+          "customerId": {
+            "type": "string"
+          },
+          "customerName": {
+            "type": "string"
+          },
+          "acceptedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "samples": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "testCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "quotationNo",
+          "customerId",
+          "customerName",
+          "acceptedAt",
+          "samples",
+          "testCount"
+        ]
+      },
       "QuotationLineDto": {
         "type": "object",
         "properties": {
@@ -13167,6 +16257,10 @@
           "status": {
             "type": "string"
           },
+          "planned": {
+            "type": "boolean",
+            "description": "false until the planner has taken it up; status alone reads PLANNED before that"
+          },
           "dueDate": {
             "format": "date-time",
             "type": "string",
@@ -13183,6 +16277,7 @@
           "testCode",
           "testName",
           "status",
+          "planned",
           "dueDate",
           "assignedToName"
         ]
@@ -14274,6 +17369,13 @@
             "type": "string",
             "nullable": true,
             "format": "uuid"
+          },
+          "versions": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            },
+            "description": "test id -> the version the user saw; a changed test is refused rather than overwritten"
           }
         },
         "required": [
@@ -14426,6 +17528,3411 @@
         },
         "required": [
           "link"
+        ]
+      },
+      "WorklistItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "testCode": {
+            "type": "string"
+          },
+          "testName": {
+            "type": "string"
+          },
+          "methodName": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string"
+          },
+          "urgent": {
+            "type": "boolean"
+          },
+          "dueDate": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "overdue": {
+            "type": "boolean"
+          },
+          "sampleNo": {
+            "type": "string"
+          },
+          "jobNo": {
+            "type": "string"
+          },
+          "sampleDescription": {
+            "type": "string"
+          },
+          "customerName": {
+            "type": "string",
+            "nullable": true,
+            "description": "null while impartiality is on"
+          },
+          "currentStage": {
+            "type": "string",
+            "nullable": true
+          },
+          "rejectionReason": {
+            "type": "string",
+            "nullable": true
+          },
+          "holdReason": {
+            "type": "string",
+            "nullable": true
+          },
+          "version": {
+            "type": "number"
+          },
+          "analysisMode": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "testCode",
+          "testName",
+          "methodName",
+          "status",
+          "urgent",
+          "dueDate",
+          "overdue",
+          "sampleNo",
+          "jobNo",
+          "sampleDescription",
+          "customerName",
+          "currentStage",
+          "rejectionReason",
+          "holdReason",
+          "version",
+          "analysisMode"
+        ]
+      },
+      "WorklistPageDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorklistItemDto"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PageMetaDto"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
+      },
+      "LimitDto": {
+        "type": "object",
+        "properties": {
+          "spec": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "min": {
+            "type": "string",
+            "nullable": true
+          },
+          "max": {
+            "type": "string",
+            "nullable": true
+          },
+          "text": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "spec",
+          "role",
+          "min",
+          "max",
+          "text"
+        ]
+      },
+      "ResultOptionViewDto": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string"
+          },
+          "isPass": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "required": [
+          "value",
+          "isPass"
+        ]
+      },
+      "CalculationDto": {
+        "type": "object",
+        "properties": {
+          "inputs": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "working": {
+            "type": "string"
+          },
+          "result": {
+            "type": "string"
+          },
+          "formulaVersion": {
+            "type": "number",
+            "nullable": true
+          }
+        },
+        "required": [
+          "inputs",
+          "working",
+          "result",
+          "formulaVersion"
+        ]
+      },
+      "ParameterResultDto": {
+        "type": "object",
+        "properties": {
+          "parameterId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "unit": {
+            "type": "string",
+            "nullable": true
+          },
+          "decimals": {
+            "type": "number"
+          },
+          "accredited": {
+            "type": "boolean"
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          },
+          "numericValue": {
+            "type": "string",
+            "nullable": true
+          },
+          "textValue": {
+            "type": "string",
+            "nullable": true
+          },
+          "limits": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LimitDto"
+            }
+          },
+          "passPrimary": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "passDual": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResultOptionViewDto"
+            }
+          },
+          "calculation": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CalculationDto"
+              }
+            ]
+          },
+          "error": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "parameterId",
+          "code",
+          "name",
+          "kind",
+          "unit",
+          "decimals",
+          "accredited",
+          "value",
+          "numericValue",
+          "textValue",
+          "limits",
+          "passPrimary",
+          "passDual",
+          "options",
+          "calculation",
+          "error"
+        ]
+      },
+      "ApprovalItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "testCode": {
+            "type": "string"
+          },
+          "testName": {
+            "type": "string"
+          },
+          "methodName": {
+            "type": "string",
+            "nullable": true
+          },
+          "sampleNo": {
+            "type": "string"
+          },
+          "jobNo": {
+            "type": "string"
+          },
+          "urgent": {
+            "type": "boolean"
+          },
+          "dueDate": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "submittedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "conductedByName": {
+            "type": "string",
+            "nullable": true
+          },
+          "outcome": {
+            "type": "string"
+          },
+          "version": {
+            "type": "number"
+          },
+          "ownResult": {
+            "type": "boolean"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ParameterResultDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "testCode",
+          "testName",
+          "methodName",
+          "sampleNo",
+          "jobNo",
+          "urgent",
+          "dueDate",
+          "submittedAt",
+          "conductedByName",
+          "outcome",
+          "version",
+          "ownResult",
+          "results"
+        ]
+      },
+      "ApprovalPageDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApprovalItemDto"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PageMetaDto"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
+      },
+      "BulkApproveItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "number",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "id",
+          "version"
+        ]
+      },
+      "BulkApproveDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "minItems": 1,
+            "maxItems": 200,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BulkApproveItem"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "BulkApproveResultDto": {
+        "type": "object",
+        "properties": {
+          "approved": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "failed": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "message"
+              ]
+            }
+          }
+        },
+        "required": [
+          "approved",
+          "failed"
+        ]
+      },
+      "StageDto": {
+        "type": "object",
+        "properties": {
+          "seq": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "completedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "completedByName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "seq",
+          "name",
+          "completedAt",
+          "completedByName"
+        ]
+      },
+      "InstrumentChoiceDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "calibrationDueAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "calibrationOverdue": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name",
+          "calibrationDueAt",
+          "calibrationOverdue"
+        ]
+      },
+      "ConversionOptionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "fromCode": {
+            "type": "string"
+          },
+          "fromSymbol": {
+            "type": "string"
+          },
+          "toCode": {
+            "type": "string"
+          },
+          "toSymbol": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "fromCode",
+          "fromSymbol",
+          "toCode",
+          "toSymbol"
+        ]
+      },
+      "RemarkOptionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "outcome": {
+            "type": "string"
+          },
+          "suggested": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "text",
+          "outcome",
+          "suggested"
+        ]
+      },
+      "TestDetailDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "testCode": {
+            "type": "string"
+          },
+          "testName": {
+            "type": "string"
+          },
+          "methodName": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string"
+          },
+          "urgent": {
+            "type": "boolean"
+          },
+          "dueDate": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "overdue": {
+            "type": "boolean"
+          },
+          "sampleNo": {
+            "type": "string"
+          },
+          "jobNo": {
+            "type": "string"
+          },
+          "sampleDescription": {
+            "type": "string"
+          },
+          "customerName": {
+            "type": "string",
+            "nullable": true,
+            "description": "null while impartiality is on"
+          },
+          "currentStage": {
+            "type": "string",
+            "nullable": true
+          },
+          "rejectionReason": {
+            "type": "string",
+            "nullable": true
+          },
+          "holdReason": {
+            "type": "string",
+            "nullable": true
+          },
+          "version": {
+            "type": "number"
+          },
+          "analysisMode": {
+            "type": "string",
+            "nullable": true
+          },
+          "sampleId": {
+            "type": "string"
+          },
+          "officeInstructions": {
+            "type": "string",
+            "nullable": true
+          },
+          "technicalData": {
+            "type": "string",
+            "nullable": true
+          },
+          "instrumentId": {
+            "type": "string",
+            "nullable": true
+          },
+          "remarks": {
+            "type": "string",
+            "nullable": true
+          },
+          "observations": {
+            "type": "string",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "conductedByName": {
+            "type": "string",
+            "nullable": true
+          },
+          "canEdit": {
+            "type": "boolean"
+          },
+          "blockOverdueInstruments": {
+            "type": "boolean"
+          },
+          "instrumentWarning": {
+            "type": "string",
+            "nullable": true
+          },
+          "stages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StageDto"
+            }
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ParameterResultDto"
+            }
+          },
+          "instruments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InstrumentChoiceDto"
+            }
+          },
+          "conversions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConversionOptionDto"
+            }
+          },
+          "remarkOptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RemarkOptionDto"
+            }
+          },
+          "assignedToName": {
+            "type": "string",
+            "nullable": true
+          },
+          "submittedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "approvedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "approvedByName": {
+            "type": "string",
+            "nullable": true
+          },
+          "outcome": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "testCode",
+          "testName",
+          "methodName",
+          "status",
+          "urgent",
+          "dueDate",
+          "overdue",
+          "sampleNo",
+          "jobNo",
+          "sampleDescription",
+          "customerName",
+          "currentStage",
+          "rejectionReason",
+          "holdReason",
+          "version",
+          "analysisMode",
+          "sampleId",
+          "officeInstructions",
+          "technicalData",
+          "instrumentId",
+          "remarks",
+          "observations",
+          "notes",
+          "conductedByName",
+          "canEdit",
+          "blockOverdueInstruments",
+          "instrumentWarning",
+          "stages",
+          "results",
+          "instruments",
+          "conversions",
+          "remarkOptions",
+          "assignedToName",
+          "submittedAt",
+          "approvedAt",
+          "approvedByName",
+          "outcome"
+        ]
+      },
+      "VersionDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "version"
+        ]
+      },
+      "ResultValueInput": {
+        "type": "object",
+        "properties": {
+          "parameterId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "value": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 4000
+          }
+        },
+        "required": [
+          "parameterId"
+        ]
+      },
+      "SaveResultsDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "minimum": 1
+          },
+          "values": {
+            "maxItems": 500,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResultValueInput"
+            }
+          },
+          "instrumentId": {
+            "type": "string",
+            "nullable": true,
+            "format": "uuid"
+          },
+          "remarks": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 4000
+          },
+          "observations": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 4000
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 4000
+          }
+        },
+        "required": [
+          "version"
+        ]
+      },
+      "TestReasonDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "minimum": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "version",
+          "reason"
+        ]
+      },
+      "ReportRowDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "reportNo": {
+            "type": "string"
+          },
+          "revisionId": {
+            "type": "string"
+          },
+          "revisionNo": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "APPROVED",
+              "DRAFT",
+              "ISSUED",
+              "IN_REVIEW",
+              "PENDING_APPROVAL",
+              "SUPERSEDED"
+            ]
+          },
+          "sampleId": {
+            "type": "string"
+          },
+          "sampleNo": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobNo": {
+            "type": "string"
+          },
+          "customerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "ulrNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "issuedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "version": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "reportNo",
+          "revisionId",
+          "revisionNo",
+          "status",
+          "sampleId",
+          "sampleNo",
+          "jobId",
+          "jobNo",
+          "customerName",
+          "ulrNumber",
+          "createdAt",
+          "issuedAt",
+          "version"
+        ]
+      },
+      "ReportPageDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportRowDto"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PageMetaDto"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
+      },
+      "SignedPdfDto": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "filename": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "url",
+          "filename"
+        ]
+      },
+      "ReportRejectionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "stage": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "byName": {
+            "type": "string",
+            "nullable": true
+          },
+          "at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "sampleTestIds": {
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "stage",
+          "action",
+          "reason",
+          "byName",
+          "at",
+          "sampleTestIds"
+        ]
+      },
+      "SignatureDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "designation": {
+            "type": "string",
+            "nullable": true
+          },
+          "signedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "contentSha256": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "designation",
+          "signedAt",
+          "contentSha256"
+        ]
+      },
+      "RevisionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "revisionNo": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "APPROVED",
+              "DRAFT",
+              "ISSUED",
+              "IN_REVIEW",
+              "PENDING_APPROVAL",
+              "SUPERSEDED"
+            ]
+          },
+          "revisionReason": {
+            "type": "string",
+            "nullable": true
+          },
+          "ulrNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "reviewedByName": {
+            "type": "string",
+            "nullable": true
+          },
+          "reviewedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "approvedByName": {
+            "type": "string",
+            "nullable": true
+          },
+          "approvedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "issuedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "supersededAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "pdfReady": {
+            "type": "boolean"
+          },
+          "pdfSha256": {
+            "type": "string",
+            "nullable": true
+          },
+          "version": {
+            "type": "number"
+          },
+          "rejections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportRejectionDto"
+            }
+          },
+          "signature": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SignatureDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "revisionNo",
+          "status",
+          "revisionReason",
+          "ulrNumber",
+          "reviewedByName",
+          "reviewedAt",
+          "approvedByName",
+          "approvedAt",
+          "issuedAt",
+          "supersededAt",
+          "pdfReady",
+          "pdfSha256",
+          "version",
+          "rejections",
+          "signature"
+        ]
+      },
+      "ReportTestDto": {
+        "type": "object",
+        "properties": {
+          "sampleTestId": {
+            "type": "string"
+          },
+          "testName": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "sampleTestId",
+          "testName",
+          "status"
+        ]
+      },
+      "ReportDetailDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "reportNo": {
+            "type": "string"
+          },
+          "sampleId": {
+            "type": "string"
+          },
+          "sampleNo": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobNo": {
+            "type": "string"
+          },
+          "customerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "customerEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "currentRevisionNo": {
+            "type": "number"
+          },
+          "revisions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RevisionDto"
+            }
+          },
+          "tests": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportTestDto"
+            }
+          },
+          "canReview": {
+            "type": "boolean"
+          },
+          "canApprove": {
+            "type": "boolean"
+          },
+          "withheld": {
+            "type": "boolean"
+          },
+          "reportRemarks": {
+            "type": "string",
+            "nullable": true
+          },
+          "sampleDescription": {
+            "type": "string"
+          },
+          "customerReference": {
+            "type": "string",
+            "nullable": true
+          },
+          "kindAttention": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "reportNo",
+          "sampleId",
+          "sampleNo",
+          "jobId",
+          "jobNo",
+          "customerName",
+          "customerEmail",
+          "currentRevisionNo",
+          "revisions",
+          "tests",
+          "canReview",
+          "canApprove",
+          "withheld",
+          "reportRemarks",
+          "sampleDescription",
+          "customerReference",
+          "kindAttention"
+        ]
+      },
+      "ReportPreviewDto": {
+        "type": "object",
+        "properties": {
+          "html": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "html"
+        ]
+      },
+      "ReportActionDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "version"
+        ]
+      },
+      "ReportRejectDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "minimum": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "CORRECT",
+              "RETEST"
+            ]
+          },
+          "sampleTestIds": {
+            "description": "required when action is RETEST",
+            "maxItems": 200,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "required": [
+          "version",
+          "reason",
+          "action"
+        ]
+      },
+      "ReportCorrectDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "minimum": 1
+          },
+          "reportRemarks": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 4000
+          },
+          "sampleDescription": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "customerReference": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 500
+          },
+          "kindAttention": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "version"
+        ]
+      },
+      "ReportApproveDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "minimum": 1
+          },
+          "password": {
+            "type": "string",
+            "description": "the signatory re-enters their password",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "version",
+          "password"
+        ]
+      },
+      "ReportIssueDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "minimum": 1
+          },
+          "emailTo": {
+            "type": "string",
+            "nullable": true,
+            "format": "email"
+          },
+          "emailCc": {
+            "type": "string",
+            "nullable": true,
+            "format": "email"
+          }
+        },
+        "required": [
+          "version"
+        ]
+      },
+      "ReportEmailDto": {
+        "type": "object",
+        "properties": {
+          "to": {
+            "type": "string",
+            "format": "email"
+          },
+          "cc": {
+            "type": "string",
+            "nullable": true,
+            "format": "email"
+          }
+        },
+        "required": [
+          "to"
+        ]
+      },
+      "ReportReviseDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "InvoiceSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "invoiceNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "customerId": {
+            "type": "string"
+          },
+          "customerName": {
+            "type": "string"
+          },
+          "crn": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "CANCELLED",
+              "DRAFT",
+              "ISSUED",
+              "PARTIALLY_PAID",
+              "PAID"
+            ]
+          },
+          "invoiceDate": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "dueDate": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "grandTotal": {
+            "type": "string"
+          },
+          "paidAmount": {
+            "type": "string"
+          },
+          "creditedAmount": {
+            "type": "string"
+          },
+          "balance": {
+            "type": "string"
+          },
+          "overdue": {
+            "type": "boolean"
+          },
+          "daysOverdue": {
+            "type": "number"
+          },
+          "ageingBucket": {
+            "type": "string",
+            "nullable": true
+          },
+          "isInterState": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "invoiceNo",
+          "customerId",
+          "customerName",
+          "crn",
+          "status",
+          "invoiceDate",
+          "dueDate",
+          "grandTotal",
+          "paidAmount",
+          "creditedAmount",
+          "balance",
+          "overdue",
+          "daysOverdue",
+          "ageingBucket",
+          "isInterState",
+          "version"
+        ]
+      },
+      "InvoicePageDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InvoiceSummaryDto"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PageMetaDto"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
+      },
+      "ReadyJobDto": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string"
+          },
+          "jobNo": {
+            "type": "string"
+          },
+          "customerId": {
+            "type": "string"
+          },
+          "customerName": {
+            "type": "string"
+          },
+          "crn": {
+            "type": "string"
+          },
+          "reportNos": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "testCount": {
+            "type": "number"
+          },
+          "amount": {
+            "type": "string"
+          },
+          "missingRates": {
+            "type": "number"
+          },
+          "receivedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "jobId",
+          "jobNo",
+          "customerId",
+          "customerName",
+          "crn",
+          "reportNos",
+          "testCount",
+          "amount",
+          "missingRates",
+          "receivedAt"
+        ]
+      },
+      "ReadyPageDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReadyJobDto"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PageMetaDto"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
+      },
+      "AgeingTotalsDto": {
+        "type": "object",
+        "properties": {
+          "bucket": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "string"
+          },
+          "count": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "bucket",
+          "amount",
+          "count"
+        ]
+      },
+      "CustomerOutstandingDto": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string"
+          },
+          "customerName": {
+            "type": "string"
+          },
+          "crn": {
+            "type": "string"
+          },
+          "outstanding": {
+            "type": "string"
+          },
+          "overdue": {
+            "type": "string"
+          },
+          "invoiceCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "customerId",
+          "customerName",
+          "crn",
+          "outstanding",
+          "overdue",
+          "invoiceCount"
+        ]
+      },
+      "DueSummaryDto": {
+        "type": "object",
+        "properties": {
+          "ageing": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgeingTotalsDto"
+            }
+          },
+          "customers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomerOutstandingDto"
+            }
+          },
+          "total": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "ageing",
+          "customers",
+          "total"
+        ]
+      },
+      "InvoiceLineDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "seq": {
+            "type": "number"
+          },
+          "jobId": {
+            "type": "string",
+            "nullable": true
+          },
+          "sampleTestId": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string"
+          },
+          "sacCode": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "rate": {
+            "type": "string"
+          },
+          "rateSource": {
+            "type": "string",
+            "nullable": true
+          },
+          "amount": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "seq",
+          "jobId",
+          "sampleTestId",
+          "description",
+          "sacCode",
+          "quantity",
+          "rate",
+          "rateSource",
+          "amount"
+        ]
+      },
+      "AllocationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "paymentId": {
+            "type": "string"
+          },
+          "paymentNo": {
+            "type": "string"
+          },
+          "paidOn": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "OTHER",
+              "CASH",
+              "CHEQUE",
+              "NEFT",
+              "RTGS",
+              "IMPS",
+              "UPI",
+              "CARD"
+            ]
+          },
+          "reference": {
+            "type": "string",
+            "nullable": true
+          },
+          "amount": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "paymentId",
+          "paymentNo",
+          "paidOn",
+          "mode",
+          "reference",
+          "amount"
+        ]
+      },
+      "CreditNoteDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "creditNoteNo": {
+            "type": "string"
+          },
+          "issuedOn": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "taxableAmount": {
+            "type": "string"
+          },
+          "cgst": {
+            "type": "string"
+          },
+          "sgst": {
+            "type": "string"
+          },
+          "igst": {
+            "type": "string"
+          },
+          "roundOff": {
+            "type": "string"
+          },
+          "total": {
+            "type": "string"
+          },
+          "amountInWords": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "creditNoteNo",
+          "issuedOn",
+          "reason",
+          "taxableAmount",
+          "cgst",
+          "sgst",
+          "igst",
+          "roundOff",
+          "total",
+          "amountInWords"
+        ]
+      },
+      "ReminderDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "emailLogId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "at",
+          "emailLogId"
+        ]
+      },
+      "InvoiceDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "invoiceNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "customerId": {
+            "type": "string"
+          },
+          "customerName": {
+            "type": "string"
+          },
+          "crn": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "CANCELLED",
+              "DRAFT",
+              "ISSUED",
+              "PARTIALLY_PAID",
+              "PAID"
+            ],
+            "type": "string"
+          },
+          "invoiceDate": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "dueDate": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "grandTotal": {
+            "type": "string"
+          },
+          "paidAmount": {
+            "type": "string"
+          },
+          "creditedAmount": {
+            "type": "string"
+          },
+          "balance": {
+            "type": "string"
+          },
+          "overdue": {
+            "type": "boolean"
+          },
+          "daysOverdue": {
+            "type": "number"
+          },
+          "ageingBucket": {
+            "type": "string",
+            "nullable": true
+          },
+          "isInterState": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "number"
+          },
+          "placeOfSupply": {
+            "type": "string"
+          },
+          "placeOfSupplyCode": {
+            "type": "string"
+          },
+          "subtotal": {
+            "type": "string"
+          },
+          "discountAmount": {
+            "type": "string"
+          },
+          "taxableAmount": {
+            "type": "string"
+          },
+          "gstRate": {
+            "type": "string"
+          },
+          "cgst": {
+            "type": "string"
+          },
+          "sgst": {
+            "type": "string"
+          },
+          "igst": {
+            "type": "string"
+          },
+          "roundOff": {
+            "type": "string"
+          },
+          "amountInWords": {
+            "type": "string"
+          },
+          "cancelReason": {
+            "type": "string",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "issuedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "lines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InvoiceLineDto"
+            }
+          },
+          "allocations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AllocationDto"
+            }
+          },
+          "creditNotes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreditNoteDto"
+            }
+          },
+          "reminders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReminderDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "invoiceNo",
+          "customerId",
+          "customerName",
+          "crn",
+          "status",
+          "invoiceDate",
+          "dueDate",
+          "grandTotal",
+          "paidAmount",
+          "creditedAmount",
+          "balance",
+          "overdue",
+          "daysOverdue",
+          "ageingBucket",
+          "isInterState",
+          "version",
+          "placeOfSupply",
+          "placeOfSupplyCode",
+          "subtotal",
+          "discountAmount",
+          "taxableAmount",
+          "gstRate",
+          "cgst",
+          "sgst",
+          "igst",
+          "roundOff",
+          "amountInWords",
+          "cancelReason",
+          "notes",
+          "issuedAt",
+          "lines",
+          "allocations",
+          "creditNotes",
+          "reminders"
+        ]
+      },
+      "CreateInvoiceDto": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "jobIds": {
+            "description": "one job, or several for one customer",
+            "minItems": 1,
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "discountPct": {
+            "type": "string",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "customerId",
+          "jobIds"
+        ]
+      },
+      "LineRateInput": {
+        "type": "object",
+        "properties": {
+          "lineId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "rate": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "lineId",
+          "rate",
+          "reason"
+        ]
+      },
+      "UpdateDraftInvoiceDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "minimum": 1
+          },
+          "discountPct": {
+            "type": "string",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 2000
+          },
+          "lineRates": {
+            "description": "Changing a fetched rate needs a reason",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LineRateInput"
+            }
+          }
+        },
+        "required": [
+          "version"
+        ]
+      },
+      "IssueInvoiceDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "minimum": 1
+          },
+          "invoiceDate": {
+            "type": "string"
+          },
+          "emailTo": {
+            "type": "string",
+            "nullable": true,
+            "format": "email"
+          },
+          "emailCc": {
+            "type": "string",
+            "nullable": true,
+            "format": "email"
+          }
+        },
+        "required": [
+          "version"
+        ]
+      },
+      "CancelInvoiceDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "minimum": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "version",
+          "reason"
+        ]
+      },
+      "EmailInvoiceDto": {
+        "type": "object",
+        "properties": {
+          "to": {
+            "type": "string",
+            "format": "email"
+          },
+          "cc": {
+            "type": "string",
+            "nullable": true,
+            "format": "email"
+          }
+        },
+        "required": [
+          "to"
+        ]
+      },
+      "CreateCreditNoteDto": {
+        "type": "object",
+        "properties": {
+          "taxableAmount": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "issuedOn": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "taxableAmount",
+          "reason"
+        ]
+      },
+      "RemindDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "PaymentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "paymentNo": {
+            "type": "string"
+          },
+          "customerId": {
+            "type": "string"
+          },
+          "customerName": {
+            "type": "string"
+          },
+          "paidOn": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "mode": {
+            "enum": [
+              "OTHER",
+              "CASH",
+              "CHEQUE",
+              "NEFT",
+              "RTGS",
+              "IMPS",
+              "UPI",
+              "CARD"
+            ],
+            "type": "string"
+          },
+          "reference": {
+            "type": "string",
+            "nullable": true
+          },
+          "amount": {
+            "type": "string"
+          },
+          "unapplied": {
+            "type": "string"
+          },
+          "isAdvance": {
+            "type": "boolean"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "reversed": {
+            "type": "boolean"
+          },
+          "allocations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "invoiceId": {
+                  "type": "string"
+                },
+                "invoiceNo": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "amount": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "invoiceId",
+                "invoiceNo",
+                "amount"
+              ]
+            }
+          }
+        },
+        "required": [
+          "id",
+          "paymentNo",
+          "customerId",
+          "customerName",
+          "paidOn",
+          "mode",
+          "reference",
+          "amount",
+          "unapplied",
+          "isAdvance",
+          "notes",
+          "reversed",
+          "allocations"
+        ]
+      },
+      "PaymentPageDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PaymentDto"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PageMetaDto"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
+      },
+      "AllocationInput": {
+        "type": "object",
+        "properties": {
+          "invoiceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "amount": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "invoiceId",
+          "amount"
+        ]
+      },
+      "CreatePaymentDto": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "paidOn": {
+            "type": "string"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "OTHER",
+              "CASH",
+              "CHEQUE",
+              "NEFT",
+              "RTGS",
+              "IMPS",
+              "UPI",
+              "CARD"
+            ]
+          },
+          "reference": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 200
+          },
+          "amount": {
+            "type": "string"
+          },
+          "allocations": {
+            "description": "Anything not allocated stays on account as an advance",
+            "maxItems": 200,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AllocationInput"
+            }
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "customerId",
+          "paidOn",
+          "mode",
+          "amount"
+        ]
+      },
+      "ApplyAdvanceDto": {
+        "type": "object",
+        "properties": {
+          "allocations": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AllocationInput"
+            }
+          }
+        },
+        "required": [
+          "allocations"
+        ]
+      },
+      "ReversePaymentDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "DispatchItemDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "reference": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "id",
+          "reference",
+          "description"
+        ]
+      },
+      "DispatchDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "dispatchNo": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobNo": {
+            "type": "string"
+          },
+          "customerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "dispatchDate": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "modeId": {
+            "type": "string"
+          },
+          "modeLabel": {
+            "type": "string"
+          },
+          "courierName": {
+            "type": "string",
+            "nullable": true
+          },
+          "carrierName": {
+            "type": "string",
+            "nullable": true
+          },
+          "docketNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "carrierContact": {
+            "type": "string",
+            "nullable": true
+          },
+          "remarks": {
+            "type": "string",
+            "nullable": true
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DispatchItemDto"
+            }
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "dispatchNo",
+          "jobId",
+          "jobNo",
+          "customerName",
+          "dispatchDate",
+          "modeId",
+          "modeLabel",
+          "courierName",
+          "carrierName",
+          "docketNo",
+          "carrierContact",
+          "remarks",
+          "items",
+          "createdAt"
+        ]
+      },
+      "DispatchPageDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DispatchDto"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PageMetaDto"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
+      },
+      "DispatchableJobDto": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string"
+          },
+          "jobNo": {
+            "type": "string"
+          },
+          "customerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "reports": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "reportId": {
+                  "type": "string"
+                },
+                "reportNo": {
+                  "type": "string"
+                },
+                "revisionNo": {
+                  "type": "number"
+                },
+                "withheld": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "reportId",
+                "reportNo",
+                "revisionNo",
+                "withheld"
+              ]
+            }
+          },
+          "returnableSamples": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "sampleId": {
+                  "type": "string"
+                },
+                "sampleNo": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "sampleId",
+                "sampleNo",
+                "description"
+              ]
+            }
+          }
+        },
+        "required": [
+          "jobId",
+          "jobNo",
+          "customerName",
+          "reports",
+          "returnableSamples"
+        ]
+      },
+      "DispatchablePageDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DispatchableJobDto"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PageMetaDto"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
+      },
+      "ReturnableRowDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "sampleNo": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "jobNo": {
+            "type": "string"
+          },
+          "customerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "returnable": {
+            "type": "boolean"
+          },
+          "returnStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "returnedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "retentionUntil": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "disposedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string"
+          },
+          "version": {
+            "type": "number"
+          },
+          "dueForDisposal": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "sampleNo",
+          "description",
+          "jobId",
+          "jobNo",
+          "customerName",
+          "returnable",
+          "returnStatus",
+          "returnedAt",
+          "retentionUntil",
+          "disposedAt",
+          "status",
+          "version",
+          "dueForDisposal"
+        ]
+      },
+      "ReturnablePageDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReturnableRowDto"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PageMetaDto"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
+      },
+      "SampleReturnDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "minimum": 1
+          },
+          "returnedAt": {
+            "type": "string"
+          },
+          "returnStatus": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        },
+        "required": [
+          "version",
+          "returnedAt",
+          "returnStatus"
+        ]
+      },
+      "SampleDisposeDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "minimum": 1
+          },
+          "disposedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "version",
+          "disposedAt"
+        ]
+      },
+      "CreateDispatchDto": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "dispatchDate": {
+            "type": "string"
+          },
+          "modeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "courierName": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 120
+          },
+          "carrierName": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 120
+          },
+          "docketNo": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 120
+          },
+          "carrierContact": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 60
+          },
+          "remarks": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 1000
+          },
+          "reportIds": {
+            "description": "issued reports going out",
+            "maxItems": 200,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "sampleIds": {
+            "description": "returnable samples going back",
+            "maxItems": 200,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "required": [
+          "jobId",
+          "dispatchDate",
+          "modeId"
+        ]
+      },
+      "CancelPreviewDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "job",
+              "sample",
+              "test"
+            ]
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "type",
+          "id"
+        ]
+      },
+      "CancelImpactDto": {
+        "type": "object",
+        "properties": {
+          "canCancel": {
+            "type": "boolean"
+          },
+          "blockers": {
+            "description": "why not, when canCancel is false",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "samples": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "sampleNo": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "sampleNo"
+              ]
+            }
+          },
+          "tests": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "sampleNo": {
+                  "type": "string"
+                },
+                "testName": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "sampleNo",
+                "testName",
+                "status"
+              ]
+            }
+          },
+          "reports": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "reportNo": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "reportNo",
+                "status"
+              ]
+            }
+          },
+          "draftInvoiceLines": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "invoiceId": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "invoiceId",
+                "description"
+              ]
+            }
+          },
+          "issuedInvoiceLines": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "invoiceId": {
+                  "type": "string"
+                },
+                "invoiceNo": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "invoiceId",
+                "invoiceNo",
+                "description"
+              ]
+            }
+          }
+        },
+        "required": [
+          "canCancel",
+          "blockers",
+          "samples",
+          "tests",
+          "reports",
+          "draftInvoiceLines",
+          "issuedInvoiceLines"
+        ]
+      },
+      "CancelDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "enum": [
+              "job",
+              "sample",
+              "test"
+            ],
+            "type": "string"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "number",
+            "minimum": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "type",
+          "id",
+          "version",
+          "reason"
+        ]
+      },
+      "MisColumnDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "type"
+        ]
+      },
+      "MisCatalogItemDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "no": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          },
+          "group": {
+            "type": "string"
+          },
+          "filters": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "columns": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MisColumnDto"
+            }
+          }
+        },
+        "required": [
+          "key",
+          "no",
+          "title",
+          "group",
+          "filters",
+          "columns"
+        ]
+      },
+      "MisResultDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "columns": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MisColumnDto"
+            }
+          },
+          "data": {
+            "description": "each row is keyed by column key",
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PageMetaDto"
+          }
+        },
+        "required": [
+          "key",
+          "title",
+          "columns",
+          "data",
+          "meta"
+        ]
+      },
+      "MetricDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "value": {
+            "type": "number"
+          },
+          "display": {
+            "type": "string",
+            "nullable": true
+          },
+          "link": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "value",
+          "display",
+          "link"
+        ]
+      },
+      "ChartPointDto": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "value": {
+            "type": "number"
+          },
+          "link": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "label",
+          "value",
+          "link"
+        ]
+      },
+      "OperationsDto": {
+        "type": "object",
+        "properties": {
+          "metrics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MetricDto"
+            }
+          },
+          "samplesByStatus": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChartPointDto"
+            }
+          },
+          "testsByStage": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChartPointDto"
+            }
+          }
+        },
+        "required": [
+          "metrics",
+          "samplesByStatus",
+          "testsByStage"
+        ]
+      },
+      "ReasonCountDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string"
+          },
+          "count": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "reason",
+          "count"
+        ]
+      },
+      "QualityDto": {
+        "type": "object",
+        "properties": {
+          "metrics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MetricDto"
+            }
+          },
+          "rejectionReasons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReasonCountDto"
+            }
+          }
+        },
+        "required": [
+          "metrics",
+          "rejectionReasons"
+        ]
+      },
+      "PeopleDto": {
+        "type": "object",
+        "properties": {
+          "byTechnician": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChartPointDto"
+            }
+          },
+          "byInstrument": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChartPointDto"
+            }
+          },
+          "calibrationsDue": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "dueDate": {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "overdue": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "dueDate",
+                "overdue"
+              ]
+            }
+          }
+        },
+        "required": [
+          "byTechnician",
+          "byInstrument",
+          "calibrationsDue"
+        ]
+      },
+      "ChartSeriesPointDto": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "billed": {
+            "type": "number"
+          },
+          "collected": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "label",
+          "billed",
+          "collected"
+        ]
+      },
+      "CommercialDto": {
+        "type": "object",
+        "properties": {
+          "metrics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MetricDto"
+            }
+          },
+          "billedVsCollected": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChartSeriesPointDto"
+            }
+          },
+          "ageing": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChartPointDto"
+            }
+          },
+          "topCustomers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChartPointDto"
+            }
+          },
+          "topTests": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChartPointDto"
+            }
+          }
+        },
+        "required": [
+          "metrics",
+          "billedVsCollected",
+          "ageing",
+          "topCustomers",
+          "topTests"
+        ]
+      },
+      "WorkItemDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "count": {
+            "type": "number"
+          },
+          "link": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "count",
+          "link"
+        ]
+      },
+      "DashboardDto": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "operations": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OperationsDto"
+              }
+            ]
+          },
+          "quality": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QualityDto"
+              }
+            ]
+          },
+          "people": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PeopleDto"
+              }
+            ]
+          },
+          "commercial": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CommercialDto"
+              }
+            ]
+          },
+          "myWork": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkItemDto"
+            }
+          }
+        },
+        "required": [
+          "from",
+          "to",
+          "operations",
+          "quality",
+          "people",
+          "commercial",
+          "myWork"
+        ]
+      },
+      "NotificationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string",
+            "nullable": true
+          },
+          "link": {
+            "type": "string",
+            "nullable": true
+          },
+          "readAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "title",
+          "body",
+          "link",
+          "readAt",
+          "createdAt"
+        ]
+      },
+      "NotificationPageDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationDto"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PageMetaDto"
+          },
+          "unread": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "data",
+          "meta",
+          "unread"
+        ]
+      },
+      "PreferenceDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "email": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "type",
+          "label",
+          "email"
+        ]
+      },
+      "UpdatePreferencesDto": {
+        "type": "object",
+        "properties": {
+          "preferences": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "description": "notification type -> send email"
+          }
+        },
+        "required": [
+          "preferences"
         ]
       }
     }

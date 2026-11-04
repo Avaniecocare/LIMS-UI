@@ -47,6 +47,15 @@ const Account = lazy(() => import('@/features/account/AccountPage'));
 const Masters = lazy(() => import('@/features/masters/MastersPage'));
 const Customers = lazy(() => import('@/features/customers/CustomersPage'));
 const CustomerDetail = lazy(() => import('@/features/customers/CustomersPage').then((m) => ({ default: m.CustomerDetailPage })));
+const Orders = lazy(() => import('@/features/orders/OrdersPage'));
+const OrderDetail = lazy(() => import('@/features/orders/OrdersPage').then((m) => ({ default: m.OrderDetailPage })));
+const Quotations = lazy(() => import('@/features/quotations/QuotationsPage'));
+const QuotationEditor = lazy(() => import('@/features/quotations/QuotationEditorPage'));
+const QuotationDetail = lazy(() => import('@/features/quotations/QuotationDetailPage'));
+const Samples = lazy(() => import('@/features/samples/SamplesPage'));
+const Booking = lazy(() => import('@/features/samples/BookingPage'));
+const JobDetail = lazy(() => import('@/features/samples/JobDetailPage'));
+const Planning = lazy(() => import('@/features/planning/PlanningPage'));
 
 export const router = createBrowserRouter([
   {
@@ -68,6 +77,16 @@ export const router = createBrowserRouter([
       { path: '/masters/:key', element: page(Masters, ['masters.view', 'rates.view']) },
       { path: '/customers', element: page(Customers, ['customers.view']) },
       { path: '/customers/:id', element: page(CustomerDetail, ['customers.view']) },
+      { path: '/orders', element: page(Orders, ['orders.view']) },
+      { path: '/orders/:id', element: page(OrderDetail, ['orders.view']) },
+      { path: '/quotations', element: page(Quotations, ['quotations.view']) },
+      { path: '/quotations/new', element: page(QuotationEditor, ['quotations.edit']) },
+      { path: '/quotations/:id', element: page(QuotationDetail, ['quotations.view']) },
+      { path: '/quotations/:id/edit', element: page(QuotationEditor, ['quotations.edit']) },
+      { path: '/samples', element: page(Samples, ['jobs.view']) },
+      { path: '/samples/new', element: page(Booking, ['jobs.create']) },
+      { path: '/samples/jobs/:id', element: page(JobDetail, ['jobs.view']) },
+      { path: '/planning', element: page(Planning, ['planning.view']) },
       { path: '*', element: <EmptyState title="Page not found" /> },
     ],
   },

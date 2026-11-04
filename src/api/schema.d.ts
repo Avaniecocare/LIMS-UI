@@ -4,166 +4,6 @@
  */
 
 export interface paths {
-    "/api/v1/auth/login": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["AuthController_login"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/login/totp": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["AuthController_loginTotp"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/logout": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["AuthController_logout"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/me": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["AuthController_me"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/change-password": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["AuthController_changePassword"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/forgot-password": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["AuthController_forgot"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/reset-password": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["AuthController_reset"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/totp/setup": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["AuthController_totpSetup"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/totp/enable": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["AuthController_totpEnable"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/totp/disable": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["AuthController_totpDisable"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/admin/users": {
         parameters: {
             query?: never;
@@ -512,6 +352,166 @@ export interface paths {
         get: operations["HealthController_ready"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AuthController_login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/login/totp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AuthController_loginTotp"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AuthController_logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AuthController_me"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/change-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AuthController_changePassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/forgot-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AuthController_forgot"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/reset-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AuthController_reset"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/totp/setup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AuthController_totpSetup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/totp/enable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AuthController_totpEnable"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/totp/disable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AuthController_totpDisable"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1737,6 +1737,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/quotations/convertible": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["QuotationsController_convertible"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/quotations/{id}": {
         parameters: {
             query?: never;
@@ -2221,63 +2237,942 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/tests/my": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Assigned tests only */
+        get: operations["TestingController_worklist"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tests/approvals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TestingController_approvals"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tests/approvals/bulk": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TestingController_bulk"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tests/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TestingController_detail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tests/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TestingController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tests/{id}/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TestingController_start"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tests/{id}/stages/{seq}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TestingController_stage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tests/{id}/results": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Saves values, including autosaved drafts, and returns the server's calculations and pass/fail. */
+        put: operations["TestingController_save"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tests/{id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TestingController_submit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tests/{id}/hold": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TestingController_hold"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tests/{id}/release": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TestingController_release"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tests/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TestingController_approve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tests/{id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["TestingController_reject"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ReportsController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/revisions/{revisionId}/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ReportsController_pdf"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ReportsController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/{id}/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ReportsController_preview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ReportsController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/{id}/emails": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ReportsController_emails"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/{id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ReportsController_submit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/{id}/pass-review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ReportsController_pass"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/{id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ReportsController_reject"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/{id}/draft": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["ReportsController_correct"];
+        trace?: never;
+    };
+    "/api/v1/reports/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ReportsController_approve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/{id}/issue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ReportsController_issue"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/{id}/email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ReportsController_email"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/{id}/revise": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ReportsController_revise"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/invoices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["InvoicesController_list"];
+        put?: never;
+        post: operations["InvoicesController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/invoices/ready": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["InvoicesController_ready"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/invoices/due": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["InvoicesController_due"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/invoices/due/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["InvoicesController_dueSummary"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/invoices/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["InvoicesController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["InvoicesController_update"];
+        trace?: never;
+    };
+    "/api/v1/invoices/{id}/issue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["InvoicesController_issue"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/invoices/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["InvoicesController_cancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/invoices/{id}/email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["InvoicesController_email"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/invoices/{id}/emails": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["InvoicesController_emails"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/invoices/{id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["InvoicesController_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/invoices/{id}/credit-notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["InvoicesController_creditNote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/invoices/{id}/remind": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["InvoicesController_remind"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["InvoicesController_payments"];
+        put?: never;
+        post: operations["InvoicesController_createPayment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/payments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["InvoicesController_payment"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/payments/{id}/apply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["InvoicesController_apply"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/payments/{id}/reverse": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["InvoicesController_reverse"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dispatch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["DispatchController_list"];
+        put?: never;
+        post: operations["DispatchController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dispatch/pending": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["DispatchController_pending"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dispatch/returnables": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["DispatchController_returnables"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dispatch/samples/{id}/return": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["DispatchController_returned"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dispatch/samples/{id}/dispose": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["DispatchController_disposed"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dispatch/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["DispatchController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cancellations/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** The downstream effect, shown before confirming. */
+        post: operations["CancellationsController_preview"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cancellations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CancellationsController_cancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/mis": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MisController_catalog"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/mis/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MisController_run"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Sections follow the caller's permissions; every user at least gets "My work". */
+        get: operations["DashboardController_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["NotificationsController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/read-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["NotificationsController_readAll"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/{id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["NotificationsController_read"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/preferences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["NotificationsController_preferences"];
+        put: operations["NotificationsController_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        LoginDto: {
-            /** Format: email */
-            email: string;
-            password: string;
-        };
-        SessionUserDto: {
-            id: string;
-            name: string;
-            email: string;
-            designation: string | null;
-            roles: string[];
-            permissions: string[];
-            csrfToken: string;
-            totpEnabled: boolean;
-            mustChangePassword: boolean;
-            /** @description Admin, Signatory and Accounts may enrol in TOTP */
-            totpAvailable: boolean;
-        };
-        LoginResultDto: {
-            /** @description present when a TOTP code is needed to finish signing in */
-            totpChallenge?: string | null;
-            user?: components["schemas"]["SessionUserDto"] | null;
-        };
-        LoginTotpDto: {
-            challenge: string;
-            code: string;
-        };
-        OkDto: {
-            ok: boolean;
-        };
-        ChangePasswordDto: {
-            currentPassword: string;
-            newPassword: string;
-        };
-        ForgotPasswordDto: {
-            /** Format: email */
-            email: string;
-        };
-        ResetPasswordDto: {
-            token: string;
-            newPassword: string;
-        };
-        TotpSetupDto: {
-            secret: string;
-            otpauthUrl: string;
-        };
-        TotpEnableDto: {
-            code: string;
-        };
-        TotpDisableDto: {
-            password: string;
-            code?: string;
-        };
         UserDto: {
             id: string;
             email: string;
@@ -2329,6 +3224,9 @@ export interface components {
         };
         AdminResetPasswordDto: {
             newPassword: string;
+        };
+        OkDto: {
+            ok: boolean;
         };
         PermissionDto: {
             code: string;
@@ -2486,6 +3384,56 @@ export interface components {
             sampleRetentionDays?: number;
             reportRetentionYears?: number;
             terms?: components["schemas"]["WizardTermsDto"];
+        };
+        LoginDto: {
+            /** Format: email */
+            email: string;
+            password: string;
+        };
+        SessionUserDto: {
+            id: string;
+            name: string;
+            email: string;
+            designation: string | null;
+            roles: string[];
+            permissions: string[];
+            csrfToken: string;
+            totpEnabled: boolean;
+            mustChangePassword: boolean;
+            /** @description Admin, Signatory and Accounts may enrol in TOTP */
+            totpAvailable: boolean;
+        };
+        LoginResultDto: {
+            /** @description present when a TOTP code is needed to finish signing in */
+            totpChallenge?: string | null;
+            user?: components["schemas"]["SessionUserDto"] | null;
+        };
+        LoginTotpDto: {
+            challenge: string;
+            code: string;
+        };
+        ChangePasswordDto: {
+            currentPassword: string;
+            newPassword: string;
+        };
+        ForgotPasswordDto: {
+            /** Format: email */
+            email: string;
+        };
+        ResetPasswordDto: {
+            token: string;
+            newPassword: string;
+        };
+        TotpSetupDto: {
+            secret: string;
+            otpauthUrl: string;
+        };
+        TotpEnableDto: {
+            code: string;
+        };
+        TotpDisableDto: {
+            password: string;
+            code?: string;
         };
         CreateDocumentDto: {
             kind: string;
@@ -2705,7 +3653,7 @@ export interface components {
             code: string;
             name: string;
             /** @enum {string} */
-            kind: "NUMERIC" | "TEXT" | "RESULT_SET" | "CALCULATED";
+            kind: "RESULT_SET" | "CALCULATED" | "NUMERIC" | "TEXT";
             unitId: string | null;
             unitSymbol: string | null;
             decimals: number;
@@ -2731,7 +3679,7 @@ export interface components {
             code: string;
             name: string;
             /** @enum {string} */
-            kind?: "NUMERIC" | "TEXT" | "RESULT_SET" | "CALCULATED";
+            kind?: "RESULT_SET" | "CALCULATED" | "NUMERIC" | "TEXT";
             /** Format: uuid */
             unitId?: string | null;
             decimals?: number;
@@ -3206,6 +4154,16 @@ export interface components {
             data: components["schemas"]["QuotationSummaryDto"][];
             meta: components["schemas"]["PageMetaDto"];
         };
+        ConvertibleQuotationDto: {
+            id: string;
+            quotationNo: string;
+            customerId: string;
+            customerName: string;
+            /** Format: date-time */
+            acceptedAt: string | null;
+            samples: string[];
+            testCount: number;
+        };
         QuotationLineDto: {
             id: string;
             seq: number;
@@ -3403,6 +4361,8 @@ export interface components {
             testCode: string;
             testName: string;
             status: string;
+            /** @description false until the planner has taken it up; status alone reads PLANNED before that */
+            planned: boolean;
             /** Format: date-time */
             dueDate: string | null;
             assignedToName: string | null;
@@ -3675,6 +4635,10 @@ export interface components {
             assignedToId: string;
             /** Format: uuid */
             instrumentId?: string | null;
+            /** @description test id -> the version the user saw; a changed test is refused rather than overwritten */
+            versions?: {
+                [key: string]: number;
+            };
         };
         WorkloadRowDto: {
             id: string;
@@ -3713,6 +4677,823 @@ export interface components {
             /** @description where the app should go after a barcode or QR scan; null if nothing matched */
             link: string | null;
         };
+        WorklistItemDto: {
+            id: string;
+            testCode: string;
+            testName: string;
+            methodName: string | null;
+            status: string;
+            urgent: boolean;
+            /** Format: date-time */
+            dueDate: string | null;
+            overdue: boolean;
+            sampleNo: string;
+            jobNo: string;
+            sampleDescription: string;
+            /** @description null while impartiality is on */
+            customerName: string | null;
+            currentStage: string | null;
+            rejectionReason: string | null;
+            holdReason: string | null;
+            version: number;
+            analysisMode: string | null;
+        };
+        WorklistPageDto: {
+            data: components["schemas"]["WorklistItemDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        LimitDto: {
+            spec: string;
+            role: string;
+            min: string | null;
+            max: string | null;
+            text: string | null;
+        };
+        ResultOptionViewDto: {
+            value: string;
+            isPass: boolean | null;
+        };
+        CalculationDto: {
+            inputs: {
+                [key: string]: string;
+            };
+            working: string;
+            result: string;
+            formulaVersion: number | null;
+        };
+        ParameterResultDto: {
+            parameterId: string;
+            code: string;
+            name: string;
+            kind: string;
+            unit: string | null;
+            decimals: number;
+            accredited: boolean;
+            value: string | null;
+            numericValue: string | null;
+            textValue: string | null;
+            limits: components["schemas"]["LimitDto"][];
+            passPrimary: boolean | null;
+            passDual: boolean | null;
+            options: components["schemas"]["ResultOptionViewDto"][];
+            calculation: components["schemas"]["CalculationDto"] | null;
+            error: string | null;
+        };
+        ApprovalItemDto: {
+            id: string;
+            testCode: string;
+            testName: string;
+            methodName: string | null;
+            sampleNo: string;
+            jobNo: string;
+            urgent: boolean;
+            /** Format: date-time */
+            dueDate: string | null;
+            /** Format: date-time */
+            submittedAt: string | null;
+            conductedByName: string | null;
+            outcome: string;
+            version: number;
+            ownResult: boolean;
+            results: components["schemas"]["ParameterResultDto"][];
+        };
+        ApprovalPageDto: {
+            data: components["schemas"]["ApprovalItemDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        BulkApproveItem: {
+            /** Format: uuid */
+            id: string;
+            version: number;
+        };
+        BulkApproveDto: {
+            items: components["schemas"]["BulkApproveItem"][];
+        };
+        BulkApproveResultDto: {
+            approved: string[];
+            failed: {
+                id: string;
+                message: string;
+            }[];
+        };
+        StageDto: {
+            seq: number;
+            name: string;
+            /** Format: date-time */
+            completedAt: string | null;
+            completedByName: string | null;
+        };
+        InstrumentChoiceDto: {
+            id: string;
+            code: string;
+            name: string;
+            /** Format: date-time */
+            calibrationDueAt: string | null;
+            calibrationOverdue: boolean;
+        };
+        ConversionOptionDto: {
+            id: string;
+            fromCode: string;
+            fromSymbol: string;
+            toCode: string;
+            toSymbol: string;
+        };
+        RemarkOptionDto: {
+            id: string;
+            code: string;
+            text: string;
+            outcome: string;
+            suggested: boolean;
+        };
+        TestDetailDto: {
+            id: string;
+            testCode: string;
+            testName: string;
+            methodName: string | null;
+            status: string;
+            urgent: boolean;
+            /** Format: date-time */
+            dueDate: string | null;
+            overdue: boolean;
+            sampleNo: string;
+            jobNo: string;
+            sampleDescription: string;
+            /** @description null while impartiality is on */
+            customerName: string | null;
+            currentStage: string | null;
+            rejectionReason: string | null;
+            holdReason: string | null;
+            version: number;
+            analysisMode: string | null;
+            sampleId: string;
+            officeInstructions: string | null;
+            technicalData: string | null;
+            instrumentId: string | null;
+            remarks: string | null;
+            observations: string | null;
+            notes: string | null;
+            conductedByName: string | null;
+            canEdit: boolean;
+            blockOverdueInstruments: boolean;
+            instrumentWarning: string | null;
+            stages: components["schemas"]["StageDto"][];
+            results: components["schemas"]["ParameterResultDto"][];
+            instruments: components["schemas"]["InstrumentChoiceDto"][];
+            conversions: components["schemas"]["ConversionOptionDto"][];
+            remarkOptions: components["schemas"]["RemarkOptionDto"][];
+            assignedToName: string | null;
+            /** Format: date-time */
+            submittedAt: string | null;
+            /** Format: date-time */
+            approvedAt: string | null;
+            approvedByName: string | null;
+            outcome: string;
+        };
+        VersionDto: {
+            version: number;
+        };
+        ResultValueInput: {
+            /** Format: uuid */
+            parameterId: string;
+            value?: string | null;
+        };
+        SaveResultsDto: {
+            version: number;
+            values?: components["schemas"]["ResultValueInput"][];
+            /** Format: uuid */
+            instrumentId?: string | null;
+            remarks?: string | null;
+            observations?: string | null;
+            notes?: string | null;
+        };
+        TestReasonDto: {
+            version: number;
+            reason: string;
+        };
+        ReportRowDto: {
+            id: string;
+            reportNo: string;
+            revisionId: string;
+            revisionNo: number;
+            /** @enum {string} */
+            status: "APPROVED" | "DRAFT" | "ISSUED" | "IN_REVIEW" | "PENDING_APPROVAL" | "SUPERSEDED";
+            sampleId: string;
+            sampleNo: string;
+            jobId: string;
+            jobNo: string;
+            customerName: string | null;
+            ulrNumber: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            issuedAt: string | null;
+            version: number;
+        };
+        ReportPageDto: {
+            data: components["schemas"]["ReportRowDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        SignedPdfDto: {
+            url: string;
+            filename: string;
+        };
+        ReportRejectionDto: {
+            id: string;
+            stage: string;
+            action: string;
+            reason: string;
+            byName: string | null;
+            /** Format: date-time */
+            at: string;
+            sampleTestIds: string[] | null;
+        };
+        SignatureDto: {
+            name: string;
+            designation: string | null;
+            /** Format: date-time */
+            signedAt: string;
+            contentSha256: string;
+        };
+        RevisionDto: {
+            id: string;
+            revisionNo: number;
+            /** @enum {string} */
+            status: "APPROVED" | "DRAFT" | "ISSUED" | "IN_REVIEW" | "PENDING_APPROVAL" | "SUPERSEDED";
+            revisionReason: string | null;
+            ulrNumber: string | null;
+            reviewedByName: string | null;
+            /** Format: date-time */
+            reviewedAt: string | null;
+            approvedByName: string | null;
+            /** Format: date-time */
+            approvedAt: string | null;
+            /** Format: date-time */
+            issuedAt: string | null;
+            /** Format: date-time */
+            supersededAt: string | null;
+            pdfReady: boolean;
+            pdfSha256: string | null;
+            version: number;
+            rejections: components["schemas"]["ReportRejectionDto"][];
+            signature: components["schemas"]["SignatureDto"] | null;
+        };
+        ReportTestDto: {
+            sampleTestId: string;
+            testName: string;
+            status: string;
+        };
+        ReportDetailDto: {
+            id: string;
+            reportNo: string;
+            sampleId: string;
+            sampleNo: string;
+            jobId: string;
+            jobNo: string;
+            customerName: string | null;
+            customerEmail: string | null;
+            currentRevisionNo: number;
+            revisions: components["schemas"]["RevisionDto"][];
+            tests: components["schemas"]["ReportTestDto"][];
+            canReview: boolean;
+            canApprove: boolean;
+            withheld: boolean;
+            reportRemarks: string | null;
+            sampleDescription: string;
+            customerReference: string | null;
+            kindAttention: string | null;
+        };
+        ReportPreviewDto: {
+            html: string;
+        };
+        ReportActionDto: {
+            version: number;
+        };
+        ReportRejectDto: {
+            version: number;
+            reason: string;
+            /** @enum {string} */
+            action: "CORRECT" | "RETEST";
+            /** @description required when action is RETEST */
+            sampleTestIds?: string[];
+        };
+        ReportCorrectDto: {
+            version: number;
+            reportRemarks?: string | null;
+            sampleDescription?: string;
+            customerReference?: string | null;
+            kindAttention?: string | null;
+        };
+        ReportApproveDto: {
+            version: number;
+            /** @description the signatory re-enters their password */
+            password: string;
+        };
+        ReportIssueDto: {
+            version: number;
+            /** Format: email */
+            emailTo?: string | null;
+            /** Format: email */
+            emailCc?: string | null;
+        };
+        ReportEmailDto: {
+            /** Format: email */
+            to: string;
+            /** Format: email */
+            cc?: string | null;
+        };
+        ReportReviseDto: {
+            reason: string;
+        };
+        InvoiceSummaryDto: {
+            id: string;
+            invoiceNo: string | null;
+            customerId: string;
+            customerName: string;
+            crn: string;
+            /** @enum {string} */
+            status: "CANCELLED" | "DRAFT" | "ISSUED" | "PARTIALLY_PAID" | "PAID";
+            /** Format: date-time */
+            invoiceDate: string | null;
+            /** Format: date-time */
+            dueDate: string | null;
+            grandTotal: string;
+            paidAmount: string;
+            creditedAmount: string;
+            balance: string;
+            overdue: boolean;
+            daysOverdue: number;
+            ageingBucket: string | null;
+            isInterState: boolean;
+            version: number;
+        };
+        InvoicePageDto: {
+            data: components["schemas"]["InvoiceSummaryDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        ReadyJobDto: {
+            jobId: string;
+            jobNo: string;
+            customerId: string;
+            customerName: string;
+            crn: string;
+            reportNos: string[];
+            testCount: number;
+            amount: string;
+            missingRates: number;
+            /** Format: date-time */
+            receivedAt: string;
+        };
+        ReadyPageDto: {
+            data: components["schemas"]["ReadyJobDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        AgeingTotalsDto: {
+            bucket: string;
+            amount: string;
+            count: number;
+        };
+        CustomerOutstandingDto: {
+            customerId: string;
+            customerName: string;
+            crn: string;
+            outstanding: string;
+            overdue: string;
+            invoiceCount: number;
+        };
+        DueSummaryDto: {
+            ageing: components["schemas"]["AgeingTotalsDto"][];
+            customers: components["schemas"]["CustomerOutstandingDto"][];
+            total: string;
+        };
+        InvoiceLineDto: {
+            id: string;
+            seq: number;
+            jobId: string | null;
+            sampleTestId: string | null;
+            description: string;
+            sacCode: string;
+            quantity: number;
+            rate: string;
+            rateSource: string | null;
+            amount: string;
+        };
+        AllocationDto: {
+            id: string;
+            paymentId: string;
+            paymentNo: string;
+            /** Format: date-time */
+            paidOn: string;
+            /** @enum {string} */
+            mode: "OTHER" | "CASH" | "CHEQUE" | "NEFT" | "RTGS" | "IMPS" | "UPI" | "CARD";
+            reference: string | null;
+            amount: string;
+        };
+        CreditNoteDto: {
+            id: string;
+            creditNoteNo: string;
+            /** Format: date-time */
+            issuedOn: string;
+            reason: string;
+            taxableAmount: string;
+            cgst: string;
+            sgst: string;
+            igst: string;
+            roundOff: string;
+            total: string;
+            amountInWords: string;
+        };
+        ReminderDto: {
+            id: string;
+            kind: string;
+            /** Format: date-time */
+            at: string;
+            emailLogId: string | null;
+        };
+        InvoiceDto: {
+            id: string;
+            invoiceNo: string | null;
+            customerId: string;
+            customerName: string;
+            crn: string;
+            /** @enum {string} */
+            status: "CANCELLED" | "DRAFT" | "ISSUED" | "PARTIALLY_PAID" | "PAID";
+            /** Format: date-time */
+            invoiceDate: string | null;
+            /** Format: date-time */
+            dueDate: string | null;
+            grandTotal: string;
+            paidAmount: string;
+            creditedAmount: string;
+            balance: string;
+            overdue: boolean;
+            daysOverdue: number;
+            ageingBucket: string | null;
+            isInterState: boolean;
+            version: number;
+            placeOfSupply: string;
+            placeOfSupplyCode: string;
+            subtotal: string;
+            discountAmount: string;
+            taxableAmount: string;
+            gstRate: string;
+            cgst: string;
+            sgst: string;
+            igst: string;
+            roundOff: string;
+            amountInWords: string;
+            cancelReason: string | null;
+            notes: string | null;
+            /** Format: date-time */
+            issuedAt: string | null;
+            lines: components["schemas"]["InvoiceLineDto"][];
+            allocations: components["schemas"]["AllocationDto"][];
+            creditNotes: components["schemas"]["CreditNoteDto"][];
+            reminders: components["schemas"]["ReminderDto"][];
+        };
+        CreateInvoiceDto: {
+            /** Format: uuid */
+            customerId: string;
+            /** @description one job, or several for one customer */
+            jobIds: string[];
+            discountPct?: string | null;
+            notes?: string | null;
+        };
+        LineRateInput: {
+            /** Format: uuid */
+            lineId: string;
+            rate: string;
+            reason: string;
+        };
+        UpdateDraftInvoiceDto: {
+            version: number;
+            discountPct?: string | null;
+            notes?: string | null;
+            /** @description Changing a fetched rate needs a reason */
+            lineRates?: components["schemas"]["LineRateInput"][];
+        };
+        IssueInvoiceDto: {
+            version: number;
+            invoiceDate?: string;
+            /** Format: email */
+            emailTo?: string | null;
+            /** Format: email */
+            emailCc?: string | null;
+        };
+        CancelInvoiceDto: {
+            version: number;
+            reason: string;
+        };
+        EmailInvoiceDto: {
+            /** Format: email */
+            to: string;
+            /** Format: email */
+            cc?: string | null;
+        };
+        CreateCreditNoteDto: {
+            taxableAmount: string;
+            reason: string;
+            issuedOn?: string;
+        };
+        RemindDto: Record<string, never>;
+        PaymentDto: {
+            id: string;
+            paymentNo: string;
+            customerId: string;
+            customerName: string;
+            /** Format: date-time */
+            paidOn: string;
+            /** @enum {string} */
+            mode: "OTHER" | "CASH" | "CHEQUE" | "NEFT" | "RTGS" | "IMPS" | "UPI" | "CARD";
+            reference: string | null;
+            amount: string;
+            unapplied: string;
+            isAdvance: boolean;
+            notes: string | null;
+            reversed: boolean;
+            allocations: {
+                invoiceId: string;
+                invoiceNo: string | null;
+                amount: string;
+            }[];
+        };
+        PaymentPageDto: {
+            data: components["schemas"]["PaymentDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        AllocationInput: {
+            /** Format: uuid */
+            invoiceId: string;
+            amount: string;
+        };
+        CreatePaymentDto: {
+            /** Format: uuid */
+            customerId: string;
+            paidOn: string;
+            /** @enum {string} */
+            mode: "OTHER" | "CASH" | "CHEQUE" | "NEFT" | "RTGS" | "IMPS" | "UPI" | "CARD";
+            reference?: string | null;
+            amount: string;
+            /** @description Anything not allocated stays on account as an advance */
+            allocations?: components["schemas"]["AllocationInput"][];
+            notes?: string | null;
+        };
+        ApplyAdvanceDto: {
+            allocations: components["schemas"]["AllocationInput"][];
+        };
+        ReversePaymentDto: {
+            reason: string;
+        };
+        DispatchItemDto: {
+            kind: string;
+            id: string;
+            reference: string;
+            description: string;
+        };
+        DispatchDto: {
+            id: string;
+            dispatchNo: string;
+            jobId: string;
+            jobNo: string;
+            customerName: string | null;
+            /** Format: date-time */
+            dispatchDate: string;
+            modeId: string;
+            modeLabel: string;
+            courierName: string | null;
+            carrierName: string | null;
+            docketNo: string | null;
+            carrierContact: string | null;
+            remarks: string | null;
+            items: components["schemas"]["DispatchItemDto"][];
+            /** Format: date-time */
+            createdAt: string;
+        };
+        DispatchPageDto: {
+            data: components["schemas"]["DispatchDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        DispatchableJobDto: {
+            jobId: string;
+            jobNo: string;
+            customerName: string | null;
+            reports: {
+                reportId: string;
+                reportNo: string;
+                revisionNo: number;
+                withheld: boolean;
+            }[];
+            returnableSamples: {
+                sampleId: string;
+                sampleNo: string;
+                description: string;
+            }[];
+        };
+        DispatchablePageDto: {
+            data: components["schemas"]["DispatchableJobDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        ReturnableRowDto: {
+            id: string;
+            sampleNo: string;
+            description: string;
+            jobId: string;
+            jobNo: string;
+            customerName: string | null;
+            returnable: boolean;
+            returnStatus: string | null;
+            /** Format: date-time */
+            returnedAt: string | null;
+            /** Format: date-time */
+            retentionUntil: string | null;
+            /** Format: date-time */
+            disposedAt: string | null;
+            status: string;
+            version: number;
+            dueForDisposal: boolean;
+        };
+        ReturnablePageDto: {
+            data: components["schemas"]["ReturnableRowDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        SampleReturnDto: {
+            version: number;
+            returnedAt: string;
+            returnStatus: string;
+        };
+        SampleDisposeDto: {
+            version: number;
+            disposedAt: string;
+        };
+        CreateDispatchDto: {
+            /** Format: uuid */
+            jobId: string;
+            dispatchDate: string;
+            /** Format: uuid */
+            modeId: string;
+            courierName?: string | null;
+            carrierName?: string | null;
+            docketNo?: string | null;
+            carrierContact?: string | null;
+            remarks?: string | null;
+            /** @description issued reports going out */
+            reportIds?: string[];
+            /** @description returnable samples going back */
+            sampleIds?: string[];
+        };
+        CancelPreviewDto: {
+            /** @enum {string} */
+            type: "job" | "sample" | "test";
+            /** Format: uuid */
+            id: string;
+        };
+        CancelImpactDto: {
+            canCancel: boolean;
+            /** @description why not, when canCancel is false */
+            blockers: string[];
+            samples: {
+                id: string;
+                sampleNo: string;
+            }[];
+            tests: {
+                id: string;
+                sampleNo: string;
+                testName: string;
+                status: string;
+            }[];
+            reports: {
+                id: string;
+                reportNo: string;
+                status: string;
+            }[];
+            draftInvoiceLines: {
+                invoiceId: string;
+                description: string;
+            }[];
+            issuedInvoiceLines: {
+                invoiceId: string;
+                invoiceNo: string | null;
+                description: string;
+            }[];
+        };
+        CancelDto: {
+            /** @enum {string} */
+            type: "job" | "sample" | "test";
+            /** Format: uuid */
+            id: string;
+            version: number;
+            reason: string;
+        };
+        MisColumnDto: {
+            key: string;
+            label: string;
+            type: string;
+        };
+        MisCatalogItemDto: {
+            key: string;
+            no: number;
+            title: string;
+            group: string;
+            filters: string[];
+            columns: components["schemas"]["MisColumnDto"][];
+        };
+        MisResultDto: {
+            key: string;
+            title: string;
+            columns: components["schemas"]["MisColumnDto"][];
+            /** @description each row is keyed by column key */
+            data: Record<string, never>[];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        MetricDto: {
+            key: string;
+            label: string;
+            value: number;
+            display: string | null;
+            link: string | null;
+        };
+        ChartPointDto: {
+            label: string;
+            value: number;
+            link: string | null;
+        };
+        OperationsDto: {
+            metrics: components["schemas"]["MetricDto"][];
+            samplesByStatus: components["schemas"]["ChartPointDto"][];
+            testsByStage: components["schemas"]["ChartPointDto"][];
+        };
+        ReasonCountDto: {
+            reason: string;
+            count: number;
+        };
+        QualityDto: {
+            metrics: components["schemas"]["MetricDto"][];
+            rejectionReasons: components["schemas"]["ReasonCountDto"][];
+        };
+        PeopleDto: {
+            byTechnician: components["schemas"]["ChartPointDto"][];
+            byInstrument: components["schemas"]["ChartPointDto"][];
+            calibrationsDue: {
+                id: string;
+                name: string;
+                /** Format: date-time */
+                dueDate: string;
+                overdue: boolean;
+            }[];
+        };
+        ChartSeriesPointDto: {
+            label: string;
+            billed: number;
+            collected: number;
+        };
+        CommercialDto: {
+            metrics: components["schemas"]["MetricDto"][];
+            billedVsCollected: components["schemas"]["ChartSeriesPointDto"][];
+            ageing: components["schemas"]["ChartPointDto"][];
+            topCustomers: components["schemas"]["ChartPointDto"][];
+            topTests: components["schemas"]["ChartPointDto"][];
+        };
+        WorkItemDto: {
+            key: string;
+            label: string;
+            count: number;
+            link: string;
+        };
+        DashboardDto: {
+            from: string;
+            to: string;
+            operations: components["schemas"]["OperationsDto"] | null;
+            quality: components["schemas"]["QualityDto"] | null;
+            people: components["schemas"]["PeopleDto"] | null;
+            commercial: components["schemas"]["CommercialDto"] | null;
+            myWork: components["schemas"]["WorkItemDto"][];
+        };
+        NotificationDto: {
+            id: string;
+            type: string;
+            title: string;
+            body: string | null;
+            link: string | null;
+            /** Format: date-time */
+            readAt: string | null;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        NotificationPageDto: {
+            data: components["schemas"]["NotificationDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+            unread: number;
+        };
+        PreferenceDto: {
+            type: string;
+            label: string;
+            email: boolean;
+        };
+        UpdatePreferencesDto: {
+            /** @description notification type -> send email */
+            preferences: {
+                [key: string]: boolean;
+            };
+        };
     };
     responses: never;
     parameters: never;
@@ -3722,224 +5503,6 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    AuthController_login: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["LoginDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LoginResultDto"];
-                };
-            };
-        };
-    };
-    AuthController_loginTotp: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["LoginTotpDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LoginResultDto"];
-                };
-            };
-        };
-    };
-    AuthController_logout: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["OkDto"];
-                };
-            };
-        };
-    };
-    AuthController_me: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SessionUserDto"];
-                };
-            };
-        };
-    };
-    AuthController_changePassword: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ChangePasswordDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["OkDto"];
-                };
-            };
-        };
-    };
-    AuthController_forgot: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ForgotPasswordDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["OkDto"];
-                };
-            };
-        };
-    };
-    AuthController_reset: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ResetPasswordDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["OkDto"];
-                };
-            };
-        };
-    };
-    AuthController_totpSetup: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TotpSetupDto"];
-                };
-            };
-        };
-    };
-    AuthController_totpEnable: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["TotpEnableDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["OkDto"];
-                };
-            };
-        };
-    };
-    AuthController_totpDisable: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["TotpDisableDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["OkDto"];
-                };
-            };
-        };
-    };
     AdminController_listUsers: {
         parameters: {
             query?: {
@@ -4539,6 +6102,224 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    AuthController_login: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoginResultDto"];
+                };
+            };
+        };
+    };
+    AuthController_loginTotp: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginTotpDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoginResultDto"];
+                };
+            };
+        };
+    };
+    AuthController_logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    AuthController_me: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionUserDto"];
+                };
+            };
+        };
+    };
+    AuthController_changePassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangePasswordDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    AuthController_forgot: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ForgotPasswordDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    AuthController_reset: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResetPasswordDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    AuthController_totpSetup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TotpSetupDto"];
+                };
+            };
+        };
+    };
+    AuthController_totpEnable: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TotpEnableDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    AuthController_totpDisable: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TotpDisableDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
             };
         };
     };
@@ -7581,6 +9362,25 @@ export interface operations {
             };
         };
     };
+    QuotationsController_convertible: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConvertibleQuotationDto"][];
+                };
+            };
+        };
+    };
     QuotationsController_get: {
         parameters: {
             query?: never;
@@ -7848,6 +9648,7 @@ export interface operations {
             query?: {
                 status?: "COMPLETED" | "PLANNED" | "CANCELLED" | "RECEIVED" | "IN_TESTING" | "REPORTING";
                 returnable?: string;
+                urgent?: string;
                 from?: string;
                 to?: string;
                 page?: number;
@@ -8155,7 +9956,7 @@ export interface operations {
     PlanningController_list: {
         parameters: {
             query?: {
-                view?: "unplanned" | "unassigned" | "assigned";
+                view?: "assigned" | "unplanned" | "unassigned";
                 departmentId?: string;
                 jobId?: string;
                 assignedToId?: string;
@@ -8345,6 +10146,1530 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ScanResultDto"];
+                };
+            };
+        };
+    };
+    TestingController_worklist: {
+        parameters: {
+            query?: {
+                /** @description open (default) or done */
+                view?: string;
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorklistPageDto"];
+                };
+            };
+        };
+    };
+    TestingController_approvals: {
+        parameters: {
+            query?: {
+                departmentId?: string;
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApprovalPageDto"];
+                };
+            };
+        };
+    };
+    TestingController_bulk: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BulkApproveDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BulkApproveResultDto"];
+                };
+            };
+        };
+    };
+    TestingController_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestDetailDto"];
+                };
+            };
+        };
+    };
+    TestingController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditHistoryDto"][];
+                };
+            };
+        };
+    };
+    TestingController_start: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VersionDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestDetailDto"];
+                };
+            };
+        };
+    };
+    TestingController_stage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                seq: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VersionDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestDetailDto"];
+                };
+            };
+        };
+    };
+    TestingController_save: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveResultsDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestDetailDto"];
+                };
+            };
+        };
+    };
+    TestingController_submit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VersionDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestDetailDto"];
+                };
+            };
+        };
+    };
+    TestingController_hold: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TestReasonDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestDetailDto"];
+                };
+            };
+        };
+    };
+    TestingController_release: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VersionDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestDetailDto"];
+                };
+            };
+        };
+    };
+    TestingController_approve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VersionDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestDetailDto"];
+                };
+            };
+        };
+    };
+    TestingController_reject: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TestReasonDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestDetailDto"];
+                };
+            };
+        };
+    };
+    ReportsController_list: {
+        parameters: {
+            query?: {
+                status?: "APPROVED" | "DRAFT" | "ISSUED" | "IN_REVIEW" | "PENDING_APPROVAL" | "SUPERSEDED";
+                jobId?: string;
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportPageDto"];
+                };
+            };
+        };
+    };
+    ReportsController_pdf: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                revisionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SignedPdfDto"];
+                };
+            };
+        };
+    };
+    ReportsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportDetailDto"];
+                };
+            };
+        };
+    };
+    ReportsController_preview: {
+        parameters: {
+            query?: {
+                revisionNo?: number;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportPreviewDto"];
+                };
+            };
+        };
+    };
+    ReportsController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditHistoryDto"][];
+                };
+            };
+        };
+    };
+    ReportsController_emails: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmailLogDto"][];
+                };
+            };
+        };
+    };
+    ReportsController_submit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReportActionDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportDetailDto"];
+                };
+            };
+        };
+    };
+    ReportsController_pass: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReportActionDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportDetailDto"];
+                };
+            };
+        };
+    };
+    ReportsController_reject: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReportRejectDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportDetailDto"];
+                };
+            };
+        };
+    };
+    ReportsController_correct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReportCorrectDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportDetailDto"];
+                };
+            };
+        };
+    };
+    ReportsController_approve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReportApproveDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportDetailDto"];
+                };
+            };
+        };
+    };
+    ReportsController_issue: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReportIssueDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportDetailDto"];
+                };
+            };
+        };
+    };
+    ReportsController_email: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReportEmailDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    ReportsController_revise: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReportReviseDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportDetailDto"];
+                };
+            };
+        };
+    };
+    InvoicesController_list: {
+        parameters: {
+            query?: {
+                status?: "CANCELLED" | "DRAFT" | "ISSUED" | "PARTIALLY_PAID" | "PAID";
+                customerId?: string;
+                from?: string;
+                to?: string;
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoicePageDto"];
+                };
+            };
+        };
+    };
+    InvoicesController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateInvoiceDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceDto"];
+                };
+            };
+        };
+    };
+    InvoicesController_ready: {
+        parameters: {
+            query?: {
+                status?: "CANCELLED" | "DRAFT" | "ISSUED" | "PARTIALLY_PAID" | "PAID";
+                customerId?: string;
+                from?: string;
+                to?: string;
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReadyPageDto"];
+                };
+            };
+        };
+    };
+    InvoicesController_due: {
+        parameters: {
+            query?: {
+                customerId?: string;
+                bucket?: "Not Due" | "0-30" | "31-60" | "61-90" | "90+";
+                overdue?: "true" | "false";
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoicePageDto"];
+                };
+            };
+        };
+    };
+    InvoicesController_dueSummary: {
+        parameters: {
+            query?: {
+                customerId?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DueSummaryDto"];
+                };
+            };
+        };
+    };
+    InvoicesController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceDto"];
+                };
+            };
+        };
+    };
+    InvoicesController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateDraftInvoiceDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceDto"];
+                };
+            };
+        };
+    };
+    InvoicesController_issue: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IssueInvoiceDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceDto"];
+                };
+            };
+        };
+    };
+    InvoicesController_cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CancelInvoiceDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceDto"];
+                };
+            };
+        };
+    };
+    InvoicesController_email: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmailInvoiceDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    InvoicesController_emails: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmailLogDto"][];
+                };
+            };
+        };
+    };
+    InvoicesController_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditHistoryDto"][];
+                };
+            };
+        };
+    };
+    InvoicesController_creditNote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCreditNoteDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceDto"];
+                };
+            };
+        };
+    };
+    InvoicesController_remind: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RemindDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceDto"];
+                };
+            };
+        };
+    };
+    InvoicesController_payments: {
+        parameters: {
+            query?: {
+                customerId?: string;
+                from?: string;
+                to?: string;
+                unapplied?: "true";
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentPageDto"];
+                };
+            };
+        };
+    };
+    InvoicesController_createPayment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreatePaymentDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentDto"];
+                };
+            };
+        };
+    };
+    InvoicesController_payment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentDto"];
+                };
+            };
+        };
+    };
+    InvoicesController_apply: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApplyAdvanceDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentDto"];
+                };
+            };
+        };
+    };
+    InvoicesController_reverse: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReversePaymentDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentDto"];
+                };
+            };
+        };
+    };
+    DispatchController_list: {
+        parameters: {
+            query?: {
+                jobId?: string;
+                from?: string;
+                to?: string;
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DispatchPageDto"];
+                };
+            };
+        };
+    };
+    DispatchController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateDispatchDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DispatchDto"];
+                };
+            };
+        };
+    };
+    DispatchController_pending: {
+        parameters: {
+            query?: {
+                jobId?: string;
+                from?: string;
+                to?: string;
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DispatchablePageDto"];
+                };
+            };
+        };
+    };
+    DispatchController_returnables: {
+        parameters: {
+            query?: {
+                /** @description pending | returned | disposed | due-for-disposal */
+                view?: "pending" | "returned" | "disposed" | "due-for-disposal";
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReturnablePageDto"];
+                };
+            };
+        };
+    };
+    DispatchController_returned: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SampleReturnDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    DispatchController_disposed: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SampleDisposeDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    DispatchController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DispatchDto"];
+                };
+            };
+        };
+    };
+    CancellationsController_preview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CancelPreviewDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CancelImpactDto"];
+                };
+            };
+        };
+    };
+    CancellationsController_cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CancelDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    MisController_catalog: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MisCatalogItemDto"][];
+                };
+            };
+        };
+    };
+    MisController_run: {
+        parameters: {
+            query?: {
+                from?: string;
+                to?: string;
+                customerId?: string;
+                departmentId?: string;
+                technicianId?: string;
+                status?: string;
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MisResultDto"];
+                };
+            };
+        };
+    };
+    DashboardController_get: {
+        parameters: {
+            query?: {
+                from?: string;
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DashboardDto"];
+                };
+            };
+        };
+    };
+    NotificationsController_list: {
+        parameters: {
+            query?: {
+                unreadOnly?: boolean;
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationPageDto"];
+                };
+            };
+        };
+    };
+    NotificationsController_readAll: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    NotificationsController_read: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    NotificationsController_preferences: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreferenceDto"][];
+                };
+            };
+        };
+    };
+    NotificationsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdatePreferencesDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreferenceDto"][];
                 };
             };
         };

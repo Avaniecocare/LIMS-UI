@@ -1,7 +1,7 @@
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef, type RowSelectionState } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useRef, type ReactNode } from 'react';
 import { Button, Checkbox, EmptyState, ErrorState, Select, Spinner } from '@/components/ui/primitives';
 import { cn } from '@/lib/format';
 
@@ -213,12 +213,4 @@ export function DataTable<T>({
   );
 }
 
-/** List state kept in the URL, so filters survive reloads and can be shared. */
-export function useDebounced<T>(value: T, ms = 300): T {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const id = setTimeout(() => setDebounced(value), ms);
-    return () => clearTimeout(id);
-  }, [value, ms]);
-  return debounced;
-}
+export { useDebounced } from '@/lib/use-debounced';

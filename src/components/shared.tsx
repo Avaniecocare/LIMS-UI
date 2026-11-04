@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { toast } from 'sonner';
 import type { components } from '@/api/schema';
 import { Badge, Button, ConfirmDialog, Dialog, EmptyState, ErrorState, Field, Input, Spinner, Textarea, type ButtonProps } from '@/components/ui/primitives';
-import { api, uploadFile, unwrap } from '@/lib/api';
+import { ApiError, api, uploadFile, unwrap } from '@/lib/api';
 import { formatDateTime, humanize } from '@/lib/format';
 import { toastError } from '@/lib/forms';
 
@@ -12,7 +12,12 @@ type DocJob = components['schemas']['DocumentJobDto'];
 
 /** Queues a PDF or Excel job on the server, waits for the worker, then opens the signed link. */
 export async function produceDocument(kind: string, params: Record<string, unknown> = {}): Promise<DocJob> {
-  let job = unwrap(await api.POST('/api/v1/documents', { body: { kind, params } }));
+  return pollDocumentJob(unwrap(await api.POST('/api/v1/documents', { body: { kind, params } })));
+}
+
+/** Waits for a queued document job, whichever endpoint started it. */
+export async function pollDocumentJob(started: DocJob): Promise<DocJob> {
+  let job = started;
   const deadline = Date.now() + 120_000;
   while (job.status === 'QUEUED' || job.status === 'RUNNING') {
     if (Date.now() > deadline) throw new Error('This is taking longer than expected. Please try again shortly.');
@@ -23,16 +28,51 @@ export async function produceDocument(kind: string, params: Record<string, unkno
   return job;
 }
 
-export function DocumentButton({ kind, params, children, ...props }: { kind: string; params?: Record<string, unknown> } & ButtonProps) {
-  const m = useMutation({
-    mutationFn: () => produceDocument(kind, params),
-    onSuccess: (job) => {
-      if (job.url) window.open(job.url, '_blank', 'noopener');
+/**
+ * Browsers block a tab opened long after the click, and documents can take a while. So the tab is
+ * opened during the click and pointed at the signed link when it is ready.
+ */
+export function reserveTab() {
+  const tab = window.open('', '_blank');
+  if (tab) {
+    tab.opener = null;
+    tab.document.title = 'Preparing the document…';
+    tab.document.body.textContent = 'Preparing the document…';
+  }
+  return {
+    show(url: string | null | undefined, name = 'Document') {
+      if (!url) tab?.close();
+      else if (tab) tab.location.href = url;
+      else toast.success(`${name} is ready`, { action: { label: 'Open', onClick: () => window.open(url, '_blank', 'noopener') }, duration: 30_000 });
     },
-    onError: toastError,
+    cancel: () => tab?.close(),
+  };
+}
+
+/** Failures from the document worker carry their own message; show it rather than a generic one. */
+export function toastDocumentError(error: unknown) {
+  if (error instanceof Error && !(error instanceof ApiError)) toast.error(error.message);
+  else toastError(error);
+}
+
+export function DocumentButton({ kind, params, children, ...props }: { kind: string; params?: Record<string, unknown> } & ButtonProps) {
+  const client = useQueryClient();
+  const m = useMutation({
+    mutationFn: async (tab: ReturnType<typeof reserveTab>) => {
+      try {
+        const job = await produceDocument(kind, params);
+        tab.show(job.url, job.filename ?? undefined);
+        return job;
+      } catch (e) {
+        tab.cancel();
+        throw e;
+      }
+    },
+    onSuccess: () => client.invalidateQueries({ queryKey: ['files'] }),
+    onError: toastDocumentError,
   });
   return (
-    <Button variant="secondary" {...props} loading={m.isPending} onClick={() => m.mutate()}>
+    <Button variant="secondary" {...props} loading={m.isPending} onClick={() => m.mutate(reserveTab())}>
       <Download aria-hidden />
       {children}
     </Button>
@@ -111,8 +151,20 @@ export function ReasonDialog({ open, onOpenChange, title, description, confirmLa
   );
 }
 
+type FileRow = components['schemas']['FileDto'];
+
+/** Stores one file against a record. */
+export async function uploadEntityFile(entity: string, entityId: string, category: string, file: File): Promise<FileRow> {
+  const form = new FormData();
+  form.set('entity', entity);
+  form.set('entityId', entityId);
+  form.set('category', category);
+  form.set('file', file);
+  return (await uploadFile('/files', form)) as FileRow;
+}
+
 /** Attachments on any record: private storage, opened through short-lived signed links. */
-export function Attachments({ entity, entityId, category, title = 'Attachments', canEdit, withPrintSize, accept = 'image/png,image/jpeg,image/webp,application/pdf' }: { entity: string; entityId: string; category: string; title?: string; canEdit: boolean; withPrintSize?: boolean; accept?: string }) {
+export function Attachments({ entity, entityId, category, title = 'Attachments', canEdit, withPrintSize, accept = 'image/png,image/jpeg,image/webp,application/pdf', extraActions }: { entity: string; entityId: string; category: string; title?: string; canEdit: boolean; withPrintSize?: boolean; accept?: string; extraActions?: ReactNode }) {
   const client = useQueryClient();
   const key = ['files', entity, entityId, category];
   const q = useQuery({ queryKey: key, queryFn: async () => unwrap(await api.GET('/api/v1/files', { params: { query: { entity, entityId, category } } })) });
@@ -184,6 +236,7 @@ export function Attachments({ entity, entityId, category, title = 'Attachments',
               <Paperclip aria-hidden />
               Add file
             </Button>
+            {extraActions}
           </div>
         )}
       </div>
@@ -212,6 +265,57 @@ export function Attachments({ entity, entityId, category, title = 'Attachments',
         ))}
       </ul>
       <ConfirmDialog open={!!confirm} onOpenChange={(o) => !o && setConfirm(null)} title="Remove this file?" description="It stays in the audit history." confirmLabel="Remove" danger loading={remove.isPending} onConfirm={() => confirm && remove.mutate(confirm)} />
+    </div>
+  );
+}
+
+type EmailRow = components['schemas']['EmailLogDto'];
+
+/** Delivery log for anything the system emailed. */
+export function EmailLogTable({ rows, loading, error, onRetry }: { rows: EmailRow[] | undefined; loading?: boolean; error?: unknown; onRetry?: () => void }) {
+  if (loading) return <Spinner />;
+  if (error) return <ErrorState error={error} onRetry={onRetry} />;
+  if (!rows?.length) return <p className="text-[13px] text-gray-600">Nothing sent yet.</p>;
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-[13px]" aria-label="Email delivery log">
+        <thead className="bg-gray-50 text-left text-xs text-gray-700">
+          <tr>
+            <th scope="col" className="px-2 py-1.5 font-semibold">To</th>
+            <th scope="col" className="px-2 py-1.5 font-semibold">Cc</th>
+            <th scope="col" className="px-2 py-1.5 font-semibold">Subject</th>
+            <th scope="col" className="px-2 py-1.5 font-semibold">Status</th>
+            <th scope="col" className="px-2 py-1.5 font-semibold">Attempts</th>
+            <th scope="col" className="px-2 py-1.5 font-semibold">Sent or queued</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr key={r.id} className="border-t border-gray-100 align-top">
+              <td className="px-2 py-1.5">{r.toAddress}</td>
+              <td className="px-2 py-1.5">{r.ccAddress ?? '—'}</td>
+              <td className="px-2 py-1.5">{r.subject}</td>
+              <td className="px-2 py-1.5">
+                <StatusBadge status={r.status} />
+                {r.lastError && <p className="mt-0.5 text-xs text-red-800">{r.lastError}</p>}
+              </td>
+              <td className="px-2 py-1.5">{r.attempts}</td>
+              <td className="px-2 py-1.5 whitespace-nowrap">{formatDateTime(r.sentAt ?? r.createdAt)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+/** From and to dates of a list filter, kept in the list's URL state. */
+export function DateRangeFilter({ from, to, onChange, label = 'Date' }: { from: string; to: string; onChange: (key: 'from' | 'to', value: string | null) => void; label?: string }) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <Input className="w-36" type="date" aria-label={`${label} from`} value={from} onChange={(e) => onChange('from', e.target.value || null)} />
+      <span className="text-[13px] text-gray-600">to</span>
+      <Input className="w-36" type="date" aria-label={`${label} to`} value={to} onChange={(e) => onChange('to', e.target.value || null)} />
     </div>
   );
 }
