@@ -1,0 +1,38 @@
+server {
+  listen 8080;
+  root /usr/share/nginx/html;
+  index index.html;
+  server_tokens off;
+
+  # Strict CSP. No inline scripts: config.js is a same-origin file generated at start.
+  set $csp "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: ${API_URL} ${STORAGE_ORIGIN}; font-src 'self'; connect-src 'self' ${API_URL}; media-src 'self' blob:; frame-src ${API_URL} ${STORAGE_ORIGIN}; base-uri 'none'; form-action 'self'; frame-ancestors 'none'";
+  add_header Content-Security-Policy $csp always;
+  add_header X-Content-Type-Options nosniff always;
+  add_header Referrer-Policy no-referrer always;
+  add_header Permissions-Policy "camera=(self), microphone=(), geolocation=()" always;
+  add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+  location /assets/ {
+    add_header Cache-Control "public, max-age=31536000, immutable" always;
+    add_header Content-Security-Policy $csp always;
+    add_header X-Content-Type-Options nosniff always;
+    try_files $uri =404;
+  }
+  location = /config.js {
+    add_header Cache-Control "no-store" always;
+    add_header X-Content-Type-Options nosniff always;
+    try_files $uri =404;
+  }
+  location = /healthz {
+    access_log off;
+    default_type text/plain;
+    return 200 "ok";
+  }
+  location / {
+    add_header Cache-Control "no-cache" always;
+    add_header Content-Security-Policy $csp always;
+    add_header X-Content-Type-Options nosniff always;
+    add_header Referrer-Policy no-referrer always;
+    try_files $uri /index.html;
+  }
+}
