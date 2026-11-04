@@ -5,13 +5,14 @@ import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import type { components } from '@/api/schema';
 import { useSession } from '@/app/providers';
+import { CancelDialog, type CancelTarget } from '@/components/CancelDialog';
 import { DataTable, type Col } from '@/components/DataTable';
 import { JobPicker, useTests } from '@/components/pickers';
 import { DocumentButton, SavedFilters, SearchBox, StatusBadge } from '@/components/shared';
 import { Badge, Button, Checkbox, Dialog, ErrorState, Field, Input, PageHeader, Select, Spinner, Tabs, TabsList, TabsTrigger, Textarea } from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
 import { cn, formatDate } from '@/lib/format';
-import { toastError } from '@/lib/forms';
+import { toastError, writeError } from '@/lib/forms';
 import { useListState } from '@/lib/use-list-state';
 
 type Row = components['schemas']['PlanningRowDto'];
@@ -296,12 +297,12 @@ function AssignDialog({ rows, reassign, open, onOpenChange, onAssigned }: { rows
     }
   }, [open]);
   const m = useMutation({
-    mutationFn: async () => unwrap(await api.POST('/api/v1/planning/assign', { body: { sampleTestIds: rows.map((r) => r.id), assignedToId, instrumentId: instrumentId || null } })),
+    mutationFn: async () => unwrap(await api.POST('/api/v1/planning/assign', { body: { sampleTestIds: rows.map((r) => r.id), assignedToId, instrumentId: instrumentId || null, versions: Object.fromEntries(rows.map((r) => [r.id, r.version])) } })),
     onSuccess: () => {
       toast.success(`${rows.length} ${rows.length === 1 ? 'test' : 'tests'} ${reassign ? 'reassigned' : 'assigned'}`);
       onAssigned();
     },
-    onError: toastError,
+    onError: writeError(onAssigned),
   });
   const chosenInstrument = instruments.data?.find((i) => i.id === instrumentId);
   const verb = reassign ? 'Reassign' : 'Assign';
@@ -435,6 +436,8 @@ export default function PlanningPage() {
 
   const [selected, setSelected] = useState<Record<string, Row>>({});
   const [dialog, setDialog] = useState<'plan' | 'plan-job' | 'assign' | null>(null);
+  const [cancelling, setCancelling] = useState<CancelTarget | null>(null);
+  const canCancel = can('jobs.cancel', 'planning.edit');
   const selection = useMemo(() => Object.fromEntries(Object.keys(selected).map((id) => [id, true])), [selected]);
   const rows = Object.values(selected);
   const jobIds = [...new Set(rows.map((r) => r.jobId))];
@@ -469,13 +472,26 @@ export default function PlanningPage() {
       },
       { id: 'testName', header: 'Test', enableSorting: true, cell: ({ row }) => `${row.original.testCode} — ${row.original.testName}` },
       { id: 'method', header: 'Method', cell: ({ row }) => row.original.methodName ?? '—' },
-      { id: 'status', header: 'Status', cell: ({ row }) => <StatusBadge status={row.original.status} /> },
+      { id: 'status', header: 'Status', cell: ({ row }) => (row.original.planned ? <StatusBadge status={row.original.status} /> : <Badge>Not planned yet</Badge>) },
       { id: 'urgent', header: 'Urgent', cell: ({ row }) => (row.original.urgent ? <Badge tone="red">Urgent</Badge> : <span className="text-gray-600">—</span>) },
       { id: 'dueDate', header: 'Due', enableSorting: true, cell: ({ row }) => formatDate(row.original.dueDate) },
       { id: 'assignee', header: 'Assigned to', cell: ({ row }) => row.original.assignedToName ?? '—' },
       { id: 'instrument', header: 'Instrument', cell: ({ row }) => row.original.instrumentName ?? '—' },
+      ...(canCancel
+        ? [
+            {
+              id: 'cancel',
+              header: () => <span className="sr-only">Cancel</span>,
+              cell: ({ row: { original: r } }) => (
+                <Button variant="ghost" size="sm" aria-label={`Cancel ${r.testCode} on ${r.sampleNo}`} onClick={() => setCancelling({ type: 'test', id: r.id, version: r.version, label: `${r.testCode} on ${r.sampleNo}` })}>
+                  Cancel
+                </Button>
+              ),
+            } as Col<Row>,
+          ]
+        : []),
     ],
-    [],
+    [canCancel],
   );
 
   return (
@@ -584,6 +600,7 @@ export default function PlanningPage() {
       </div>
       {dialog === 'plan' && singleJob && <PlanDialog open jobId={singleJob} sampleIds={[...new Set(rows.map((r) => r.sampleId))]} testIds={[...new Set(rows.map((r) => r.testId))]} onOpenChange={(o) => !o && setDialog(null)} onPlanned={() => afterChange(singleJob)} />}
       {dialog === 'plan-job' && jobFilter && <PlanDialog open jobId={jobFilter} testIds={[]} onOpenChange={(o) => !o && setDialog(null)} onPlanned={() => afterChange(jobFilter)} />}
+      <CancelDialog target={cancelling} onClose={() => setCancelling(null)} onCancelled={clear} />
       <AssignDialog rows={rows} reassign={view === 'assigned'} open={dialog === 'assign'} onOpenChange={(o) => setDialog(o ? 'assign' : null)} onAssigned={() => afterChange(singleJob)} />
     </>
   );

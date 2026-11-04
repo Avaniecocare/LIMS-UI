@@ -7,6 +7,7 @@ import { api } from '@/lib/api';
 import { cn } from '@/lib/format';
 import { GlobalSearch } from './GlobalSearch';
 import { NAV } from './nav';
+import { NotificationBell } from './Notifications';
 import { useBranding, useSession } from './providers';
 
 export function Layout() {
@@ -62,6 +63,7 @@ export function Layout() {
           <div className="flex-1" id="header-slot">
             <GlobalSearch />
           </div>
+          <NotificationBell />
           <DropdownMenu>
             <DropdownTrigger asChild>
               <Button variant="ghost" size="sm">

@@ -2,10 +2,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState, type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
 import { useBranding, useSession } from '@/app/providers';
-import { Button, Field, Input, Textarea } from '@/components/ui/primitives';
+import { Button, Field, Input, Spinner, Textarea } from '@/components/ui/primitives';
 import { ApiError, api, unwrap } from '@/lib/api';
 import { applyServerErrors } from '@/lib/forms';
 
@@ -37,6 +37,8 @@ export function LoginPage() {
   const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const form = useForm({ resolver: zodResolver(loginSchema), defaultValues: { email: '', password: '' } });
+  const [params] = useSearchParams();
+  const changed = params.get('changed') === '1';
 
   const signedIn = (user: Parameters<typeof setUser>[0]) => {
     setUser(user);
@@ -81,6 +83,11 @@ export function LoginPage() {
   return (
     <AuthShell title="Sign in">
       <form className="space-y-3" onSubmit={form.handleSubmit((v) => login.mutate(v))} noValidate>
+        {changed && !error && (
+          <p className="rounded-md bg-green-50 px-3 py-2 text-sm text-green-900" role="status">
+            Password changed. Sign in with your new password.
+          </p>
+        )}
         {error && (
           <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-800" role="alert">
             {error}
@@ -285,6 +292,61 @@ export function SetupPage() {
         </fieldset>
         <Button type="submit" className="w-full" loading={m.isPending}>
           Finish setup
+        </Button>
+      </form>
+    </AuthShell>
+  );
+}
+
+/** After an admin sets a temporary password, this is the only thing the account can do. */
+export function RequiredPasswordChangePage() {
+  const { user, loading, setUser } = useSession();
+  const [currentPassword, setCurrent] = useState('');
+  const [newPassword, setNew] = useState('');
+  const [repeat, setRepeat] = useState('');
+  const [mismatch, setMismatch] = useState(false);
+  // Clearing the session re-renders this page, so the redirect below is what takes the user away.
+  const [changed, setChanged] = useState(false);
+  const change = useMutation({
+    mutationFn: () => api.POST('/api/v1/auth/change-password', { body: { currentPassword, newPassword } }),
+    onSuccess: () => {
+      setChanged(true);
+      setUser(null);
+    },
+  });
+  const leave = useMutation({
+    mutationFn: () => api.POST('/api/v1/auth/logout'),
+    onSettled: () => setUser(null),
+  });
+  if (loading) return <Spinner />;
+  if (!user) return <Navigate to={changed ? '/login?changed=1' : '/login'} replace />;
+  if (!user.mustChangePassword) return <Navigate to="/" replace />;
+  return (
+    <AuthShell title="Choose a new password">
+      <p className="mb-3 text-sm text-gray-800">Your password was set by an administrator. Choose your own to continue, then sign in again.</p>
+      <form
+        className="space-y-3"
+        onSubmit={(e) => {
+          e.preventDefault();
+          const same = newPassword === repeat;
+          setMismatch(!same);
+          if (same) change.mutate();
+        }}
+      >
+        <Field label="Current password" htmlFor="current-password" required>
+          <Input id="current-password" type="password" autoComplete="current-password" required autoFocus value={currentPassword} onChange={(e) => setCurrent(e.target.value)} />
+        </Field>
+        <Field label="New password" htmlFor="new-password" required hint="At least 10 characters, with upper and lower case, a digit and a symbol." error={change.error?.message}>
+          <Input id="new-password" type="password" autoComplete="new-password" required value={newPassword} onChange={(e) => setNew(e.target.value)} />
+        </Field>
+        <Field label="Repeat new password" htmlFor="repeat-password" required error={mismatch ? 'The passwords do not match' : undefined}>
+          <Input id="repeat-password" type="password" autoComplete="new-password" required aria-invalid={mismatch} value={repeat} onChange={(e) => setRepeat(e.target.value)} />
+        </Field>
+        <Button type="submit" className="w-full" loading={change.isPending}>
+          Change password
+        </Button>
+        <Button variant="ghost" className="w-full" loading={leave.isPending} onClick={() => leave.mutate()}>
+          Sign out
         </Button>
       </form>
     </AuthShell>

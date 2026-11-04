@@ -1,10 +1,11 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useSession } from '@/app/providers';
-import { Button, Card, CardHeader, Field, Input, PageHeader } from '@/components/ui/primitives';
+import { Button, Card, CardHeader, Checkbox, ErrorState, Field, Input, PageHeader, Spinner } from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
+import { toastError } from '@/lib/forms';
 
 function ChangePassword() {
   const { setUser } = useSession();
@@ -116,6 +117,36 @@ function TwoFactor() {
   );
 }
 
+function EmailPreferences() {
+  const client = useQueryClient();
+  const key = ['notification-preferences'];
+  const q = useQuery({ queryKey: key, queryFn: async () => unwrap(await api.GET('/api/v1/notifications/preferences')) });
+  const m = useMutation({
+    mutationFn: async (change: { type: string; email: boolean }) => unwrap(await api.PUT('/api/v1/notifications/preferences', { body: { preferences: { [change.type]: change.email } } })),
+    onSuccess: (rows) => {
+      client.setQueryData(key, rows);
+      toast.success('Email preferences saved');
+    },
+    onError: toastError,
+  });
+  return (
+    <Card className="md:col-span-2">
+      <CardHeader title="Email notifications" description="You always see notifications in the bell. Choose which ones are also emailed to you." />
+      <div className="p-4">
+        {q.isLoading && <Spinner />}
+        {q.error && <ErrorState error={q.error} onRetry={q.refetch} />}
+        <div className="grid gap-2 sm:grid-cols-2">
+          {q.data?.map((p) => (
+            <div key={p.type}>
+              <Checkbox id={`pref-${p.type}`} label={p.label} checked={p.email} disabled={m.isPending} onCheckedChange={(v) => m.mutate({ type: p.type, email: !!v })} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </Card>
+  );
+}
+
 export default function AccountPage() {
   const { user } = useSession();
   return (
@@ -124,6 +155,7 @@ export default function AccountPage() {
       <div className="grid max-w-4xl gap-4 md:grid-cols-2">
         <ChangePassword />
         <TwoFactor />
+        <EmailPreferences />
       </div>
     </>
   );

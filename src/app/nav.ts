@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { Building2, ClipboardList, Database, FileText, FlaskConical, Home, Inbox, Settings } from 'lucide-react';
+import { BadgeCheck, Building2, ClipboardList, Database, FileText, FlaskConical, Home, Inbox, Microscope, Settings } from 'lucide-react';
 
 export interface NavItem {
   label: string;
@@ -16,6 +16,8 @@ export const NAV: NavItem[] = [
   { label: 'Quotations', to: '/quotations', icon: FileText, permissions: ['quotations.view'] },
   { label: 'Samples', to: '/samples', icon: FlaskConical, permissions: ['jobs.view'] },
   { label: 'Planning', to: '/planning', icon: ClipboardList, permissions: ['planning.view'] },
+  { label: 'My Tests', to: '/my-tests', icon: Microscope, permissions: ['tests.work'] },
+  { label: 'Approvals', to: '/approvals', icon: BadgeCheck, permissions: ['tests.approve', 'reports.review', 'reports.approve', 'reports.issue', 'reports.view'] },
   { label: 'Customers', to: '/customers', icon: Building2, permissions: ['customers.view'] },
   { label: 'Masters', to: '/masters', icon: Database, permissions: ['masters.view', 'rates.view'] },
   {

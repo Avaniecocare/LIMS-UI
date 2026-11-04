@@ -1,7 +1,7 @@
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef, type RowSelectionState } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useRef, type ReactNode } from 'react';
+import { Fragment, useRef, type ReactNode } from 'react';
 import { Button, Checkbox, EmptyState, ErrorState, Select, Spinner } from '@/components/ui/primitives';
 import { cn } from '@/lib/format';
 
@@ -33,6 +33,10 @@ export interface DataTableProps<T> {
   selection?: RowSelectionState;
   onSelectionChange?: (selection: RowSelectionState) => void;
   bulkActions?: ReactNode;
+  /** Rows that cannot be ticked, such as ones the user may not act on. */
+  isRowSelectable?: (row: T) => boolean;
+  /** Extra content under a row, or null when the row is collapsed. Such a table is not virtualized. */
+  renderExpanded?: (row: T) => ReactNode;
   ariaLabel: string;
   maxHeightClass?: string;
 }
@@ -58,6 +62,8 @@ export function DataTable<T>({
   selection,
   onSelectionChange,
   bulkActions,
+  isRowSelectable,
+  renderExpanded,
   ariaLabel,
   maxHeightClass = 'max-h-[calc(100vh-15rem)]',
 }: DataTableProps<T>) {
@@ -72,7 +78,7 @@ export function DataTable<T>({
           ),
           cell: ({ row }) => (
             <span onClick={(e) => e.stopPropagation()}>
-              <Checkbox aria-label="Select row" checked={row.getIsSelected()} onCheckedChange={(v) => row.toggleSelected(!!v)} />
+              <Checkbox aria-label="Select row" disabled={!row.getCanSelect()} checked={row.getIsSelected()} onCheckedChange={(v) => row.toggleSelected(!!v)} />
             </span>
           ),
         },
@@ -87,7 +93,7 @@ export function DataTable<T>({
     getRowId,
     manualSorting: true,
     manualPagination: true,
-    enableRowSelection: !!onSelectionChange,
+    enableRowSelection: onSelectionChange ? (isRowSelectable ? (row) => isRowSelectable(row.original) : true) : false,
     state: { rowSelection: selection ?? {} },
     onRowSelectionChange: (updater) => {
       const next = typeof updater === 'function' ? updater(selection ?? {}) : updater;
@@ -97,10 +103,10 @@ export function DataTable<T>({
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const tableRows = table.getRowModel().rows;
-  const virtualizer = useVirtualizer({ count: tableRows.length, getScrollElement: () => scrollRef.current, estimateSize: () => ROW_HEIGHT, overscan: 12 });
-  const items = virtualizer.getVirtualItems();
+  const virtualizer = useVirtualizer({ count: tableRows.length, getScrollElement: () => scrollRef.current, estimateSize: () => ROW_HEIGHT, overscan: 12, enabled: !renderExpanded });
+  const items = renderExpanded ? [] : virtualizer.getVirtualItems();
   // jsdom and first paint report no viewport; render a window rather than an empty table.
-  const visible = items.length ? items : tableRows.slice(0, 30).map((_, index) => ({ index, start: index * ROW_HEIGHT, size: ROW_HEIGHT }));
+  const visible = items.length ? items : (renderExpanded ? tableRows : tableRows.slice(0, 30)).map((_, index) => ({ index, start: index * ROW_HEIGHT, size: ROW_HEIGHT }));
   const paddingTop = items.length ? items[0].start : 0;
   const paddingBottom = items.length ? virtualizer.getTotalSize() - items[items.length - 1].end : 0;
 
@@ -151,22 +157,31 @@ export function DataTable<T>({
               )}
               {visible.map((v) => {
                 const row = tableRows[v.index];
+                const extra = renderExpanded?.(row.original);
                 return (
-                  <tr
-                    key={row.id}
-                    data-index={v.index}
-                    ref={items.length ? virtualizer.measureElement : undefined}
-                    className={cn('border-b border-gray-100', onRowClick && 'cursor-pointer hover:bg-gray-50', row.getIsSelected() && 'bg-blue-50')}
-                    onClick={onRowClick ? () => onRowClick(row.original) : undefined}
-                    onKeyDown={onRowClick ? (e) => e.key === 'Enter' && e.target === e.currentTarget && onRowClick(row.original) : undefined}
-                    tabIndex={onRowClick ? 0 : undefined}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="px-3 py-2 align-middle text-gray-900">
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </td>
-                    ))}
-                  </tr>
+                  <Fragment key={row.id}>
+                    <tr
+                      data-index={v.index}
+                      ref={items.length ? virtualizer.measureElement : undefined}
+                      className={cn('border-b border-gray-100', onRowClick && 'cursor-pointer hover:bg-gray-50', row.getIsSelected() && 'bg-blue-50')}
+                      onClick={onRowClick ? () => onRowClick(row.original) : undefined}
+                      onKeyDown={onRowClick ? (e) => e.key === 'Enter' && e.target === e.currentTarget && onRowClick(row.original) : undefined}
+                      tabIndex={onRowClick ? 0 : undefined}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <td key={cell.id} className="px-3 py-2 align-middle text-gray-900">
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </td>
+                      ))}
+                    </tr>
+                    {extra && (
+                      <tr className="border-b border-gray-100">
+                        <td colSpan={allColumns.length} className="p-0">
+                          {extra}
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
                 );
               })}
               {paddingBottom > 0 && (

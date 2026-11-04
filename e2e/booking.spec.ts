@@ -223,7 +223,7 @@ test('booking without a quotation, deviations, camera, letter and scanning', asy
   await page.getByRole('button', { name: 'Book samples' }).click();
 
   // The client catches the missing reason at once
-  await page.getByRole('button', { name: 'Book job' }).click();
+  await page.getByRole('button', { name: 'Book job', exact: true }).click();
   await expect(page.getByText('Say why there is no quotation')).toBeVisible();
 
   await pick(page, /^Customer/, 'Contoso');
@@ -254,7 +254,7 @@ test('booking without a quotation, deviations, camera, letter and scanning', asy
   await page.getByLabel('Applies to').selectOption({ label: `Sample 1 — ${description}` });
   await page.getByLabel('Remark').fill('Seal was damaged');
   await shot(page, 'booking');
-  await page.getByRole('button', { name: 'Book job' }).click();
+  await page.getByRole('button', { name: 'Book job', exact: true }).click();
 
   await expect(page).toHaveURL(/\/samples\/jobs\//);
   const jobId = new URL(page.url()).pathname.split('/').pop()!;
@@ -376,7 +376,7 @@ test('a planner never sees the customer', async ({ page }) => {
   await page.getByLabel('Letter / challan reference').fill('SECRET-LETTER');
   const description = unique('Blind sample');
   await page.getByRole('region', { name: 'Sample 1' }).getByLabel('Description').fill(description);
-  await page.getByRole('button', { name: 'Book job' }).click();
+  await page.getByRole('button', { name: 'Book job', exact: true }).click();
   await expect(page).toHaveURL(/\/samples\/jobs\//);
   await expect(page.getByText('Booked without a quotation: Impartiality check')).toBeVisible();
   const jobPath = new URL(page.url()).pathname;

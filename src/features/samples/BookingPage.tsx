@@ -1,15 +1,18 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus, Trash2 } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import type { components } from '@/api/schema';
 import { useSession } from '@/app/providers';
 import { CustomerPicker, TestMultiPicker, useLookups } from '@/components/pickers';
-import { Button, Card, CardHeader, EmptyState, Field, Input, PageHeader, Select, Textarea } from '@/components/ui/primitives';
+import { DataTable, type Col } from '@/components/DataTable';
+import { Button, Card, CardHeader, ConfirmDialog, EmptyState, Field, Input, PageHeader, Select, Textarea } from '@/components/ui/primitives';
 import { ApiError, api, unwrap } from '@/lib/api';
+import { formatDate } from '@/lib/format';
 import { applyServerErrors, toastError } from '@/lib/forms';
 import { emptyHeader, HEADER_FIELDS, headerShape, headerToBody, JobHeaderFields, sampleShape, SampleFields } from './job-fields';
 
@@ -24,8 +27,57 @@ type FormValues = z.infer<typeof schema>;
 
 const emptySample = (): FormValues['samples'][number] => ({ description: '', condition: '', quantity: '', size: '', returnable: false, attributes: [], testIds: [] });
 
-export default function BookingPage() {
-  const { can } = useSession();
+type Convertible = components['schemas']['ConvertibleQuotationDto'];
+
+function BookFromQuotation() {
+  const navigate = useNavigate();
+  const client = useQueryClient();
+  const q = useQuery({ queryKey: ['quotations-convertible'], queryFn: async () => unwrap(await api.GET('/api/v1/quotations/convertible')) });
+  const [chosen, setChosen] = useState<Convertible | null>(null);
+  const convert = useMutation({
+    mutationFn: async (id: string) => unwrap(await api.POST('/api/v1/quotations/{id}/convert', { params: { path: { id } } })),
+    onSuccess: (res) => {
+      client.invalidateQueries({ queryKey: ['quotations-convertible'] });
+      client.invalidateQueries({ queryKey: ['quotations'] });
+      client.invalidateQueries({ queryKey: ['jobs'] });
+      client.invalidateQueries({ queryKey: ['samples'] });
+      toast.success(`Job ${res.jobNo} booked`);
+      navigate(`/samples/jobs/${res.jobId}`, { replace: true });
+    },
+    onError: (e) => {
+      setChosen(null);
+      toastError(e);
+    },
+  });
+  const columns = useMemo<Col<Convertible>[]>(
+    () => [
+      { accessorKey: 'quotationNo', id: 'quotationNo', header: 'Quotation' },
+      { accessorKey: 'customerName', id: 'customerName', header: 'Customer' },
+      { id: 'acceptedAt', header: 'Accepted', cell: ({ row }) => <span className="whitespace-nowrap">{formatDate(row.original.acceptedAt)}</span> },
+      { id: 'samples', header: 'Samples', cell: ({ row }) => row.original.samples.join(', ') || '—' },
+      { accessorKey: 'testCount', id: 'testCount', header: 'Tests' },
+      {
+        id: 'book',
+        header: () => <span className="sr-only">Book</span>,
+        cell: ({ row }) => (
+          <Button size="sm" aria-label={`Book job from ${row.original.quotationNo}`} onClick={() => setChosen(row.original)}>
+            Book job
+          </Button>
+        ),
+      },
+    ],
+    [],
+  );
+  return (
+    <section aria-label="Book from an accepted quotation">
+      <h2 className="mb-2 text-base font-semibold text-gray-900">Book from an accepted quotation</h2>
+      <DataTable ariaLabel="Accepted quotations ready to book" columns={columns} rows={q.data} loading={q.isLoading} error={q.error} onRetry={q.refetch} getRowId={(r) => r.id} emptyTitle="No accepted quotations are waiting to be booked" maxHeightClass="max-h-72" />
+      <ConfirmDialog open={!!chosen} onOpenChange={(o) => !o && setChosen(null)} title={`Book a job from ${chosen?.quotationNo ?? 'this quotation'}?`} description="This creates a job with the samples and tests on the quotation. It can only be done once." confirmLabel="Book job" loading={convert.isPending} onConfirm={() => chosen && convert.mutate(chosen.id)} />
+    </section>
+  );
+}
+
+function BookWithoutQuotation() {
   const navigate = useNavigate();
   const client = useQueryClient();
   const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: { customerId: '', noQuotationReason: '', ...emptyHeader, samples: [emptySample()], deviations: [] } });
@@ -79,29 +131,10 @@ export default function BookingPage() {
     },
   });
 
-  if (!can('jobs.createWithoutQuotation')) {
-    return (
-      <EmptyState title="Booking without a quotation needs extra permission">
-        <Link to="/quotations" className="underline">
-          Convert an accepted quotation
-        </Link>{' '}
-        instead.
-      </EmptyState>
-    );
-  }
-
   const sampleValues = form.watch('samples');
   return (
-    <>
-      <PageHeader
-        title="Book samples"
-        description="Booking without a quotation. To book from a quotation, convert it from the quotation page."
-        breadcrumb={
-          <Link to="/samples" className="underline">
-            Samples
-          </Link>
-        }
-      />
+    <section aria-label="Book without a quotation">
+      <h2 className="mb-2 text-base font-semibold text-gray-900">Book without a quotation</h2>
       <form className="space-y-4" onSubmit={form.handleSubmit((v) => save.mutate(v))} noValidate>
         <Card>
           <CardHeader title="Job details" />
@@ -196,6 +229,29 @@ export default function BookingPage() {
           </Button>
         </div>
       </form>
+    </section>
+  );
+}
+
+export default function BookingPage() {
+  const { can } = useSession();
+  const fromQuotation = can('quotations.convert');
+  const without = can('jobs.createWithoutQuotation');
+  return (
+    <>
+      <PageHeader
+        title="Book samples"
+        breadcrumb={
+          <Link to="/samples" className="underline">
+            Samples
+          </Link>
+        }
+      />
+      <div className="space-y-6">
+        {fromQuotation && <BookFromQuotation />}
+        {without && <BookWithoutQuotation />}
+        {!fromQuotation && !without && <EmptyState title="You do not have permission to book from a quotation or without one" />}
+      </div>
     </>
   );
 }

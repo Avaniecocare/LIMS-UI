@@ -24,3 +24,17 @@ export function toastError(error: unknown) {
     toast.error('Something went wrong. Please try again.');
   }
 }
+
+export const isConflict = (error: unknown) => error instanceof ApiError && error.status === 409;
+
+/** For writes that send a version: a conflict means someone else changed the record, so reload it. */
+export function writeError(reload?: () => void) {
+  return (error: unknown) => {
+    if (isConflict(error)) {
+      toast.error('This record was changed by someone else. The latest version has been loaded.');
+      reload?.();
+    } else {
+      toastError(error);
+    }
+  };
+}

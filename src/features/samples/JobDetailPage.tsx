@@ -8,13 +8,14 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 import type { components } from '@/api/schema';
 import { useSession } from '@/app/providers';
+import { CancelDialog, type CancelTarget } from '@/components/CancelDialog';
 import { useLookups } from '@/components/pickers';
 import { Attachments, DocumentButton, EmailLogTable, HistoryList, pollDocumentJob, ReasonDialog, reserveTab, StatusBadge, toastDocumentError, uploadEntityFile } from '@/components/shared';
 import { Badge, Button, Card, CardHeader, ConfirmDialog, Dialog, EmptyState, ErrorState, Field, Input, PageHeader, Select, Spinner, Tabs, TabsContent, TabsList, TabsTrigger, Textarea } from '@/components/ui/primitives';
 import { WebcamCapture } from '@/components/WebcamCapture';
 import { api, unwrap } from '@/lib/api';
 import { cn, formatDate, formatDateTime, humanize, toDateInput } from '@/lib/format';
-import { applyServerErrors, toastError } from '@/lib/forms';
+import { applyServerErrors, writeError } from '@/lib/forms';
 import { emptyHeader, HEADER_FIELDS, headerSchema, headerToBody, JobHeaderFields, sampleSchema, sampleShape, SampleFields, type HeaderValues, type SampleValues } from './job-fields';
 
 type Job = components['schemas']['JobDto'];
@@ -116,11 +117,15 @@ function EditSampleDialog({ sample, open, onOpenChange }: { sample: Sample; open
   );
 }
 
-function SampleCard({ job, sample, highlighted }: { job: Job; sample: Sample; highlighted: boolean }) {
+const CLOSED_TEST = ['APPROVED', 'CANCELLED'];
+
+function SampleCard({ job, sample, highlighted, onCancel }: { job: Job; sample: Sample; highlighted: boolean; onCancel: (target: CancelTarget) => void }) {
   const { can } = useSession();
   const client = useQueryClient();
   const [editing, setEditing] = useState(false);
   const canFiles = can('jobs.create', 'jobs.edit');
+  // A test's version is looked up from its own record when cancelling, which needs tests.viewAll.
+  const canCancelTests = can('jobs.cancel', 'planning.edit') && can('tests.viewAll');
   return (
     <section id={`sample-${sample.id}`} tabIndex={-1} aria-label={`Sample ${sample.sampleNo}`} aria-current={highlighted ? 'true' : undefined} className={cn('scroll-mt-4 rounded-lg border bg-white outline-none', highlighted ? 'border-brand ring-2 ring-brand' : 'border-gray-200')}>
       <div className="flex flex-wrap items-start justify-between gap-2 border-b border-gray-200 px-4 py-3">
@@ -141,6 +146,11 @@ function SampleCard({ job, sample, highlighted }: { job: Job; sample: Sample; hi
             <Button variant="secondary" size="sm" onClick={() => setEditing(true)}>
               <Pencil aria-hidden />
               Edit
+            </Button>
+          )}
+          {can('jobs.cancel') && sample.status !== 'CANCELLED' && (
+            <Button variant="secondary" size="sm" onClick={() => onCancel({ type: 'sample', id: sample.id, version: sample.version, label: `sample ${sample.sampleNo}` })}>
+              Cancel sample
             </Button>
           )}
         </div>
@@ -193,19 +203,39 @@ function SampleCard({ job, sample, highlighted }: { job: Job; sample: Sample; hi
                         {h}
                       </th>
                     ))}
+                    {canCancelTests && (
+                      <th scope="col" className="px-2 py-1.5">
+                        <span className="sr-only">Cancel</span>
+                      </th>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
                   {sample.tests.map((t) => (
                     <tr key={t.id} className="border-t border-gray-100">
                       <td className="px-2 py-1.5">
-                        {t.testCode} — {t.testName}
+                        {can('tests.viewAll') ? (
+                          <Link to={`/my-tests/${t.id}`} className="underline">
+                            {t.testCode} — {t.testName}
+                          </Link>
+                        ) : (
+                          <>
+                            {t.testCode} — {t.testName}
+                          </>
+                        )}
                       </td>
-                      <td className="px-2 py-1.5">
-                        <StatusBadge status={t.status} />
-                      </td>
+                      <td className="px-2 py-1.5">{t.planned || t.status === 'CANCELLED' ? <StatusBadge status={t.status} /> : <Badge>Not planned yet</Badge>}</td>
                       <td className="px-2 py-1.5">{t.assignedToName ?? '—'}</td>
                       <td className="px-2 py-1.5 whitespace-nowrap">{formatDate(t.dueDate)}</td>
+                      {canCancelTests && (
+                        <td className="px-2 py-1 text-right">
+                          {!CLOSED_TEST.includes(t.status) && (
+                            <Button variant="ghost" size="sm" aria-label={`Cancel ${t.testCode} on ${sample.sampleNo}`} onClick={() => onCancel({ type: 'test', id: t.id, label: `${t.testCode} on ${sample.sampleNo}` })}>
+                              Cancel
+                            </Button>
+                          )}
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>
@@ -485,6 +515,7 @@ export default function JobDetailPage() {
   const updated = useJobUpdated();
   const [tab, setTab] = useState('overview');
   const [dialog, setDialog] = useState<'hold' | 'release' | null>(null);
+  const [cancelling, setCancelling] = useState<CancelTarget | null>(null);
   const q = useQuery({ queryKey: ['job', id], queryFn: async () => unwrap(await api.GET('/api/v1/jobs/{id}', { params: { path: { id: id! } } })) });
   const history = useQuery({ queryKey: ['job-history', id], enabled: tab === 'history', queryFn: async () => unwrap(await api.GET('/api/v1/jobs/{id}/history', { params: { path: { id: id! } } })) });
   const hold = useMutation({
@@ -493,7 +524,10 @@ export default function JobDetailPage() {
       updated(j);
       setDialog(null);
     },
-    onError: toastError,
+    onError: (e) => {
+      setDialog(null);
+      writeError(() => void q.refetch())(e);
+    },
   });
   const release = useMutation({
     mutationFn: async (version: number) => unwrap(await api.POST('/api/v1/jobs/{id}/release', { params: { path: { id: id! } }, body: { version } })),
@@ -501,7 +535,10 @@ export default function JobDetailPage() {
       updated(j);
       setDialog(null);
     },
-    onError: toastError,
+    onError: (e) => {
+      setDialog(null);
+      writeError(() => void q.refetch())(e);
+    },
   });
 
   // A search result or scan lands on one sample: show it, bring it into view, once per sample.
@@ -574,6 +611,11 @@ export default function JobDetailPage() {
               </Button>
             )}
             {onHold && can('jobs.hold') && <Button onClick={() => setDialog('release')}>Release hold</Button>}
+            {job.status !== 'CANCELLED' && job.status !== 'COMPLETED' && can('jobs.cancel') && (
+              <Button variant="secondary" onClick={() => setCancelling({ type: 'job', id: job.id, version: job.version, label: `job ${job.jobNo}` })}>
+                Cancel job
+              </Button>
+            )}
           </>
         }
       />
@@ -599,7 +641,7 @@ export default function JobDetailPage() {
         <TabsContent value="overview">
           <div className="space-y-4">
             {job.samples.map((s) => (
-              <SampleCard key={s.id} job={job} sample={s} highlighted={s.id === selectedSample} />
+              <SampleCard key={s.id} job={job} sample={s} highlighted={s.id === selectedSample} onCancel={setCancelling} />
             ))}
             <Deviations job={job} />
           </div>
@@ -648,6 +690,7 @@ export default function JobDetailPage() {
           {history.data && <HistoryList entries={history.data} />}
         </TabsContent>
       </Tabs>
+      <CancelDialog target={cancelling} onClose={() => setCancelling(null)} />
       <ReasonDialog open={dialog === 'hold'} onOpenChange={(o) => !o && setDialog(null)} title="Put this job on hold" description="Planning and testing stop until the hold is released." confirmLabel="Put on hold" loading={hold.isPending} onConfirm={(reason) => hold.mutate({ version: job.version, reason })} />
       <ConfirmDialog open={dialog === 'release'} onOpenChange={(o) => !o && setDialog(null)} title="Release the hold?" description="The job returns to the status it had before." confirmLabel="Release hold" loading={release.isPending} onConfirm={() => release.mutate(job.version)} />
     </>

@@ -1,11 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import type { components } from '@/api/schema';
 import { useSession } from '@/app/providers';
 import { DataTable, useDebounced, type Col } from '@/components/DataTable';
+import { uploadEntityFile } from '@/components/shared';
 import { Badge, Button, Card, CardHeader, Checkbox, Dialog, ErrorState, Field, Input, PageHeader, Select, Spinner, Tabs, TabsContent, TabsList, TabsTrigger, Textarea } from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
 import { formatDate, formatDateTime } from '@/lib/format';
@@ -20,7 +21,62 @@ type AuditEntry = components['schemas']['AuditEntryDto'];
 const useRoles = () => useQuery({ queryKey: ['roles'], queryFn: async () => unwrap(await api.GET('/api/v1/admin/roles')) });
 
 // ---------------------------------------------------------------- users
-function UserForm({ user, onDone }: { user: User | null; onDone: () => void }) {
+/** The image printed on reports this person signs. */
+function SignatureSection({ user, onChange }: { user: User; onChange: (user: User) => void }) {
+  const client = useQueryClient();
+  const input = useRef<HTMLInputElement>(null);
+  const url = useQuery({
+    queryKey: ['signature-url', user.signatureFileId],
+    enabled: !!user.signatureFileId,
+    staleTime: 60_000,
+    queryFn: async () => unwrap(await api.GET('/api/v1/files/{id}/url', { params: { path: { id: user.signatureFileId! } } })).url,
+  });
+  const upload = useMutation({
+    mutationFn: async (file: File) => {
+      const stored = await uploadEntityFile('User', user.id, 'signature', file);
+      return unwrap(await api.POST('/api/v1/admin/users/{id}/signature', { params: { path: { id: user.id } }, body: { version: user.version, fileId: stored.id } }));
+    },
+    onSuccess: (updated) => {
+      onChange(updated);
+      client.invalidateQueries({ queryKey: ['users'] });
+      toast.success('Signature saved');
+    },
+    onError: toastError,
+  });
+  return (
+    <section aria-label="Signature image" className="rounded-md border border-gray-200 p-3">
+      <h3 className="text-[13px] font-semibold text-gray-900">Signature image</h3>
+      <p className="mt-0.5 text-xs text-gray-600">Printed on reports this person signs.</p>
+      <div className="mt-2 flex flex-wrap items-center gap-3">
+        {user.signatureFileId ? (
+          <>
+            {url.data ? <img src={url.data} alt={`Signature of ${user.name}`} className="h-14 max-w-48 rounded border border-gray-200 bg-white object-contain p-1" /> : <span className="text-[13px] text-gray-700">{url.isError ? 'The image could not be shown.' : 'Loading…'}</span>}
+            <span className="text-[13px] text-gray-800">Signature on file</span>
+          </>
+        ) : (
+          <span className="text-[13px] text-gray-800">No signature uploaded yet</span>
+        )}
+        <input
+          ref={input}
+          type="file"
+          accept="image/png,image/jpeg"
+          className="sr-only"
+          aria-label={`Upload a signature image for ${user.name}`}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) upload.mutate(file);
+            e.target.value = '';
+          }}
+        />
+        <Button variant="secondary" size="sm" className="ml-auto" loading={upload.isPending} onClick={() => input.current?.click()}>
+          {user.signatureFileId ? 'Replace signature' : 'Upload signature'}
+        </Button>
+      </div>
+    </section>
+  );
+}
+
+function UserForm({ user, onDone, onChange }: { user: User | null; onDone: () => void; onChange: (user: User) => void }) {
   const roles = useRoles();
   const client = useQueryClient();
   const [roleIds, setRoleIds] = useState<string[]>(user?.roles.map((r) => r.id) ?? []);
@@ -71,6 +127,7 @@ function UserForm({ user, onDone }: { user: User | null; onDone: () => void }) {
         </div>
       </fieldset>
       {user && <Checkbox id="u-active" label="Active" checked={isActive} onCheckedChange={(v) => setActive(!!v)} />}
+      {user && <SignatureSection user={user} onChange={onChange} />}
       <div className="flex justify-end">
         <Button type="submit" loading={m.isPending}>
           Save user
@@ -159,7 +216,7 @@ function UsersTab() {
       </div>
       <DataTable ariaLabel="Users" columns={columns} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} sort={list.sort} onSortChange={list.setSort} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} onRowClick={setEditing} getRowId={(r) => r.id} emptyTitle="No users match" />
       <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)} title={editing === 'new' ? 'Add user' : 'Edit user'}>
-        {editing && <UserForm user={editing === 'new' ? null : editing} onDone={() => setEditing(null)} />}
+        {editing && <UserForm user={editing === 'new' ? null : editing} onDone={() => setEditing(null)} onChange={setEditing} />}
       </Dialog>
       <Dialog open={!!resetting} onOpenChange={(o) => !o && setResetting(null)} title={`Reset password for ${resetting?.name ?? ''}`}>
         {resetting && <ResetPasswordForm user={resetting} onDone={() => setResetting(null)} />}

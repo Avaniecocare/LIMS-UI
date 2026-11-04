@@ -106,6 +106,12 @@ export default function SamplesPage() {
               <Select aria-label="Returnable filter" className="w-36" value={list.filters.returnable ?? ''} onChange={(e) => list.setFilter('returnable', e.target.value || null)}>
                 <option value="">Returnable or not</option>
                 <option value="true">Returnable only</option>
+                <option value="false">Not returnable</option>
+              </Select>
+              <Select aria-label="Urgent filter" className="w-32" value={list.filters.urgent ?? ''} onChange={(e) => list.setFilter('urgent', e.target.value || null)}>
+                <option value="">Any priority</option>
+                <option value="true">Urgent only</option>
+                <option value="false">Not urgent</option>
               </Select>
             </>
           )}

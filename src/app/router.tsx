@@ -3,7 +3,7 @@ import { lazy, Suspense, type ComponentType, type LazyExoticComponent, type Reac
 import { createBrowserRouter, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { EmptyState, Spinner } from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
-import { ForgotPasswordPage, LoginPage, ResetPasswordPage, SetupPage } from '@/features/auth/AuthPages';
+import { ForgotPasswordPage, LoginPage, RequiredPasswordChangePage, ResetPasswordPage, SetupPage } from '@/features/auth/AuthPages';
 import { Layout } from './Layout';
 import { useSession } from './providers';
 
@@ -32,6 +32,8 @@ function RequireAuth() {
   });
   if (loading || (!user && setup.isLoading)) return <Spinner />;
   if (!user) return <Navigate to={setup.data?.setupRequired ? '/setup' : '/login'} replace state={{ from: location.pathname }} />;
+  // The API refuses everything else until this is done, so nothing else is offered.
+  if (user.mustChangePassword) return <Navigate to="/change-password" replace />;
   return <Layout />;
 }
 
@@ -56,6 +58,10 @@ const Samples = lazy(() => import('@/features/samples/SamplesPage'));
 const Booking = lazy(() => import('@/features/samples/BookingPage'));
 const JobDetail = lazy(() => import('@/features/samples/JobDetailPage'));
 const Planning = lazy(() => import('@/features/planning/PlanningPage'));
+const MyTests = lazy(() => import('@/features/testing/MyTestsPage'));
+const TestDetail = lazy(() => import('@/features/testing/TestDetailPage'));
+const Approvals = lazy(() => import('@/features/approvals/ApprovalsPage'));
+const ReportDetail = lazy(() => import('@/features/approvals/ReportDetailPage'));
 
 export const router = createBrowserRouter([
   {
@@ -67,6 +73,7 @@ export const router = createBrowserRouter([
       { path: '/setup', element: <SetupPage /> },
     ],
   },
+  { path: '/change-password', element: <RequiredPasswordChangePage /> },
   {
     element: <RequireAuth />,
     children: [
@@ -87,6 +94,10 @@ export const router = createBrowserRouter([
       { path: '/samples/new', element: page(Booking, ['jobs.create']) },
       { path: '/samples/jobs/:id', element: page(JobDetail, ['jobs.view']) },
       { path: '/planning', element: page(Planning, ['planning.view']) },
+      { path: '/my-tests', element: page(MyTests, ['tests.work']) },
+      { path: '/my-tests/:id', element: page(TestDetail, ['tests.work', 'tests.viewAll']) },
+      { path: '/approvals', element: page(Approvals, ['tests.approve', 'reports.review', 'reports.approve', 'reports.issue', 'reports.view']) },
+      { path: '/approvals/reports/:id', element: page(ReportDetail, ['reports.view']) },
       { path: '*', element: <EmptyState title="Page not found" /> },
     ],
   },
