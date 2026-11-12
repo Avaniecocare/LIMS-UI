@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { WhatsappButton } from '@/features/whatsapp/WhatsappSend';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
@@ -174,7 +175,7 @@ function DraftForm({ invoice, onSaved, onConflict }: { invoice: Invoice; onSaved
     },
   });
   return (
-    <form className="grid gap-3 p-4 md:grid-cols-[10rem_1fr_auto] md:items-start" onSubmit={form.handleSubmit((v) => m.mutate(v))} noValidate>
+    <form className="grid grid-cols-[minmax(0,1fr)] gap-3 p-4 md:grid-cols-[10rem_1fr_auto] md:items-start" onSubmit={form.handleSubmit((v) => m.mutate(v))} noValidate>
       <Field label="Discount %" htmlFor="draft-discount" error={e.discountPct?.message} hint="Leave empty to keep the current discount.">
         <Input id="draft-discount" className="tabular-nums" inputMode="decimal" autoComplete="off" aria-invalid={!!e.discountPct} {...form.register('discountPct')} />
       </Field>
@@ -424,11 +425,13 @@ export default function InvoiceDetailPage() {
                 Email
               </Button>
             )}
+            {issued && <WhatsappButton kind="invoice" entityId={i.id} title={i.invoiceNo ?? 'invoice'} />}
             {open && canRemind && (
               <Button variant="secondary" onClick={() => setDialog('remind')}>
                 Send reminder
               </Button>
             )}
+            {open && <WhatsappButton kind="reminder" entityId={i.id} title={`a reminder for ${i.invoiceNo}`} label="Remind on WhatsApp" />}
             {issued && canPay && (
               <Button variant="secondary" onClick={() => setDialog('credit')}>
                 Credit note

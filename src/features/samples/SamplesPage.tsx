@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import type { components } from '@/api/schema';
 import { useSession } from '@/app/providers';
 import { DataTable, type Col } from '@/components/DataTable';
-import { DateRangeFilter, SavedFilters, SearchBox, StatusBadge } from '@/components/shared';
+import { DateRangeFilter, SavedFilters, SearchBox, StatusBadge, MobileFilters } from '@/components/shared';
 import { Badge, Button, PageHeader, Select, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
 import { formatDate, humanize } from '@/lib/format';
@@ -35,9 +35,9 @@ export default function SamplesPage() {
   const { can } = useSession();
   const navigate = useNavigate();
   const list = useListState();
-  // The tab lives in the URL with the filters, but it is not an API parameter.
-  const { tab: tabParam, ...query } = list.query as typeof list.query & { tab?: string };
-  const tab = tabParam === 'samples' ? 'samples' : 'jobs';
+  // The tab lives in the URL with the filters; list.query already leaves it out of API calls.
+  const query = list.query;
+  const tab = list.filters.tab === 'samples' ? 'samples' : 'jobs';
   const identity = can('customers.view');
 
   const jobs = useQuery({ queryKey: ['jobs', query], enabled: tab === 'jobs', queryFn: async () => unwrap(await api.GET('/api/v1/jobs', { params: { query } })) });
@@ -90,6 +90,7 @@ export default function SamplesPage() {
       <TabsContent value={tab} className="space-y-3">
         <div className="flex flex-wrap items-center gap-2">
           <SearchBox value={list.q} onChange={list.setSearch} placeholder={tab === 'jobs' ? 'Search job or customer' : 'Search sample, description or job'} label={tab === 'jobs' ? 'Search jobs' : 'Search samples'} />
+          <MobileFilters filters={list.filters} onClear={list.clearFilters}>
           {tab === 'jobs' ? (
             <>
               <StatusFilter value={list.filters.status ?? ''} onChange={(v) => list.setFilter('status', v)} options={['RECEIVED', 'PLANNED', 'IN_TESTING', 'REPORTING', 'COMPLETED', 'ON_HOLD', 'CANCELLED']} />
@@ -116,6 +117,7 @@ export default function SamplesPage() {
           )}
           <DateRangeFilter label="Received" from={list.filters.from ?? ''} to={list.filters.to ?? ''} onChange={list.setFilter} />
           <SavedFilters screen={tab === 'jobs' ? 'jobs' : 'samples'} current={list.allParams} onApply={list.applyFilters} />
+          </MobileFilters>
         </div>
         {tab === 'jobs' ? (
           <DataTable ariaLabel="Jobs" columns={jobColumns} rows={jobs.data?.data} meta={jobs.data?.meta} loading={jobs.isLoading} error={jobs.error} onRetry={jobs.refetch} sort={list.sort} onSortChange={list.setSort} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} onRowClick={(j) => navigate(`/samples/jobs/${j.id}`)} getRowId={(j) => j.id} emptyTitle="No jobs found" />

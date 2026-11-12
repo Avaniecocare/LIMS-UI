@@ -29,6 +29,7 @@ x-app: &app
     SMTP_SECURE: "false"
     SMTP_FROM: lab@testhouse.example
     SMTP_TRANSPORT: json
+    WHATSAPP_TRANSPORT: json
     LOG_LEVEL: info
     COMPANY_PRODUCT_NAME: "Example Test House LIMS"
     COMPANY_NAME: "Example Test House"

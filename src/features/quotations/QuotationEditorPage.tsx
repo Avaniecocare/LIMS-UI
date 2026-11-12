@@ -13,6 +13,7 @@ import { Button, Card, CardHeader, EmptyState, ErrorState, Field, Input, PageHea
 import { ApiError, api, unwrap } from '@/lib/api';
 import { toDateInput } from '@/lib/format';
 import { applyServerErrors, toastError } from '@/lib/forms';
+import { useLeaveGuard } from '@/lib/use-leave-guard';
 import { VersionLines, VersionTotals } from './VersionView';
 
 type Quotation = components['schemas']['QuotationDto'];
@@ -91,7 +92,7 @@ function toBody(v: FormValues) {
 }
 
 function Editor({ quotation, preset }: { quotation: Quotation | null; preset: { customerId: string; orderId: string } }) {
-  const { can } = useSession();
+  const { can, user } = useSession();
   const navigate = useNavigate();
   const client = useQueryClient();
   const canOverride = can('quotations.rateOverride');
@@ -99,6 +100,7 @@ function Editor({ quotation, preset }: { quotation: Quotation | null; preset: { 
   useEffect(() => form.reset(toForm(quotation, preset)), [quotation, preset, form]);
   const lines = useFieldArray({ control: form.control, name: 'lines' });
   const tests = useTests();
+  const guard = useLeaveGuard(form.formState.isDirty, 'This quotation has changes that have not been saved as a draft. They will be lost if you leave this page.');
   const customerId = form.watch('customerId');
   const orders = useQuery({
     queryKey: ['order-options', customerId],
@@ -109,6 +111,20 @@ function Editor({ quotation, preset }: { quotation: Quotation | null; preset: { 
   useEffect(() => {
     if (orders.data) form.setValue('orderId', form.getValues('orderId'));
   }, [orders.data, form]);
+  // Auto-fill for a new quotation: the person preparing it as the contact, and payment terms from the customer's credit days.
+  const customerInfo = useQuery({
+    queryKey: ['customer', customerId],
+    enabled: !!customerId && !quotation,
+    queryFn: async () => unwrap(await api.GET('/api/v1/customers/{id}', { params: { path: { id: customerId } } })),
+  });
+  useEffect(() => {
+    if (!quotation && user && !form.getValues('contactPerson')) form.setValue('contactPerson', user.name);
+  }, [quotation, user, form]);
+  useEffect(() => {
+    const c = customerInfo.data;
+    if (!c || quotation || form.getValues('paymentTerms')) return;
+    form.setValue('paymentTerms', c.creditDays > 0 ? `Payment within ${c.creditDays} days of invoice` : '100% advance', { shouldDirty: true });
+  }, [customerInfo.data, quotation, form]);
   useEffect(() => {
     if (tests.data) form.getValues('lines').forEach((l, i) => form.setValue(`lines.${i}.testId`, l.testId));
   }, [tests.data, form]);
@@ -124,7 +140,7 @@ function Editor({ quotation, preset }: { quotation: Quotation | null; preset: { 
       client.invalidateQueries({ queryKey: ['orders'] });
       client.invalidateQueries({ queryKey: ['orders-pipeline'] });
       toast.success('Draft saved. Totals are updated.');
-      if (!quotation) navigate(`/quotations/${q.id}/edit`, { replace: true });
+      if (!quotation) guard.leaveWithoutPrompt(() => navigate(`/quotations/${q.id}/edit`, { replace: true }));
     },
     onError: (err) => {
       // Rate rules report against "lines" as a whole and name the test in the message itself.
@@ -148,14 +164,16 @@ function Editor({ quotation, preset }: { quotation: Quotation | null; preset: { 
 
   const version = quotation?.versions.find((x) => x.versionNo === quotation.currentVersionNo);
   const gridClass = canOverride ? 'lg:grid-cols-[1.4fr_6rem_1.6fr_4.5rem_6rem_1fr_5rem_2rem]' : 'lg:grid-cols-[1.6fr_7rem_2fr_5rem_5rem_2rem]';
-  const headings = ['Sample description', 'Required qty', 'Test', 'Qty', ...(canOverride ? ['Rate override', 'Override reason'] : []), 'Disc. %'];
+  // One wording for the column headings (large screens) and the labels above each input (stacked, smaller screens).
+  const H = { description: 'Sample description', required: 'Required quantity', test: 'Test', quantity: 'Quantity', rate: 'Rate override', reason: 'Override reason', discount: 'Discount %' };
+  const headings = [H.description, H.required, H.test, H.quantity, ...(canOverride ? [H.rate, H.reason] : []), H.discount];
   const linesError = e.lines?.message ?? e.lines?.root?.message;
 
   return (
     <form className="space-y-4" onSubmit={form.handleSubmit((v) => save.mutate(v))} noValidate>
       <Card>
         <CardHeader title="Quotation details" />
-        <div className="grid gap-3 p-4 md:grid-cols-3">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-3 p-4 md:grid-cols-3">
           <Field label="Customer" htmlFor="q-customer" required error={e.customerId?.message} className="md:col-span-2">
             <Controller
               control={form.control}
@@ -199,14 +217,14 @@ function Editor({ quotation, preset }: { quotation: Quotation | null; preset: { 
           <Field label="Contact person" htmlFor="q-contact" error={e.contactPerson?.message}>
             <Input id="q-contact" {...form.register('contactPerson')} />
           </Field>
-          <Field label="Header discount %" htmlFor="q-discount" error={e.discountPct?.message}>
+          <Field label="Header discount %" htmlFor="q-discount" error={e.discountPct?.message} hint="Taken off the subtotal, after line discounts and before tax">
             <Input id="q-discount" inputMode="decimal" aria-invalid={!!e.discountPct} {...form.register('discountPct')} />
           </Field>
           <div className="hidden md:block" />
           <Field label="Payment terms" htmlFor="q-terms" error={e.paymentTerms?.message} className="md:col-span-3 lg:col-span-1">
             <Textarea id="q-terms" rows={2} {...form.register('paymentTerms')} />
           </Field>
-          <Field label="Delivery address" htmlFor="q-address" error={e.deliveryAddress?.message} className="md:col-span-3 lg:col-span-2">
+          <Field label="Send samples to" htmlFor="q-address" error={e.deliveryAddress?.message} hint="Leave empty to use the lab address" className="md:col-span-3 lg:col-span-2">
             <Textarea id="q-address" rows={2} {...form.register('deliveryAddress')} />
           </Field>
         </div>
@@ -237,14 +255,17 @@ function Editor({ quotation, preset }: { quotation: Quotation | null; preset: { 
             const le = e.lines?.[i];
             const label = (name: string) => `Line ${i + 1} ${name}`;
             return (
-              <div key={f.id} role="group" aria-label={`Line ${i + 1}`} className={`grid items-start gap-2 ${gridClass}`} onKeyDown={onLineKeyDown}>
-                <Cell error={le?.sampleDescription?.message}>
+              <div key={f.id} role="group" aria-label={`Line ${i + 1}`} className={`grid items-start gap-2 rounded-md border border-gray-200 p-3 sm:grid-cols-2 lg:rounded-none lg:border-0 lg:p-0 ${gridClass}`} onKeyDown={onLineKeyDown}>
+                <p className="text-xs font-semibold text-gray-900 sm:col-span-2 lg:hidden" aria-hidden>
+                  Line {i + 1}
+                </p>
+                <Cell error={le?.sampleDescription?.message} label={H.description}>
                   <Input aria-label={label('sample description')} aria-invalid={!!le?.sampleDescription} placeholder="Sample" {...form.register(`lines.${i}.sampleDescription`)} />
                 </Cell>
-                <Cell error={le?.requiredQuantity?.message}>
+                <Cell error={le?.requiredQuantity?.message} label={H.required}>
                   <Input aria-label={label('required quantity')} {...form.register(`lines.${i}.requiredQuantity`)} />
                 </Cell>
-                <Cell error={le?.testId?.message}>
+                <Cell error={le?.testId?.message} label={H.test}>
                   <Select aria-label={label('test')} aria-invalid={!!le?.testId} {...form.register(`lines.${i}.testId`)}>
                     <option value="">Choose a test</option>
                     {tests.data?.map((t) => (
@@ -254,23 +275,23 @@ function Editor({ quotation, preset }: { quotation: Quotation | null; preset: { 
                     ))}
                   </Select>
                 </Cell>
-                <Cell error={le?.quantity?.message}>
+                <Cell error={le?.quantity?.message} label={H.quantity}>
                   <Input aria-label={label('quantity')} type="number" min={1} aria-invalid={!!le?.quantity} {...form.register(`lines.${i}.quantity`)} />
                 </Cell>
                 {canOverride && (
                   <>
-                    <Cell error={le?.rate?.message}>
+                    <Cell error={le?.rate?.message} label={H.rate}>
                       <Input aria-label={label('rate override')} inputMode="decimal" aria-invalid={!!le?.rate} {...form.register(`lines.${i}.rate`)} />
                     </Cell>
-                    <Cell error={le?.overrideReason?.message}>
+                    <Cell error={le?.overrideReason?.message} label={H.reason}>
                       <Input aria-label={label('override reason')} {...form.register(`lines.${i}.overrideReason`)} />
                     </Cell>
                   </>
                 )}
-                <Cell error={le?.discountPct?.message}>
+                <Cell error={le?.discountPct?.message} label={H.discount}>
                   <Input aria-label={label('discount percent')} inputMode="decimal" aria-invalid={!!le?.discountPct} {...form.register(`lines.${i}.discountPct`)} />
                 </Cell>
-                <Button variant="ghost" size="icon" aria-label={`Remove line ${i + 1}`} disabled={lines.fields.length === 1} onClick={() => lines.remove(i)}>
+                <Button variant="ghost" size="icon" className="justify-self-end lg:justify-self-auto" aria-label={`Remove line ${i + 1}`} disabled={lines.fields.length === 1} onClick={() => lines.remove(i)}>
                   <Trash2 aria-hidden />
                 </Button>
               </div>
@@ -299,13 +320,19 @@ function Editor({ quotation, preset }: { quotation: Quotation | null; preset: { 
       ) : (
         <p className="text-right text-[13px] text-gray-600">Rates, tax and totals appear here after you save.</p>
       )}
+      {guard.dialog}
     </form>
   );
 }
 
-function Cell({ error, children }: { error?: string; children: ReactNode }) {
+/** One input on a line. Below lg the column headings are hidden, so the cell shows its own label above the input. */
+function Cell({ error, label, children }: { error?: string; label: string; children: ReactNode }) {
   return (
     <div>
+      {/* The input's own aria-label ("Line 1 test") already names it; this is the visible copy for sighted users. */}
+      <span className="mb-0.5 block text-xs font-medium text-gray-700 lg:hidden" aria-hidden>
+        {label}
+      </span>
       {children}
       {error && (
         <p className="mt-0.5 text-xs text-red-700" role="alert">

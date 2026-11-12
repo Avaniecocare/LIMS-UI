@@ -61,7 +61,7 @@ export function JobHeaderFields({ form: anyForm, identity, idPrefix, disabled }:
   const e = form.formState.errors;
   const id = (name: string) => `${idPrefix}-${name}`;
   return (
-    <div className="grid gap-3 md:grid-cols-3">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-3 md:grid-cols-3">
       {identity && (
         <>
           <Field label="Letter / challan reference" htmlFor={id('letter')} error={e.letterRef?.message}>
@@ -102,7 +102,7 @@ export function JobHeaderFields({ form: anyForm, identity, idPrefix, disabled }:
             <Input id={id('email')} type="email" aria-invalid={!!e.contactEmail} {...form.register('contactEmail')} />
           </Field>
           <Field label="Contact phone" htmlFor={id('phone')} error={e.contactPhone?.message}>
-            <Input id={id('phone')} {...form.register('contactPhone')} />
+            <Input id={id('phone')} type="tel" inputMode="tel" autoComplete="tel" {...form.register('contactPhone')} />
           </Field>
           <Field label="Report issue details" htmlFor={id('report-details')} error={e.reportIssueDetails?.message} className="md:col-span-3 lg:col-span-1">
             <Textarea id={id('report-details')} rows={2} {...form.register('reportIssueDetails')} />
@@ -149,7 +149,7 @@ export function SampleFields({ form: anyForm, prefix, idPrefix }: { form: unknow
   const id = (name: string) => `${idPrefix}-${name}`;
   return (
     <div className="space-y-3">
-      <div className="grid gap-3 md:grid-cols-[2fr_1fr_1fr_1fr]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-3 md:grid-cols-[2fr_1fr_1fr_1fr]">
         <Field label="Description" htmlFor={id('description')} required error={errorAt('description')}>
           <Input id={id('description')} aria-invalid={!!errorAt('description')} {...form.register(path('description'))} />
         </Field>
@@ -173,7 +173,7 @@ export function SampleFields({ form: anyForm, prefix, idPrefix }: { form: unknow
           </Button>
         </div>
         {attributes.fields.map((f, i) => (
-          <div key={f.id} className="grid items-start gap-2 md:grid-cols-[1fr_2fr_auto]">
+          <div key={f.id} className="grid grid-cols-[minmax(0,1fr)] items-start gap-2 md:grid-cols-[1fr_2fr_auto]">
             <Field label={`Attribute ${i + 1} label`} htmlFor={id(`attr-${i}-label`)} error={errorAt(`attributes.${i}.label`)}>
               <Input id={id(`attr-${i}-label`)} {...form.register(path(`attributes.${i}.label`))} />
             </Field>

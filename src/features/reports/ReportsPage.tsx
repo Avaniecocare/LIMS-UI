@@ -12,7 +12,7 @@ export default function ReportsPage() {
       {q.isLoading && <Spinner />}
       {q.error && <ErrorState error={q.error} onRetry={q.refetch} />}
       {q.data?.length === 0 && <EmptyState title="No reports are available to you" />}
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-3 md:grid-cols-2 xl:grid-cols-3">
         {[...groups.entries()].map(([group, reports]) => (
           <Card key={group}>
             <CardHeader title={group} />

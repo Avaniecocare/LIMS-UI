@@ -1,11 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Download, Paperclip, Trash2 } from 'lucide-react';
+import { useIsPhone } from '@/app/device';
+import { Download, Paperclip, Trash2, SlidersHorizontal } from 'lucide-react';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { toast } from 'sonner';
 import type { components } from '@/api/schema';
 import { Badge, Button, ConfirmDialog, Dialog, EmptyState, ErrorState, Field, Input, Spinner, Textarea, type ButtonProps } from '@/components/ui/primitives';
 import { ApiError, api, uploadFile, unwrap } from '@/lib/api';
 import { formatDateTime, humanize } from '@/lib/format';
+import { PHOTO_CATEGORIES, shrinkImage } from '@/lib/shrink-image';
 import { toastError } from '@/lib/forms';
 
 type DocJob = components['schemas']['DocumentJobDto'];
@@ -107,7 +109,7 @@ export function HistoryList({ entries }: { entries: History[] }) {
           {h.reason && <p className="mt-1 text-gray-800">Reason: {h.reason}</p>}
           <details className="mt-1">
             <summary className="cursor-pointer text-gray-600">Changes</summary>
-            <div className="mt-1 grid gap-2 md:grid-cols-2">
+            <div className="mt-1 grid grid-cols-[minmax(0,1fr)] gap-2 md:grid-cols-2">
               <pre className="max-h-64 overflow-auto rounded bg-gray-100 p-2 text-xs">{JSON.stringify(h.before, null, 2)}</pre>
               <pre className="max-h-64 overflow-auto rounded bg-gray-100 p-2 text-xs">{JSON.stringify(h.after, null, 2)}</pre>
             </div>
@@ -159,7 +161,7 @@ export async function uploadEntityFile(entity: string, entityId: string, categor
   form.set('entity', entity);
   form.set('entityId', entityId);
   form.set('category', category);
-  form.set('file', file);
+  form.set('file', PHOTO_CATEGORIES.has(category) ? await shrinkImage(file) : file);
   return (await uploadFile('/files', form)) as FileRow;
 }
 
@@ -182,7 +184,7 @@ export function Attachments({ entity, entityId, category, title = 'Attachments',
         form.set('printWidthMm', width);
         form.set('printHeightMm', height);
       }
-      form.set('file', file);
+      form.set('file', PHOTO_CATEGORIES.has(category) ? await shrinkImage(file) : file);
       return uploadFile('/files', form);
     },
     onSuccess: () => client.invalidateQueries({ queryKey: key }),
@@ -312,10 +314,10 @@ export function EmailLogTable({ rows, loading, error, onRetry }: { rows: EmailRo
 /** From and to dates of a list filter, kept in the list's URL state. */
 export function DateRangeFilter({ from, to, onChange, label = 'Date' }: { from: string; to: string; onChange: (key: 'from' | 'to', value: string | null) => void; label?: string }) {
   return (
-    <div className="flex items-center gap-1.5">
-      <Input className="w-36" type="date" aria-label={`${label} from`} value={from} onChange={(e) => onChange('from', e.target.value || null)} />
+    <div className="flex min-w-0 items-center gap-1.5 max-sm:w-full">
+      <Input className="w-36 max-sm:min-w-0 max-sm:flex-1" type="date" aria-label={`${label} from`} value={from} onChange={(e) => onChange('from', e.target.value || null)} />
       <span className="text-[13px] text-gray-600">to</span>
-      <Input className="w-36" type="date" aria-label={`${label} to`} value={to} onChange={(e) => onChange('to', e.target.value || null)} />
+      <Input className="w-36 max-sm:min-w-0 max-sm:flex-1" type="date" aria-label={`${label} to`} value={to} onChange={(e) => onChange('to', e.target.value || null)} />
     </div>
   );
 }
@@ -341,7 +343,7 @@ export function SavedFilters({ screen, current, onApply }: { screen: string; cur
   return (
     <div className="flex flex-wrap items-center gap-1.5">
       {q.data?.map((f) => (
-        <span key={f.id} className="inline-flex items-center rounded-md border border-gray-300 bg-white text-[13px]">
+        <span key={f.id} className="inline-flex items-center rounded-md border border-gray-300 bg-surface text-[13px]">
           <button type="button" className="px-2 py-1 hover:bg-gray-50" onClick={() => onApply(f.filters as Record<string, string>)}>
             {f.name}
           </button>
@@ -385,7 +387,47 @@ export function SearchBox({ value, onChange, placeholder, label }: { value: stri
     return () => clearTimeout(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text]);
-  return <Input className="w-full max-w-xs" type="search" placeholder={placeholder} aria-label={label} value={text} onChange={(e) => setText(e.target.value)} />;
+  return <Input className="w-full max-w-xs max-md:max-w-none max-md:min-w-0 max-md:flex-1" type="search" placeholder={placeholder} aria-label={label} value={text} onChange={(e) => setText(e.target.value)} />;
+}
+
+/** Address parameters that are not filters: paging, sorting, search and the page's tab. */
+const NOT_FILTERS = ['tab', 'view'];
+
+/**
+ * A list's filters. On a computer they sit in the row next to the search box. On a phone they move behind a
+ * "Filters" button that opens a sheet, and the button counts the ones in use; changes apply as they are made.
+ */
+export function MobileFilters({ filters, onClear, children }: { filters: Record<string, string>; onClear?: () => void; children: ReactNode }) {
+  const phone = useIsPhone();
+  const [open, setOpen] = useState(false);
+  if (!phone) return <>{children}</>;
+  const active = Object.keys(filters).filter((k) => !NOT_FILTERS.includes(k)).length;
+  return (
+    <>
+      <Button variant="secondary" className="shrink-0" aria-haspopup="dialog" onClick={() => setOpen(true)}>
+        <SlidersHorizontal aria-hidden />
+        Filters
+        {active > 0 && (
+          <span className="ml-0.5 rounded-full bg-brand px-1.5 text-[11px] text-brand-fg tabular-nums" aria-label={`${active} in use`}>
+            {active}
+          </span>
+        )}
+      </Button>
+      <Dialog open={open} onOpenChange={setOpen} title="Filters">
+        <div className="flex flex-col gap-3 [&_input]:w-full [&_input]:max-w-none [&_select]:w-full">{children}</div>
+        <div className="mt-5 flex gap-2">
+          {onClear && active > 0 && (
+            <Button variant="secondary" className="flex-1" onClick={onClear}>
+              Clear filters
+            </Button>
+          )}
+          <Button className="flex-1" onClick={() => setOpen(false)}>
+            Show results
+          </Button>
+        </div>
+      </Dialog>
+    </>
+  );
 }
 
 /** Buttons inside a clickable row: pressing one must not also open the row. */

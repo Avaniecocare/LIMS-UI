@@ -3,14 +3,14 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 import { useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import type { components } from '@/api/schema';
 import { useSession } from '@/app/providers';
 import { DataTable, type Col } from '@/components/DataTable';
 import { CustomerPicker } from '@/components/pickers';
-import { Attachments, DateRangeFilter, SavedFilters, SearchBox, StatusBadge } from '@/components/shared';
+import { Attachments, DateRangeFilter, SavedFilters, SearchBox, StatusBadge, MobileFilters } from '@/components/shared';
 import { Button, Card, CardHeader, ErrorState, Field, Input, PageHeader, Select, Spinner, Textarea } from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
 import { cn, formatDate, formatINR, humanize, toDateInput, todayIso } from '@/lib/format';
@@ -33,8 +33,8 @@ const schema = z.object({
 });
 type FormValues = z.infer<typeof schema>;
 
-const toForm = (o: Order | null): FormValues => ({
-  customerId: o?.customerId ?? '',
+const toForm = (o: Order | null, presetCustomerId = ''): FormValues => ({
+  customerId: o?.customerId ?? presetCustomerId,
   source: o?.source ?? 'EMAIL',
   reference: o?.reference ?? '',
   description: o?.description ?? '',
@@ -47,8 +47,11 @@ function OrderForm({ order, onSaved }: { order: Order | null; onSaved: (o: Order
   const { can } = useSession();
   const client = useQueryClient();
   const canEdit = can('orders.edit');
-  const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: toForm(order) });
-  useEffect(() => form.reset(toForm(order)), [order, form]);
+  // A customer just created from the picker comes back as ?customerId=.
+  const [params] = useSearchParams();
+  const preset = order ? '' : (params.get('customerId') ?? '');
+  const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: toForm(order, preset) });
+  useEffect(() => form.reset(toForm(order, preset)), [order, preset, form]);
   const owners = useQuery({ queryKey: ['order-owners'], staleTime: 60_000, queryFn: async () => unwrap(await api.GET('/api/v1/orders/owners')) });
   // A native select shows nothing until its option exists, so re-apply the value once they load.
   useEffect(() => {
@@ -74,7 +77,7 @@ function OrderForm({ order, onSaved }: { order: Order | null; onSaved: (o: Order
     <form onSubmit={form.handleSubmit((v) => m.mutate(v))} noValidate>
       <Card>
         <CardHeader title="Order details" />
-        <fieldset disabled={!canEdit} className="grid gap-3 p-4 md:grid-cols-3">
+        <fieldset disabled={!canEdit} className="grid grid-cols-[minmax(0,1fr)] gap-3 p-4 md:grid-cols-3">
           <Field label="Customer" htmlFor="o-customer" required error={e.customerId?.message} className="md:col-span-2">
             <Controller control={form.control} name="customerId" render={({ field }) => <CustomerPicker id="o-customer" value={field.value} onChange={field.onChange} disabled={!canEdit} invalid={!!e.customerId} />} />
           </Field>
@@ -241,8 +244,10 @@ export default function OrdersPage() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search order, customer or reference" label="Search orders" />
+          <MobileFilters filters={list.filters} onClear={list.clearFilters}>
           <DateRangeFilter label="Received" from={list.filters.from ?? ''} to={list.filters.to ?? ''} onChange={list.setFilter} />
           <SavedFilters screen="orders" current={list.allParams} onApply={list.applyFilters} />
+          </MobileFilters>
         </div>
         <DataTable ariaLabel="Orders" columns={columns} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} sort={list.sort} onSortChange={list.setSort} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} onRowClick={(o) => navigate(`/orders/${o.id}`)} getRowId={(o) => o.id} emptyTitle="No orders found" />
       </div>
@@ -252,7 +257,7 @@ export default function OrdersPage() {
 
 function StageChip({ label, count, pressed, onClick }: { label: string; count?: number; pressed: boolean; onClick: () => void }) {
   return (
-    <button type="button" aria-pressed={pressed} onClick={onClick} className={cn('inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[13px] font-medium', pressed ? 'border-brand bg-brand text-brand-fg' : 'border-gray-300 bg-white text-gray-800 hover:bg-gray-50')}>
+    <button type="button" aria-pressed={pressed} onClick={onClick} className={cn('inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[13px] font-medium', pressed ? 'border-brand bg-brand text-brand-fg' : 'border-gray-300 bg-surface text-gray-800 hover:bg-gray-50')}>
       {label}
       {count !== undefined && <span className="tabular-nums">{count}</span>}
     </button>

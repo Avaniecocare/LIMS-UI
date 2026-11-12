@@ -10,10 +10,10 @@ type Point = components['schemas']['ChartPointDto'];
 type SeriesPoint = components['schemas']['ChartSeriesPointDto'];
 
 // Fixed, validated for colour-blind separation and 3:1 contrast on white. Text never wears these colours.
-const SERIES_1 = '#2a78d6';
+const SERIES_1 = 'var(--brand-primary)';
 const SERIES_2 = '#eb6834';
-const INK = '#374151';
-const GRID = '#e5e7eb';
+const INK = 'var(--color-gray-700)';
+const GRID = 'var(--color-gray-200)';
 
 const count = (v: number) => v.toLocaleString('en-IN');
 const shorten = (text: string, max = 34) => (text.length > max ? `${text.slice(0, max - 1)}…` : text);
@@ -21,7 +21,7 @@ const shorten = (text: string, max = 34) => (text.length > max ? `${text.slice(0
 function ChartTip({ active, label, rows }: { active?: boolean; label?: string; rows: { name?: string; value: string; color?: string }[] }) {
   if (!active || !rows.length) return null;
   return (
-    <div className="max-w-64 rounded-md border border-gray-200 bg-white px-2.5 py-1.5 text-xs text-gray-900 shadow">
+    <div className="max-w-64 rounded-md border border-gray-200 bg-surface px-2.5 py-1.5 text-xs text-gray-900 shadow">
       <p className="font-medium break-words">{label}</p>
       {rows.map((r) => (
         <p key={r.name ?? r.value} className="flex items-center gap-1.5 tabular-nums">
@@ -102,7 +102,7 @@ export function BarPanel({ title, points, money }: { title: string; points: Poin
             <BarChart accessibilityLayer={false} data={points} layout="vertical" margin={{ top: 0, right: money ? 88 : 40, bottom: 0, left: 4 }} barCategoryGap={8}>
               <XAxis type="number" hide domain={[0, 'dataMax']} />
               <YAxis type="category" dataKey="label" width={190} tickLine={false} axisLine={{ stroke: GRID }} tick={{ fill: INK, fontSize: 12 }} tickFormatter={(v: string) => shorten(v)} interval={0} />
-              <Tooltip cursor={{ fill: '#f3f4f6' }} isAnimationActive={false} content={({ active, payload }) => <ChartTip active={active} label={payload?.[0]?.payload?.label} rows={payload?.length ? [{ value: text(Number(payload[0].value)) }] : []} />} />
+              <Tooltip cursor={{ fill: 'var(--color-gray-100)' }} isAnimationActive={false} content={({ active, payload }) => <ChartTip active={active} label={payload?.[0]?.payload?.label} rows={payload?.length ? [{ value: text(Number(payload[0].value)) }] : []} />} />
               <Bar
                 dataKey="value"
                 fill={SERIES_1}
@@ -175,7 +175,7 @@ export function BilledCollectedPanel({ points }: { points: SeriesPoint[] }) {
               <CartesianGrid vertical={false} stroke={GRID} />
               <XAxis dataKey="month" tickLine={false} axisLine={{ stroke: GRID }} tick={{ fill: INK, fontSize: 12 }} />
               <YAxis width={80} tickLine={false} axisLine={false} tick={{ fill: INK, fontSize: 12 }} tickFormatter={(v: number) => formatINR(v).replace(/\.00$/, '')} />
-              <Tooltip cursor={{ fill: '#f3f4f6' }} isAnimationActive={false} content={({ active, label, payload }) => <ChartTip active={active} label={String(label ?? '')} rows={(payload ?? []).map((s) => ({ name: String(s.name), value: formatINR(Number(s.value)), color: String(s.color) }))} />} />
+              <Tooltip cursor={{ fill: 'var(--color-gray-100)' }} isAnimationActive={false} content={({ active, label, payload }) => <ChartTip active={active} label={String(label ?? '')} rows={(payload ?? []).map((s) => ({ name: String(s.name), value: formatINR(Number(s.value)), color: String(s.color) }))} />} />
               <Legend verticalAlign="top" align="right" iconType="square" iconSize={10} formatter={(v) => <span style={{ color: INK, fontSize: 12 }}>{v}</span>} />
               <Bar dataKey="billed" name={BILLED} fill={SERIES_1} maxBarSize={24} radius={[4, 4, 0, 0]} isAnimationActive={false} />
               <Bar dataKey="collected" name={COLLECTED} fill={SERIES_2} maxBarSize={24} radius={[4, 4, 0, 0]} isAnimationActive={false} />

@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useCountUp } from '@/lib/motion';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import type { components } from '@/api/schema';
@@ -6,7 +7,7 @@ import { useSession } from '@/app/providers';
 import { DateRangeFilter } from '@/components/shared';
 import { Badge, Card, CardHeader } from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
-import { formatDate, formatINR } from '@/lib/format';
+import { cn, formatDate, formatINR } from '@/lib/format';
 import { useListState } from '@/lib/use-list-state';
 import { useMisCatalog } from '@/features/reports/catalog';
 import { canOpenLink } from './links';
@@ -40,15 +41,32 @@ export function metricText(m: Metric) {
   return /^-?\d+(\.\d+)?$/.test(m.display) ? formatINR(m.display) : m.display;
 }
 
+/** A plain count or a bare money amount can count up; percentages, durations and text cannot. */
+function countable(m: Metric): { value: number; format: (n: number) => string } | null {
+  if (m.display === null || m.display === undefined) return Number.isInteger(m.value) ? { value: m.value, format: (n) => Math.round(n).toLocaleString('en-IN') } : null;
+  return /^\d+(\.\d+)?$/.test(m.display) ? { value: Number(m.display), format: (n) => formatINR(n.toFixed(2)) } : null;
+}
+
 export function MetricTile({ metric }: { metric: Metric }) {
   const allowed = useLinkCheck();
+  const count = countable(metric);
+  const shown = useCountUp(`metric:${metric.key}`, count?.value ?? null);
+  const text = metricText(metric);
   const body = (
     <>
       <span className="block text-xs font-medium text-gray-700">{metric.label}</span>
-      <span className="mt-0.5 block text-xl font-semibold text-gray-900 tabular-nums">{metricText(metric)}</span>
+      {/* The real value is always in the page (screen readers, copying); while counting up it sits under the moving digits. */}
+      <div className="relative mt-0.5 text-xl font-semibold text-gray-900 tabular-nums">
+        {shown !== null && count && (
+          <span aria-hidden className="absolute inset-0 whitespace-nowrap">
+            {count.format(shown)}
+          </span>
+        )}
+        <span className={cn('block', shown !== null && 'text-transparent')}>{text}</span>
+      </div>
     </>
   );
-  const shell = 'block rounded-lg border border-gray-200 bg-white px-3 py-2.5';
+  const shell = 'block rounded-lg border border-gray-200 bg-surface px-3 py-2.5 transition-[border-color,background-color] duration-(--motion-fast)';
   return allowed(metric.link) ? (
     <Link to={metric.link} data-metric={metric.key} className={`${shell} hover:border-gray-400 hover:bg-gray-50`}>
       {body}
@@ -62,9 +80,10 @@ export function MetricTile({ metric }: { metric: Metric }) {
 
 export function MetricGrid({ title, metrics }: { title: string; metrics: Metric[] }) {
   return (
-    <section aria-label={title} className="space-y-1.5">
+    <section aria-label={title} className="@container space-y-1.5">
       <h2 className="text-sm font-semibold text-gray-900">{title}</h2>
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
+      {/* Sized by the space the grid has (a container query), not the window: it fits beside an open menu too. */}
+      <div className="grid grid-cols-2 gap-2 @xl:grid-cols-3 @5xl:grid-cols-6">
         {metrics.map((m) => (
           <MetricTile key={m.key} metric={m} />
         ))}

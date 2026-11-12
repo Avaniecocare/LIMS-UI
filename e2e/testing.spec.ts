@@ -426,6 +426,38 @@ test('autosave: keeps what is being typed, warns on leaving, and reloads on a co
   await expect(row(page, 'WIDTH')).toContainText('12.75');
 });
 
+test('moving from one test to another in the app saves each entry to its own test', async ({ page }) => {
+  const { sampleTestIds } = await plannedJob(['TENS'], { technician: 'Tushar Technician', samples: 2 });
+  const [first, second] = sampleTestIds;
+  const tech = await apiAs('tech2');
+  for (const id of [first, second]) {
+    const t = await tech.get(`/tests/${id}`);
+    await tech.post(`/tests/${id}/start`, { version: t.version });
+  }
+  await signIn(page, 'tech2');
+  await page.goto(`/my-tests/${first}`);
+  await reading(row(page, 'WIDTH')).fill('11.5');
+  await reading(row(page, 'WIDTH')).blur();
+  await expect(page.getByRole('status').filter({ hasText: 'Saved' })).toBeVisible();
+
+  // In-app navigation, as a scan or a notification link does it: no page load.
+  await page.evaluate((path) => {
+    window.history.pushState({}, '', path);
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  }, `/my-tests/${second}`);
+  await expect(page).toHaveURL(new RegExp(`/my-tests/${second}`));
+  await expect(reading(row(page, 'WIDTH'))).toHaveValue('');
+  const saved = page.waitForResponse((r) => r.url().includes(`/tests/${second}/results`) && r.ok());
+  await reading(row(page, 'WIDTH')).fill('22.5');
+  await reading(row(page, 'WIDTH')).blur();
+  await saved;
+
+  const width = async (id: string) => (await tech.get(`/tests/${id}`)).results.find((r: { code: string }) => r.code === 'WIDTH').numericValue;
+  expect(await width(first)).toMatch(/^11\.5/);
+  expect(await width(second)).toMatch(/^22\.5/);
+  await tech.dispose();
+});
+
 test('an entry the server refuses is shown on its own input, and the rest still saves', async ({ page }) => {
   const { sampleTestIds } = await plannedJob(['TENS'], { technician: 'Tushar Technician' });
   await signIn(page, 'tech2');

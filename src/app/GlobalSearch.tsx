@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Search } from 'lucide-react';
-import { useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
@@ -10,7 +10,7 @@ import { useGlobalScanner } from '@/lib/scanner';
 import { useDebounced } from '@/lib/use-debounced';
 
 /** Numbers-first search in the header. Also takes keyboard-mode barcode scans, from any screen. */
-export function GlobalSearch() {
+export function GlobalSearch({ onDone }: { onDone?: () => void } = {}) {
   const navigate = useNavigate();
   const listId = useId();
   const input = useRef<HTMLInputElement>(null);
@@ -33,6 +33,7 @@ export function GlobalSearch() {
     setText('');
     setActive(-1);
     input.current?.blur();
+    onDone?.();
     navigate(link);
   };
 
@@ -55,6 +56,22 @@ export function GlobalSearch() {
 
   useGlobalScanner((code) => void scan(code));
 
+  // Ctrl+K or Cmd+K from anywhere, and "/" when not typing, jump to search: the fastest way to any record.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const typing = e.target instanceof HTMLElement && (e.target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName));
+      if (((e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === 'k') || (e.key === '/' && !typing && !e.ctrlKey && !e.metaKey)) {
+        if (document.querySelector('[role="dialog"], [role="alertdialog"]')) return;
+        e.preventDefault();
+        input.current?.focus();
+        input.current?.select();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+  const mac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform);
+
   const showList = open && term.length >= 2;
   return (
     <div className="relative max-w-md" onMouseDown={(e) => e.target !== input.current && e.preventDefault()}>
@@ -68,9 +85,10 @@ export function GlobalSearch() {
         aria-controls={listId}
         aria-autocomplete="list"
         aria-activedescendant={showList && active >= 0 ? `${listId}-${active}` : undefined}
+        aria-keyshortcuts="Control+K Meta+K /"
         placeholder="Search or scan a job, sample, report, invoice or customer"
         autoComplete="off"
-        className="h-9 w-full truncate rounded-md border border-gray-300 bg-white pr-2.5 pl-8 text-sm text-gray-900 placeholder:text-gray-500"
+        className="peer h-9 w-full truncate rounded-md border border-gray-300 bg-surface pr-2.5 pl-8 text-sm text-gray-900 transition-[border-color] duration-(--motion-fast) placeholder:text-gray-500 hover:border-gray-400 focus-visible:border-brand-focus md:pr-14 max-md:text-base pointer-coarse:h-11"
         value={text}
         onChange={(e) => {
           setText(e.target.value);
@@ -78,7 +96,10 @@ export function GlobalSearch() {
           setOpen(true);
         }}
         onFocus={() => setOpen(true)}
-        onBlur={() => setOpen(false)}
+        onBlur={() => {
+          setOpen(false);
+          if (!text.trim()) onDone?.();
+        }}
         onKeyDown={(e) => {
           if (e.key === 'ArrowDown') {
             e.preventDefault();
@@ -98,7 +119,10 @@ export function GlobalSearch() {
           }
         }}
       />
-      <div id={listId} role="listbox" aria-label="Search results" hidden={!showList} className="absolute top-10 left-0 z-30 max-h-96 w-full min-w-72 overflow-y-auto rounded-md border border-gray-200 bg-white py-1 shadow-lg">
+      <kbd aria-hidden className="pointer-events-none absolute top-2 right-2 hidden rounded border border-gray-200 bg-gray-50 px-1.5 py-px font-sans text-[11px] text-gray-600 md:block peer-focus:hidden">
+        {mac ? '⌘' : 'Ctrl'} K
+      </kbd>
+      <div id={listId} role="listbox" aria-label="Search results" hidden={!showList} className="absolute top-10 left-0 z-30 max-h-96 w-full min-w-72 animate-pop-in overflow-y-auto rounded-md border border-gray-200 bg-surface-raised py-1 shadow-lg">
         {showList &&
           items.map((r, i) => (
             <button
@@ -108,7 +132,7 @@ export function GlobalSearch() {
               role="option"
               aria-selected={i === active}
               tabIndex={-1}
-              className={cn('flex w-full items-center gap-2 px-2.5 py-1.5 text-left text-[13px]', i === active ? 'bg-gray-100' : 'hover:bg-gray-50')}
+              className={cn('flex w-full items-center gap-2 px-2.5 py-1.5 text-left text-[13px] pointer-coarse:py-3', i === active ? 'bg-gray-100' : 'hover:bg-gray-50')}
               onMouseEnter={() => setActive(i)}
               onClick={() => go(r.link)}
             >

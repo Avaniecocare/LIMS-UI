@@ -1,17 +1,239 @@
 @import 'tailwindcss';
 
-/* Brand colours are set at runtime from GET /public/branding; these are neutral fallbacks. */
+/*
+ * Design tokens. See docs/design-system.md.
+ *
+ * Brand colours come from the lab's branding (GET /public/branding, set on <html> by applyBranding); these are
+ * neutral fallbacks. Components use the semantic tokens below (surface, gray scale, brand, danger), never raw hex,
+ * so light and dark themes follow from this file alone.
+ */
 :root {
   --brand-primary: #334155;
   --brand-accent: #475569;
   --brand-primary-fg: #ffffff;
+  --brand-surface: #f5f6f8;
+  --brand-nav: #f5f6f8;
+  --brand-nav-fg: #111827;
+  --brand-focus: #334155;
+
+  /* Theme-dependent values. Light: tints of the lab's surface colour, as before. */
+  --brand-ui: var(--brand-primary);
+  --brand-ui-fg: var(--brand-primary-fg);
+  --focus-ring: var(--brand-focus);
+  --nav-bg: var(--brand-nav);
+  --nav-fg: var(--brand-nav-fg);
+  --page-bg: color-mix(in srgb, var(--brand-surface) 50%, white);
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --tone-gray-50: color-mix(in srgb, var(--brand-surface) 35%, white);
+  --tone-gray-100: color-mix(in srgb, var(--brand-surface) 70%, white);
+  --tone-gray-200: color-mix(in srgb, var(--brand-surface) 80%, #94a3b8);
+  --tone-gray-300: color-mix(in srgb, var(--brand-surface) 60%, #94a3b8);
+  --tone-gray-500: #5b6472;
+  --overlay: rgb(0 0 0 / 0.4);
+  --highlight: color-mix(in srgb, var(--brand-primary) 14%, transparent);
+  color-scheme: light;
+
+  /* Motion: short and calm. Entering eases out, leaving eases in; the spring is for small pressable things only. */
+  --motion-fast: 140ms;
+  --motion-base: 200ms;
+  --motion-slow: 320ms;
+  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+  /* Room a phone keeps at the bottom for the bottom bar (and the home indicator). */
+  --phone-bottom: calc(3.75rem + env(safe-area-inset-bottom));
+
+  /* Stacking order, lowest to highest. */
+  --z-sticky: 10;
+  --z-nav-backdrop: 30;
+  --z-nav: 40;
+  --z-overlay: 40;
+  --z-modal: 50;
+  --z-popover: 50;
+}
+
+/*
+ * Dark theme: chosen in the user menu (or the system setting when the choice is "System"). Greys are re-mapped so
+ * every existing text-gray-*, bg-gray-*, border-gray-* utility reads correctly; status tints become deep tinted
+ * backgrounds with light text. The brand colour is lightened (in providers.tsx) until it reads on dark surfaces.
+ */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --brand-ui: var(--brand-primary-dark, var(--brand-primary));
+  --brand-ui-fg: var(--brand-primary-dark-fg, var(--brand-primary-fg));
+  --focus-ring: var(--brand-focus-dark, #93c5fd);
+  --nav-bg: var(--brand-nav-dark, #11151b);
+  --nav-fg: var(--brand-nav-dark-fg, #e8ebf0);
+  --page-bg: #0e1116;
+  --surface: #161a21;
+  --surface-raised: #1c212a;
+  --tone-gray-50: #1b2028;
+  --tone-gray-100: #222833;
+  --tone-gray-200: #2d3441;
+  --tone-gray-300: #3b4353;
+  --tone-gray-500: #8d96a7;
+  --overlay: rgb(0 0 0 / 0.6);
+  --highlight: color-mix(in srgb, var(--brand-ui) 22%, transparent);
+
+  --color-gray-400: #566073;
+  --color-gray-600: #a5aebd;
+  --color-gray-700: #bdc4d0;
+  --color-gray-800: #d4d9e1;
+  --color-gray-900: #e9ecf1;
+  --color-gray-950: #f4f5f7;
+
+  --color-red-50: #2b1517;
+  --color-red-100: #3b1b1e;
+  --color-red-200: #5c2629;
+  --color-red-300: #843236;
+  --color-red-600: #f87171;
+  --color-red-700: #fca5a5;
+  --color-red-800: #fecaca;
+  --color-red-900: #fee2e2;
+
+  --color-amber-50: #2a2110;
+  --color-amber-100: #3a2d12;
+  --color-amber-200: #5a4415;
+  --color-amber-300: #7d5e1b;
+  --color-amber-700: #fcd34d;
+  --color-amber-800: #fde68a;
+  --color-amber-900: #fef3c7;
+
+  --color-green-50: #10241a;
+  --color-green-100: #143021;
+  --color-green-200: #1d4a31;
+  --color-green-300: #286843;
+  --color-green-700: #86efac;
+  --color-green-800: #bbf7d0;
+  --color-green-900: #dcfce7;
+
+  --color-blue-50: #111d33;
+  --color-blue-100: #172846;
+  --color-blue-200: #1f3b67;
+  --color-blue-300: #2b508a;
+  --color-blue-700: #93c5fd;
+  --color-blue-800: #bfdbfe;
+  --color-blue-900: #dbeafe;
+
+  --color-purple-100: #2b1b3e;
+  --color-purple-900: #ede0ff;
 }
 
 @theme inline {
-  --color-brand: var(--brand-primary);
-  --color-brand-fg: var(--brand-primary-fg);
+  --color-brand: var(--brand-ui);
+  --color-brand-fg: var(--brand-ui-fg);
+  --color-brand-focus: var(--focus-ring);
   --color-accent-brand: var(--brand-accent);
+  --color-nav: var(--nav-bg);
+  --color-nav-fg: var(--nav-fg);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-page: var(--page-bg);
+  /* Destructive actions keep their deep red in both themes, so white text on them stays readable. */
+  --color-danger: #b91c1c;
+  --color-danger-hover: #991b1b;
+  --color-gray-50: var(--tone-gray-50);
+  --color-gray-100: var(--tone-gray-100);
+  --color-gray-200: var(--tone-gray-200);
+  --color-gray-300: var(--tone-gray-300);
+  --color-gray-500: var(--tone-gray-500);
   --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  --animate-enter: enter var(--motion-base) var(--ease-enter) both;
+  --animate-fade-in: fade-in var(--motion-base) var(--ease-enter) both;
+  --animate-fade-out: fade-out var(--motion-fast) var(--ease-exit) both;
+  --animate-dialog-in: dialog-in var(--motion-base) var(--ease-enter) both;
+  --animate-dialog-out: dialog-out var(--motion-fast) var(--ease-exit) both;
+  --animate-sheet-in: sheet-in var(--motion-slow) var(--ease-enter) both;
+  --animate-sheet-out: sheet-out var(--motion-base) var(--ease-exit) both;
+  --animate-pop-in: pop-in var(--motion-fast) var(--ease-enter) both;
+  --animate-pop-out: pop-out 100ms var(--ease-exit) both;
+  --animate-check: check var(--motion-fast) var(--ease-spring) both;
+  --animate-shake: shake 320ms var(--ease-standard) both;
+  --animate-highlight: highlight 1.6s var(--ease-standard) both;
+  --animate-skeleton: skeleton 1.4s ease-in-out infinite;
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+/* Dialogs are centred with the translate property; these only scale, so the two combine. */
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+@keyframes dialog-out {
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+/* Bottom sheets (dialogs on phones) slide up from the edge and back down. */
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes sheet-out {
+  to {
+    transform: translateY(100%);
+  }
+}
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+}
+@keyframes pop-out {
+  to {
+    opacity: 0;
+    transform: translateY(-2px) scale(0.98);
+  }
+}
+@keyframes check {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+}
+@keyframes shake {
+  20%,
+  60% {
+    transform: translateX(-4px);
+  }
+  40%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+@keyframes highlight {
+  from {
+    background-color: var(--highlight);
+  }
+}
+@keyframes skeleton {
+  50% {
+    opacity: 0.45;
+  }
 }
 
 html,
@@ -22,34 +244,87 @@ body,
 
 body {
   font-size: 14px;
-  color: #111827;
-  background: #f5f6f8;
+  color: var(--color-gray-900);
+  background: var(--page-bg);
   font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* One visible keyboard focus style everywhere (WCAG 2.4.7). */
+/* Sign-in pages: the company's menu colour, shading towards its primary colour. */
+.auth-backdrop {
+  background: linear-gradient(145deg, var(--nav-bg) 0%, color-mix(in srgb, var(--nav-bg) 60%, var(--brand-ui)) 100%);
+}
+
+/* One visible keyboard focus style everywhere (WCAG 2.4.7). --brand-focus is the primary colour
+   darkened until it reaches 3:1 on the page background (WCAG 1.4.11); in dark mode it is lightened instead.
+   The 1px offset puts the ring on the background, not on the control, so that is the contrast that counts. */
 :focus-visible {
-  outline: 2px solid var(--brand-primary);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 1px;
 }
 
+/* Stays visible on whatever colour the side menu uses. */
+aside :focus-visible {
+  outline-color: var(--nav-fg);
+}
+
+/* Hidden labels for screen readers sit at their container's corner, not where they fall in the text, so a label
+   inside a scrolling table can never widen the page. */
+.sr-only {
+  top: 0;
+  left: 0;
+}
+
+/* A field that has just become invalid shakes once, so the eye finds it; the message under it fades in. */
+input[aria-invalid='true'],
+select[aria-invalid='true'],
+textarea[aria-invalid='true'] {
+  animation: var(--animate-shake);
+}
+
+/* Phones: a page with an action bar keeps room for it above the bottom navigation. */
+@media (max-width: 767px) {
+  #main:has([data-page-actions]) {
+    padding-bottom: calc(var(--phone-bottom) + 4.5rem);
+  }
+}
+
+/* A row or card that has just been added or changed. Fades out by itself. */
+.flash-new {
+  animation: var(--animate-highlight);
+}
+
+/* Native date pickers and scrollbars follow the theme through color-scheme; this keeps their icons visible. */
+:root[data-theme='dark'] ::-webkit-calendar-picker-indicator {
+  filter: invert(0.8);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* Progress indicators are the one essential motion: keep them, slowly. */
+  .animate-spin {
+    animation-duration: 1.5s !important;
+    animation-iteration-count: infinite !important;
   }
 }
 
 /* Toast text dark enough for AA on its tinted background; the library's defaults fall short. */
-[data-sonner-toast][data-rich-colors='true'][data-type='success'] {
+:root:not([data-theme='dark']) [data-sonner-toast][data-rich-colors='true'][data-type='success'] {
   color: #14532d !important;
 }
-[data-sonner-toast][data-rich-colors='true'][data-type='error'] {
+:root:not([data-theme='dark']) [data-sonner-toast][data-rich-colors='true'][data-type='error'] {
   color: #7f1d1d !important;
 }
-[data-sonner-toast][data-rich-colors='true'][data-type='warning'] {
+:root:not([data-theme='dark']) [data-sonner-toast][data-rich-colors='true'][data-type='warning'] {
   color: #713f12 !important;
 }
-[data-sonner-toast][data-rich-colors='true'][data-type='info'] {
+:root:not([data-theme='dark']) [data-sonner-toast][data-rich-colors='true'][data-type='info'] {
   color: #1e3a8a !important;
 }

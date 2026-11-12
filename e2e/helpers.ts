@@ -2,14 +2,15 @@ import { expect, request, type Page } from '@playwright/test';
 
 export const DEMO_PASSWORD = process.env.E2E_PASSWORD ?? 'Demo-Password-1!';
 
-const RATE_LIMIT_WAIT_MS = 61_000;
+export const RATE_LIMIT_WAIT_MS = 61_000;
 
 export async function signIn(page: Page, user: string) {
   await page.context().clearCookies();
   await page.goto('/login');
   await page.getByLabel('Email').fill(`${user}@demo.example`);
   await page.getByLabel('Password').fill(DEMO_PASSWORD);
-  const main = page.getByRole('navigation', { name: 'Main' });
+  // The side menu on a computer, the bottom bar on a phone.
+  const main = page.getByRole('navigation', { name: 'Main' }).or(page.getByRole('navigation', { name: 'Quick' })).first();
   const limited = page.getByRole('alert').filter({ hasText: 'Too many attempts' });
   await page.getByRole('button', { name: 'Sign in' }).click();
   // The API limits sign-ins per address per minute, successful ones included, and these tests sign in a lot.
@@ -47,6 +48,8 @@ async function openApiSession(user: string) {
   }
   expect(login.ok(), `sign in as ${user}`).toBeTruthy();
   const { user: session } = await login.json();
+  // Set-up calls may change roles or users, which need the password confirmed within the session.
+  await context.post('/api/v1/auth/confirm-password', { data: { password: DEMO_PASSWORD }, headers: { 'x-csrf-token': session.csrfToken } });
   const call = async (method: 'GET' | 'POST' | 'PUT' | 'PATCH', path: string, data?: unknown) => {
     const res = await context.fetch(`/api/v1${path}`, { method, data: data as never, headers: { 'x-csrf-token': session.csrfToken } });
     const text = await res.text();
@@ -86,7 +89,7 @@ export async function plannedJob(testCodes: string[], opts: { description?: stri
 }
 
 /** Takes a planned job with one Density test through to an issued report, for tests about what comes after. */
-export async function issuedJob(opts: { customerId?: string; density?: string } = {}) {
+export async function issuedJob(opts: { customerId?: string; density?: string; until?: 'draft' } = {}) {
   const planned = await plannedJob(['DEN'], { customerId: opts.customerId });
   const id = planned.sampleTestIds[0];
   const tech = await apiAs('tech');
@@ -106,6 +109,7 @@ export async function issuedJob(opts: { customerId?: string; density?: string } 
   const reviewer = await apiAs('reviewer');
   const reportId = (await reviewer.get(`/reports?q=${encodeURIComponent(planned.sample.sampleNo)}`)).data[0].id as string;
   let report = await reviewer.get(`/reports/${reportId}`);
+  if (opts.until === 'draft') return { ...planned, reportId, reportNo: report.reportNo as string };
   report = await reviewer.post(`/reports/${reportId}/submit`, { version: latest(report).version });
   report = await reviewer.post(`/reports/${reportId}/pass-review`, { version: latest(report).version });
   await reviewer.dispose();
@@ -119,7 +123,7 @@ export async function issuedJob(opts: { customerId?: string; density?: string } 
 }
 
 /** A new customer in the lab's own state, so nothing a test does touches anyone else's balances. */
-export async function freshCustomer(opts: { email?: string | null } = {}) {
+export async function freshCustomer(opts: { email?: string | null; phone?: string } = {}) {
   const admin = await apiAs('admin');
   const company = await admin.get('/admin/company');
   await admin.dispose();
@@ -131,7 +135,7 @@ export async function freshCustomer(opts: { email?: string | null } = {}) {
     stateCode: company.gstStateCode,
     creditDays: 30,
     withholdReportUntilPaid: false,
-    contacts: opts.email === null ? [] : [{ name: 'Bina Buyer', email: opts.email ?? 'buyer@customer.example', isPrimary: true }],
+    contacts: opts.email === null ? [] : [{ name: 'Bina Buyer', email: opts.email ?? 'buyer@customer.example', ...(opts.phone ? { phone: opts.phone } : {}), isPrimary: true }],
     addresses: [
       { kind: 'BILLING', line1: '1 Example Road', city: 'Exampleville', stateName: company.stateName, stateCode: company.gstStateCode },
       { kind: 'REPORT', line1: '1 Example Road', city: 'Exampleville', stateName: company.stateName, stateCode: company.gstStateCode },

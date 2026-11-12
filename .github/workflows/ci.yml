@@ -7,25 +7,36 @@ on:
 permissions:
   contents: read
 env:
-  # Pinned backend image the end-to-end test runs against.
+  # Backend image the end-to-end test runs against: the repository variable LIMS_PINNED_VERSION
+  # (an exact release, e.g. 0.1.0) when set, otherwise :main, which LIMS CI publishes on every
+  # push to its main branch.
   LIMS_IMAGE: ghcr.io/avaniecocare/lims:${{ vars.LIMS_PINNED_VERSION || 'main' }}
 jobs:
   gitleaks:
     runs-on: ubuntu-latest
+    env:
+      # The gitleaks CLI itself (MIT), not gitleaks-action, which needs a paid licence on org repos.
+      GITLEAKS_VERSION: 8.30.1
+      GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb # linux_x64 tarball
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with: { fetch-depth: 0 }
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITLEAKS_ENABLE_COMMENTS: false
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install gitleaks (pinned, checksum verified)
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/gitleaks.tar.gz" "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          echo "${GITLEAKS_SHA256}  $RUNNER_TEMP/gitleaks.tar.gz" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/gitleaks.tar.gz" -C "$RUNNER_TEMP" gitleaks
+      - name: Scan the full history
+        run: '"$RUNNER_TEMP/gitleaks" git --redact --verbose --exit-code 1 .'
   verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with: { node-version: 24, cache: npm }
       - run: npm ci
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run api:check
@@ -42,14 +53,17 @@ jobs:
       E2E_BASE_URL: http://localhost:5173
       E2E_API_URL: http://localhost:3000
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with: { node-version: 24, cache: npm }
-      - uses: docker/login-action@v3
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Pull the backend image
+        run: |
+          docker pull "$LIMS_IMAGE" || { echo "::error::Cannot pull $LIMS_IMAGE. Push LIMS to main (publishes :main) or set the LIMS_PINNED_VERSION repository variable to a published release."; exit 1; }
       - name: Start the pinned backend
         run: docker compose -f e2e/docker-compose.ci.yml up -d --wait
       - name: Load the demo data
@@ -65,7 +79,7 @@ jobs:
       - name: Backend logs
         if: failure()
         run: docker compose -f e2e/docker-compose.ci.yml logs --no-color --tail=300 api worker
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: failure()
         with:
           name: playwright-report
@@ -75,28 +89,31 @@ jobs:
           retention-days: 14
   image:
     if: github.event_name == 'push'
-    needs: [gitleaks, verify]
+    # Publish only what passed the end-to-end run too.
+    needs: [gitleaks, verify, e2e]
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/login-action@v3
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/metadata-action@v5
+      - uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
         id: meta
         with:
           images: ghcr.io/avaniecocare/lims-ui
           tags: |
             type=semver,pattern={{version}}
             type=sha,format=long
-      - uses: docker/build-push-action@v6
+      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
         with:
           context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

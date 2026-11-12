@@ -9,7 +9,7 @@ import type { components } from '@/api/schema';
 import { useSession } from '@/app/providers';
 import { DataTable, type Col } from '@/components/DataTable';
 import { useLookups } from '@/components/pickers';
-import { DateRangeFilter, DocumentButton, RowActions, SavedFilters, SearchBox } from '@/components/shared';
+import { DateRangeFilter, DocumentButton, RowActions, SavedFilters, SearchBox, MobileFilters } from '@/components/shared';
 import { Badge, Button, Checkbox, ConfirmDialog, Dialog, Field, Input, PageHeader, Select, Tabs, TabsContent, TabsList, TabsTrigger, Textarea } from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
 import { formatDate, humanize, todayIso } from '@/lib/format';
@@ -87,7 +87,7 @@ function RecordDialog({ job, onClose }: { job: Pending | null; onClose: () => vo
             }
           })}
         >
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-4 md:grid-cols-2">
             <fieldset className="space-y-1.5">
               <legend className="text-[13px] font-semibold text-gray-900">Reports</legend>
               {!job.reports.length && <p className="text-[13px] text-gray-700">No issued reports are waiting to go.</p>}
@@ -113,7 +113,7 @@ function RecordDialog({ job, onClose }: { job: Pending | null; onClose: () => vo
               {problem}
             </p>
           )}
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-3 md:grid-cols-2">
             <Field label="Dispatch date" htmlFor="d-date" required error={e.dispatchDate?.message}>
               <Input id="d-date" type="date" aria-invalid={!!e.dispatchDate} {...form.register('dispatchDate')} />
             </Field>
@@ -132,7 +132,7 @@ function RecordDialog({ job, onClose }: { job: Pending | null; onClose: () => vo
                 <Field label="Courier name" htmlFor="d-courier" required error={e.courierName?.message}>
                   <Input id="d-courier" aria-invalid={!!e.courierName} {...form.register('courierName')} />
                 </Field>
-                <Field label="Docket no." htmlFor="d-docket" required error={e.docketNo?.message}>
+                <Field label="Docket no." htmlFor="d-docket" required error={e.docketNo?.message} hint="The courier's tracking or consignment number.">
                   <Input id="d-docket" aria-invalid={!!e.docketNo} {...form.register('docketNo')} />
                 </Field>
               </>
@@ -228,7 +228,9 @@ function PendingTab() {
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
         <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search job" label="Search jobs waiting to go" />
+        <MobileFilters filters={list.filters} onClear={list.clearFilters}>
         <SavedFilters screen="dispatch-pending" current={list.allParams} onApply={list.applyFilters} />
+        </MobileFilters>
       </div>
       <DataTable ariaLabel="Jobs waiting to go" columns={columns} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} getRowId={(j) => j.jobId} renderExpanded={() => null} emptyTitle="Nothing is waiting to go out" />
       <RecordDialog job={recording} onClose={() => setRecording(null)} />
@@ -282,8 +284,10 @@ function DispatchesTab() {
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
         <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search dispatch, docket or job" label="Search dispatches" />
+        <MobileFilters filters={list.filters} onClear={list.clearFilters}>
         <DateRangeFilter label="Dispatch date" from={list.filters.from ?? ''} to={list.filters.to ?? ''} onChange={list.setFilter} />
         <SavedFilters screen="dispatches" current={list.allParams} onApply={list.applyFilters} />
+        </MobileFilters>
       </div>
       <DataTable ariaLabel="Dispatches" columns={columns} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} sort={list.sort} onSortChange={list.setSort} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} getRowId={(d) => d.id} renderExpanded={() => null} emptyTitle="No dispatches found" />
     </div>
@@ -420,6 +424,7 @@ function ReturnablesTab() {
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
         <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search sample or job" label="Search returnable samples" />
+        <MobileFilters filters={list.filters} onClear={list.clearFilters}>
         <Select aria-label="Which samples" className="w-44" value={list.filters.view ?? 'pending'} onChange={(e) => list.setFilter('view', e.target.value === 'pending' ? null : e.target.value)}>
           {VIEWS.map((v) => (
             <option key={v.value} value={v.value}>
@@ -428,6 +433,7 @@ function ReturnablesTab() {
           ))}
         </Select>
         <SavedFilters screen="dispatch-returnables" current={list.allParams} onApply={list.applyFilters} />
+        </MobileFilters>
       </div>
       <DataTable ariaLabel="Returnable samples" columns={columns} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} sort={list.sort} onSortChange={list.setSort} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} getRowId={(s) => s.id} emptyTitle="No samples here" />
       <ReturnDialog sample={returning} onClose={() => setReturning(null)} />

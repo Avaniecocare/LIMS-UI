@@ -5,6 +5,8 @@ import { toast } from 'sonner';
 import { useSession } from '@/app/providers';
 import { Button, Card, CardHeader, Checkbox, ErrorState, Field, Input, PageHeader, Spinner } from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
+import { MyProblemsCard } from '@/features/quality/ReportProblem';
+import { MyAccessRequestsCard, SessionsCard, SignInHistoryCard } from './SecuritySections';
 import { toastError } from '@/lib/forms';
 
 function ChangePassword() {
@@ -135,7 +137,7 @@ function EmailPreferences() {
       <div className="p-4">
         {q.isLoading && <Spinner />}
         {q.error && <ErrorState error={q.error} onRetry={q.refetch} />}
-        <div className="grid gap-2 sm:grid-cols-2">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-2 sm:grid-cols-2">
           {q.data?.map((p) => (
             <div key={p.type}>
               <Checkbox id={`pref-${p.type}`} label={p.label} checked={p.email} disabled={m.isPending} onCheckedChange={(v) => m.mutate({ type: p.type, email: !!v })} />
@@ -152,10 +154,14 @@ export default function AccountPage() {
   return (
     <>
       <PageHeader title="My account" description={`${user?.name} · ${user?.email}`} />
-      <div className="grid max-w-4xl gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] max-w-4xl gap-4 md:grid-cols-2">
         <ChangePassword />
         <TwoFactor />
         <EmailPreferences />
+        <SignInHistoryCard />
+        <SessionsCard />
+        <MyAccessRequestsCard />
+        <MyProblemsCard />
       </div>
     </>
   );

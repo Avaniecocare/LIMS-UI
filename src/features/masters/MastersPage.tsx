@@ -1,11 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus, Trash2 } from 'lucide-react';
-import { useMemo, useRef, useState, type ReactNode } from 'react';
-import { useForm } from 'react-hook-form';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useForm, useWatch, type UseFormReturn } from 'react-hook-form';
 import { useParams, useNavigate, NavLink } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import type { paths } from '@/api/schema';
 import { useSession } from '@/app/providers';
 import { DataTable, type Col } from '@/components/DataTable';
 import { Attachments, DocumentButton, HistoryList, SearchBox } from '@/components/shared';
@@ -14,10 +15,40 @@ import { api, uploadFile, unwrap } from '@/lib/api';
 import { cn, formatDate, formatINR } from '@/lib/format';
 import { applyServerErrors, toastError } from '@/lib/forms';
 import { useListState } from '@/lib/use-list-state';
+import { fetchAllPages } from '@/lib/fetch-all';
+import { useCloseGuard, useLeaveGuard } from '@/lib/use-leave-guard';
 
-/* The master screens share one implementation; the record shape differs per master, so rows are loosely typed here and validated by the server. */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Row = any;
+/*
+ * The master screens share one implementation driven by the MASTERS configuration below.
+ * Typing works in two layers:
+ *  - Each master is declared with defineMaster<K>(), where K must be a CRUD master in the generated
+ *    contract (`/api/v1/masters/{K}/{id}` exists) and its columns, option labels and nested editor are
+ *    checked against that master's DTO. A renamed endpoint or field is a compile error there.
+ *  - The generic screen (list, form, save) then works on a plain record (Row) and the form's values are
+ *    validated by the server, as their shape depends on the configuration.
+ */
+type MasterKey = { [P in keyof paths]: P extends `/api/v1/masters/${infer K}/{id}` ? K : never }[keyof paths];
+type ListResponse<K extends MasterKey> = `/api/v1/masters/${K}` extends infer P extends keyof paths ? (paths[P] extends { get: { responses: { 200: { content: { 'application/json': infer R } } } } } ? R : never) : never;
+/** One record of master K as the list endpoint returns it. */
+type MasterRecord<K extends MasterKey> = ListResponse<K> extends { data: (infer T)[] } ? T : never;
+/** A record of any master, as the generic screen sees it. */
+type Row = { id: string; version?: number; isActive?: boolean } & Record<string, unknown>;
+type FormValues = Record<string, unknown>;
+type Page = { data: Row[]; meta: { page: number; pageSize: number; total: number; totalPages: number } };
+
+/**
+ * The one place master calls are made with a path built from configuration. openapi-fetch cannot type a
+ * path chosen at run time, so the client is viewed loosely here; MasterKey keeps the paths honest.
+ */
+type LooseCall = (path: string, init: object) => Promise<{ data?: unknown }>;
+const loose = api as unknown as { GET: LooseCall; POST: LooseCall; PATCH: LooseCall; DELETE: LooseCall };
+const masterApi = {
+  list: async (key: MasterKey, query: Record<string, unknown>) => (await loose.GET(`/api/v1/masters/${key}`, { params: { query } })).data as Page,
+  create: async (key: MasterKey, body: object) => (await loose.POST(`/api/v1/masters/${key}`, { body })).data as Row,
+  update: async (key: MasterKey, id: string, body: object) => (await loose.PATCH(`/api/v1/masters/${key}/{id}`, { params: { path: { id } }, body })).data as Row,
+  remove: async (key: MasterKey, id: string) => loose.DELETE(`/api/v1/masters/${key}/{id}`, { params: { path: { id } } }),
+  history: async (key: MasterKey, id: string) => (await loose.GET(`/api/v1/masters/${key}/{id}/history`, { params: { path: { id } } })).data as Parameters<typeof HistoryList>[0]['entries'],
+};
 
 type FieldDef = {
   name: string;
@@ -25,15 +56,35 @@ type FieldDef = {
   type?: 'text' | 'number' | 'date' | 'checkbox' | 'textarea' | 'select';
   required?: boolean;
   options?: { value: string; label: string }[];
-  /** options come from another master */
-  source?: { master: string; label: (r: Row) => string; query?: Record<string, string> };
+  /** options come from another master: build with sourceOf() */
+  source?: Source;
   hint?: string;
-  showIf?: (values: Row) => boolean;
+  showIf?: (values: FormValues) => boolean;
   default?: unknown;
 };
 
+type Source = { master: MasterKey; label: (r: Row) => string; query?: Record<string, string> };
+
+/** Options from another master, labelled from that master's own (typed) record. */
+function sourceOf<S extends MasterKey>(master: S, label: (r: MasterRecord<S>) => string, query?: Record<string, string>): Source {
+  return { master, label: label as unknown as (r: Row) => string, query };
+}
+
+type ExtraProps<K extends MasterKey> = { value: Partial<MasterRecord<K>>; onChange: (patch: Record<string, unknown>) => void; record: MasterRecord<K> | null };
+
+type TypedConfig<K extends MasterKey> = Omit<MasterConfig, 'key' | 'columns' | 'extra'> & {
+  key: K;
+  columns: Col<MasterRecord<K>>[];
+  extra?: (props: ExtraProps<K>) => ReactNode;
+};
+
+/** Checks one master's configuration against its DTO, then hands it to the generic screen. */
+function defineMaster<K extends MasterKey>(cfg: TypedConfig<K>): MasterConfig {
+  return cfg as unknown as MasterConfig;
+}
+
 type MasterConfig = {
-  key: string;
+  key: MasterKey;
   label: string;
   edit: string;
   view: string;
@@ -42,38 +93,42 @@ type MasterConfig = {
   columns: Col<Row>[];
   fields: FieldDef[];
   /** nested editor shown below the fields */
-  extra?: (props: { value: Row; onChange: (patch: Row) => void; record: Row | null }) => ReactNode;
+  extra?: (props: { value: Row; onChange: (patch: Record<string, unknown>) => void; record: Row | null }) => ReactNode;
   filters?: FieldDef[];
 };
 
-const col = (accessorKey: string, header: string, sortable = false): Col<Row> => ({ accessorKey, header, enableSorting: sortable, id: accessorKey });
-const dateCol = (key: string, header: string, sortable = false): Col<Row> => ({ id: key, header, enableSorting: sortable, cell: ({ row }) => formatDate(row.original[key]) });
+const col = <T,>(accessorKey: keyof T & string, header: string, sortable = false): Col<T> => ({ accessorKey, header, enableSorting: sortable, id: accessorKey }) as Col<T>;
+const dateCol = <T,>(key: { [F in keyof T]: T[F] extends string | null ? F : never }[keyof T] & string, header: string, sortable = false): Col<T> => ({ id: key, header, enableSorting: sortable, cell: ({ row }) => formatDate(row.original[key] as string | null) });
 const activeCol: Col<Row> = { id: 'isActive', header: 'Status', cell: ({ row }) => <Badge tone={row.original.isActive ? 'green' : 'gray'}>{row.original.isActive ? 'Active' : 'Inactive'}</Badge> };
 const CODE_NAME: FieldDef[] = [
   { name: 'code', label: 'Code', required: true },
   { name: 'name', label: 'Name', required: true },
 ];
-const testSource = { master: 'tests', label: (r: Row) => `${r.code} — ${r.name}` };
-const unitSource = { master: 'units', label: (r: Row) => `${r.name} (${r.symbol})` };
-const deptSource = { master: 'departments', label: (r: Row) => r.name };
+const testSource = sourceOf('tests', (r) => `${r.code} — ${r.name}`);
+const unitSource = sourceOf('units', (r) => `${r.name} (${r.symbol})`);
+const deptSource = sourceOf('departments', (r) => r.name);
 
-// Generic GET against a master; the path is built from configuration, not hand-written types.
-const listMaster = async (master: string, query: Record<string, unknown>) => unwrap(await (api.GET as (p: string, o: object) => Promise<{ data?: { data: Row[]; meta: Row } }>)(`/api/v1/masters/${master}`, { params: { query } }));
-
-function useOptions(source?: FieldDef['source']) {
+/** Every record of a master (all pages), so a select never silently stops at the first 200. */
+function useMasterRecords<S extends MasterKey>(master: S | null, query?: Record<string, string>) {
   return useQuery({
-    queryKey: ['master-options', source?.master, source?.query],
-    enabled: !!source,
+    queryKey: ['master-options', master ?? undefined, query],
+    enabled: !!master,
     staleTime: 60_000,
-    queryFn: async () => (await listMaster(source!.master, { pageSize: 200, ...source!.query })).data,
+    queryFn: async () => (await fetchAllPages((page) => masterApi.list(master!, { ...query, page, pageSize: 200 }))) as unknown as MasterRecord<S>[],
   });
 }
 
-function FieldInput({ def, form }: { def: FieldDef; form: ReturnType<typeof useForm<Row>> }) {
+function useOptions(source?: Source) {
+  const q = useMasterRecords(source?.master ?? null, source?.query);
+  return q as typeof q & { data: Row[] | undefined };
+}
+
+function FieldInput({ def, form }: { def: FieldDef; form: UseFormReturn<FormValues> }) {
   const options = useOptions(def.source);
   const id = `f-${def.name}`;
   const error = (form.formState.errors[def.name]?.message as string | undefined) ?? undefined;
-  const values = form.watch();
+  // Only fields with a condition, or checkboxes, need to follow values as they change.
+  const values = useWatch({ control: form.control, disabled: !def.showIf && def.type !== 'checkbox' }) as FormValues;
   if (def.showIf && !def.showIf(values)) return null;
   if (def.type === 'checkbox') {
     return (
@@ -123,8 +178,8 @@ const toFormValue = (f: FieldDef, v: unknown) => {
   return v === null || v === undefined ? (f.default ?? '') : String(v);
 };
 
-const toPayload = (cfg: MasterConfig, values: Row, record: Row | null, extra: Row) => {
-  const out: Row = {};
+const toPayload = (cfg: MasterConfig, values: FormValues, record: Row | null, extra: Record<string, unknown>) => {
+  const out: Record<string, unknown> = {};
   for (const f of cfg.fields) {
     const v = values[f.name];
     if (f.showIf && !f.showIf(values)) continue;
@@ -140,44 +195,47 @@ const toPayload = (cfg: MasterConfig, values: Row, record: Row | null, extra: Ro
   return { ...out, ...extra };
 };
 
-function MasterForm({ cfg, record, onDone }: { cfg: MasterConfig; record: Row | null; onDone: () => void }) {
+function MasterForm({ cfg, record, onDone, onDirtyChange }: { cfg: MasterConfig; record: Row | null; onDone: () => void; onDirtyChange: (dirty: boolean) => void }) {
   const client = useQueryClient();
   const initial = useMemo(() => {
-    const v: Row = { isActive: record?.isActive ?? true };
+    const v: FormValues = { isActive: record?.isActive ?? true };
     for (const f of cfg.fields) v[f.name] = toFormValue(f, record?.[f.name]);
     return v;
   }, [cfg, record]);
-  const form = useForm<Row>({ resolver: zodResolver(schemaFor(cfg)) as never, defaultValues: initial });
-  const [extra, setExtra] = useState<Row>({});
+  const form = useForm<FormValues>({ resolver: zodResolver(schemaFor(cfg)), defaultValues: initial });
+  const [extra, setExtra] = useState<Record<string, unknown>>({});
+  const dirty = form.formState.isDirty || Object.keys(extra).length > 0;
+  useEffect(() => onDirtyChange(dirty), [dirty, onDirtyChange]);
   const m = useMutation({
-    mutationFn: async (values: Row) => {
+    mutationFn: (values: FormValues) => {
       const body = toPayload(cfg, values, record, extra);
-      const res = record
-        ? await (api.PATCH as (p: string, o: object) => Promise<{ data?: Row }>)(`/api/v1/masters/${cfg.key}/{id}`, { params: { path: { id: record.id } }, body })
-        : await (api.POST as (p: string, o: object) => Promise<{ data?: Row }>)(`/api/v1/masters/${cfg.key}`, { body });
-      return res.data;
+      return record ? masterApi.update(cfg.key, record.id, body) : masterApi.create(cfg.key, body);
     },
     onSuccess: () => {
       client.invalidateQueries({ queryKey: ['master', cfg.key] });
       client.invalidateQueries({ queryKey: ['master-options'] });
+      // Pickers elsewhere (quotation, booking, planning) keep their own copies of tests and lookups.
+      client.invalidateQueries({ queryKey: ['test-options'] });
+      client.invalidateQueries({ queryKey: ['lookups'] });
       toast.success(`${cfg.label}: saved`);
+      onDirtyChange(false);
       onDone();
     },
     onError: (e) => applyServerErrors(e, form.setError, cfg.fields.map((f) => f.name)),
   });
   return (
     <form className="space-y-4" onSubmit={form.handleSubmit((v) => m.mutate(v))} noValidate>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2">
         {cfg.fields.map((f) => (
           <FieldInput key={f.name} def={f} form={form} />
         ))}
         {record && (
           <div className="pt-6">
-            <Checkbox id="f-isActive" label="Active" checked={!!form.watch('isActive')} onCheckedChange={(v) => form.setValue('isActive', !!v)} />
+            <Checkbox id="f-isActive" label="Active" checked={!!form.watch('isActive')} onCheckedChange={(v) => form.setValue('isActive', !!v, { shouldDirty: true })} />
           </div>
         )}
       </div>
-      {cfg.extra?.({ value: { ...record, ...extra }, onChange: (p) => setExtra((e: Row) => ({ ...e, ...p })), record })}
+      {cfg.extra?.({ value: { ...record, ...extra } as Row, onChange: (p) => setExtra((e) => ({ ...e, ...p })), record })}
       <div className="flex justify-end">
         <Button type="submit" loading={m.isPending}>
           Save
@@ -242,22 +300,23 @@ function ImportButton({ cfg }: { cfg: MasterConfig }) {
   );
 }
 
-function Editor({ cfg, record, onDone }: { cfg: MasterConfig; record: Row | null; onDone: () => void }) {
+function Editor({ cfg, record, onDone, onDirtyChange }: { cfg: MasterConfig; record: Row | null; onDone: () => void; onDirtyChange: (dirty: boolean) => void }) {
   const [tab, setTab] = useState('details');
   const history = useQuery({
     queryKey: ['master-history', cfg.key, record?.id],
     enabled: !!record && tab === 'history',
-    queryFn: async () => (await (api.GET as (p: string, o: object) => Promise<{ data?: Row }>)(`/api/v1/masters/${cfg.key}/{id}/history`, { params: { path: { id: record.id } } })).data,
+    queryFn: () => masterApi.history(cfg.key, record!.id),
   });
-  if (!record) return <MasterForm cfg={cfg} record={null} onDone={onDone} />;
+  if (!record) return <MasterForm cfg={cfg} record={null} onDone={onDone} onDirtyChange={onDirtyChange} />;
   return (
     <Tabs value={tab} onValueChange={setTab}>
       <TabsList className="mb-3">
         <TabsTrigger value="details">Details</TabsTrigger>
         <TabsTrigger value="history">History</TabsTrigger>
       </TabsList>
-      <TabsContent value="details">
-        <MasterForm cfg={cfg} record={record} onDone={onDone} />
+      {/* Kept mounted so typed changes (and the unsaved-changes warning) survive a look at History. */}
+      <TabsContent value="details" forceMount className="data-[state=inactive]:hidden">
+        <MasterForm cfg={cfg} record={record} onDone={onDone} onDirtyChange={onDirtyChange} />
         {cfg.key === 'instruments' && (
           <div className="mt-4 border-t border-gray-200 pt-3">
             <Attachments entity="Instrument" entityId={record.id} category="certificate" title="Calibration certificates" canEdit />
@@ -276,12 +335,23 @@ function MasterScreen({ cfg }: { cfg: MasterConfig }) {
   const canEdit = can(cfg.edit);
   const [editing, setEditing] = useState<Row | 'new' | null>(null);
   const [deleting, setDeleting] = useState<Row | null>(null);
-  const q = useQuery({ queryKey: ['master', cfg.key, list.query], queryFn: () => listMaster(cfg.key, list.query) });
+  // Unsaved changes in the open record: closing the dialog or leaving the page asks first.
+  const [dirty, setDirty] = useState(false);
+  const guard = useLeaveGuard(!!editing && dirty);
+  const closeEditor = () => {
+    setDirty(false);
+    setEditing(null);
+  };
+  const closeGuard = useCloseGuard(dirty, closeEditor);
+  const q = useQuery({ queryKey: ['master', cfg.key, list.query], queryFn: () => masterApi.list(cfg.key, list.query) });
   const del = useMutation({
-    mutationFn: async (id: string) => (api.DELETE as (p: string, o: object) => Promise<unknown>)(`/api/v1/masters/${cfg.key}/{id}`, { params: { path: { id } } }),
+    mutationFn: (id: string) => masterApi.remove(cfg.key, id),
     onSuccess: () => {
       setDeleting(null);
       client.invalidateQueries({ queryKey: ['master', cfg.key] });
+      client.invalidateQueries({ queryKey: ['master-options'] });
+      client.invalidateQueries({ queryKey: ['test-options'] });
+      client.invalidateQueries({ queryKey: ['lookups'] });
     },
     onError: (e) => {
       setDeleting(null);
@@ -301,7 +371,7 @@ function MasterScreen({ cfg }: { cfg: MasterConfig }) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  aria-label={`Delete ${row.original.code ?? row.original.name ?? 'record'}`}
+                  aria-label={`Delete ${String(row.original.code ?? row.original.name ?? 'record')}`}
                   onClick={(e) => {
                     e.stopPropagation();
                     setDeleting(row.original);
@@ -337,25 +407,36 @@ function MasterScreen({ cfg }: { cfg: MasterConfig }) {
         </div>
       </div>
       <DataTable ariaLabel={cfg.label} columns={columns} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} sort={list.sort} onSortChange={list.setSort} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} onRowClick={setEditing} getRowId={(r) => r.id} />
-      <Dialog wide open={!!editing} onOpenChange={(o) => !o && setEditing(null)} title={editing === 'new' ? `Add to ${cfg.label}` : `Edit ${editing?.code ?? editing?.name ?? ''}`}>
-        {editing && <Editor key={editing === 'new' ? 'new' : editing.id} cfg={cfg} record={editing === 'new' ? null : editing} onDone={() => setEditing(null)} />}
+      <Dialog
+        wide
+        open={!!editing}
+        onOpenChange={(o) => {
+          if (!o) closeGuard.requestClose();
+        }}
+        title={editing === 'new' ? `Add to ${cfg.label}` : `Edit ${String(editing?.code ?? editing?.name ?? '')}`}
+      >
+        {editing && <Editor key={editing === 'new' ? 'new' : editing.id} cfg={cfg} record={editing === 'new' ? null : editing} onDone={closeEditor} onDirtyChange={setDirty} />}
       </Dialog>
+      {closeGuard.dialog}
+      {guard.dialog}
       <ConfirmDialog open={!!deleting} onOpenChange={(o) => !o && setDeleting(null)} title="Delete this record?" description="Records already in use can only be deactivated." confirmLabel="Delete" danger loading={del.isPending} onConfirm={() => deleting && del.mutate(deleting.id)} />
     </div>
   );
 }
 
 // ------------------------------------------------------------------ nested editors
-function LimitsEditor({ value, onChange }: { value: Row; onChange: (p: Row) => void }) {
-  const [limits, setLimits] = useState<Row[]>(() => (value.limits ?? []).map((l: Row) => ({ parameterId: l.parameterId, testId: l.testId, parameterName: l.parameterName, minValue: l.minValue ?? '', maxValue: l.maxValue ?? '', textLimit: l.textLimit ?? '' })));
+type LimitDraft = { parameterId: string; parameterName: string; minValue: string; maxValue: string; textLimit: string };
+
+function LimitsEditor({ value, onChange }: ExtraProps<'specifications'>) {
+  const [limits, setLimits] = useState<LimitDraft[]>(() => (value.limits ?? []).map((l) => ({ parameterId: l.parameterId, parameterName: l.parameterName, minValue: l.minValue ?? '', maxValue: l.maxValue ?? '', textLimit: l.textLimit ?? '' })));
   const [testId, setTestId] = useState('');
-  const tests = useOptions(testSource);
-  const params = useOptions(testId ? { master: 'test-parameters', label: (r: Row) => r.name, query: { testId, pageSize: '200' } } : undefined);
-  const push = (next: Row[]) => {
+  const tests = useMasterRecords('tests');
+  const params = useMasterRecords(testId ? 'test-parameters' : null, { testId });
+  const push = (next: LimitDraft[]) => {
     setLimits(next);
     onChange({ limits: next.map((l) => ({ parameterId: l.parameterId, minValue: l.minValue || undefined, maxValue: l.maxValue || undefined, textLimit: l.textLimit || undefined })) });
   };
-  const set = (i: number, patch: Row) => push(limits.map((l, n) => (n === i ? { ...l, ...patch } : l)));
+  const set = (i: number, patch: Partial<LimitDraft>) => push(limits.map((l, n) => (n === i ? { ...l, ...patch } : l)));
   return (
     <fieldset className="space-y-2 border-t border-gray-200 pt-3">
       <legend className="text-[13px] font-semibold">Parameter limits</legend>
@@ -427,10 +508,12 @@ function LimitsEditor({ value, onChange }: { value: Row; onChange: (p: Row) => v
   );
 }
 
-function GroupItemsEditor({ value, onChange }: { value: Row; onChange: (p: Row) => void }) {
-  const tests = useOptions(testSource);
-  const [items, setItems] = useState<Row[]>(value.items ?? []);
-  const push = (next: Row[]) => {
+type GroupItemDraft = { testId: string; testCode: string; testName: string; parameterId?: string | null };
+
+function GroupItemsEditor({ value, onChange }: ExtraProps<'test-groups'>) {
+  const tests = useMasterRecords('tests');
+  const [items, setItems] = useState<GroupItemDraft[]>(value.items ?? []);
+  const push = (next: GroupItemDraft[]) => {
     setItems(next);
     onChange({ items: next.map((x) => ({ testId: x.testId, parameterId: x.parameterId ?? undefined })) });
   };
@@ -467,9 +550,11 @@ function GroupItemsEditor({ value, onChange }: { value: Row; onChange: (p: Row) 
   );
 }
 
-function ResultOptionsEditor({ value, onChange }: { value: Row; onChange: (p: Row) => void }) {
-  const [options, setOptions] = useState<Row[]>(value.options ?? []);
-  const push = (next: Row[]) => {
+type ResultOptionDraft = { value: string; isPass: boolean | null };
+
+function ResultOptionsEditor({ value, onChange }: ExtraProps<'result-sets'>) {
+  const [options, setOptions] = useState<ResultOptionDraft[]>(value.options ?? []);
+  const push = (next: ResultOptionDraft[]) => {
     setOptions(next);
     onChange({ options: next.map((o) => ({ value: o.value, isPass: o.isPass ?? undefined })) });
   };
@@ -496,7 +581,7 @@ function ResultOptionsEditor({ value, onChange }: { value: Row; onChange: (p: Ro
   );
 }
 
-function StagesEditor({ value, onChange }: { value: Row; onChange: (p: Row) => void }) {
+function StagesEditor({ value, onChange }: ExtraProps<'tests'>) {
   const [text, setText] = useState<string>((value.stages ?? ['Sample Received by Analyst', 'Sample Preparation', 'Analysis', 'Calculation and Result Entry']).join('\n'));
   return (
     <Field label="Stages, one per line" htmlFor="stages" className="border-t border-gray-200 pt-3">
@@ -513,7 +598,7 @@ function StagesEditor({ value, onChange }: { value: Row; onChange: (p: Row) => v
   );
 }
 
-function FormulaConsole({ value }: { value: Row }) {
+function FormulaConsole({ value }: { value: Partial<MasterRecord<'formulas'>> }) {
   const [expression, setExpression] = useState<string>(value.expression ?? '');
   const [inputs, setInputs] = useState<Record<string, string>>({});
   const m = useMutation({
@@ -551,7 +636,7 @@ function FormulaConsole({ value }: { value: Row }) {
   );
 }
 
-function BindingsEditor({ value, onChange }: { value: Row; onChange: (p: Row) => void }) {
+function BindingsEditor({ value, onChange }: ExtraProps<'test-parameters'>) {
   const [text, setText] = useState<string>(value.formulaBindings ? Object.entries(value.formulaBindings).map(([k, v]) => `${k}=${v}`).join('\n') : '');
   return (
     <Field label="Formula inputs (variable=PARAMETER_CODE, one per line)" htmlFor="bindings" hint="Used when the kind is Calculated." className="border-t border-gray-200 pt-3">
@@ -580,23 +665,23 @@ const ACCREDITATION: FieldDef[] = [
 ];
 
 const MASTERS: MasterConfig[] = [
-  {
+  defineMaster<'tests'>({
     key: 'tests', label: 'Tests', view: 'masters.view', edit: 'masters.edit',
     columns: [col('code', 'Code', true), col('name', 'Name', true), col('category', 'Category'), col('departmentName', 'Department'), col('methodName', 'Method'), col('defaultTatDays', 'TAT (days)', true), col('parameterCount', 'Parameters')],
     fields: [
       ...CODE_NAME,
       { name: 'category', label: 'Category', type: 'select', options: ['CHEMICAL', 'MECHANICAL', 'PHYSICAL', 'OTHER'].map((v) => ({ value: v, label: v[0] + v.slice(1).toLowerCase() })), default: 'OTHER' },
       { name: 'departmentId', label: 'Department', type: 'select', source: deptSource },
-      { name: 'methodId', label: 'Test method', type: 'select', source: { master: 'test-methods', label: (r) => `${r.code} — ${r.name}` } },
+      { name: 'methodId', label: 'Test method', type: 'select', source: sourceOf('test-methods', (r) => `${r.code} — ${r.name}`) },
       { name: 'defaultTatDays', label: 'Default TAT (working days)', type: 'number', default: 5 },
       { name: 'urgentTatDays', label: 'Urgent TAT (working days)', type: 'number', default: 2 },
       ...ACCREDITATION,
     ],
     extra: (p) => <StagesEditor {...p} />,
-  },
-  {
+  }),
+  defineMaster<'test-parameters'>({
     key: 'test-parameters', label: 'Test parameters', view: 'masters.view', edit: 'masters.edit',
-    columns: [col('testCode', 'Test'), col('code', 'Code', true), col('name', 'Name', true), col('kind', 'Kind'), col('unitSymbol', 'Unit'), col('decimals', 'Decimals'), col('sortOrder', 'Order', true)],
+    columns: [col('testCode', 'Test'), col('code', 'Code', true), col('name', 'Name', true), col('kind', 'Kind'), col('unitSymbol', 'Unit'), col('decimals', 'Decimals'), col('sortOrder', 'Order', true), col('showOnReport', 'On report')],
     fields: [
       { name: 'testId', label: 'Test', type: 'select', required: true, source: testSource },
       ...CODE_NAME,
@@ -604,81 +689,82 @@ const MASTERS: MasterConfig[] = [
       { name: 'unitId', label: 'Unit', type: 'select', source: unitSource },
       { name: 'decimals', label: 'Decimal places', type: 'number', default: 2 },
       { name: 'sortOrder', label: 'Order', type: 'number', default: 0 },
-      { name: 'resultSetId', label: 'Result set', type: 'select', source: { master: 'result-sets', label: (r) => r.name }, showIf: (v) => v.kind === 'RESULT_SET' },
-      { name: 'formulaId', label: 'Formula', type: 'select', source: { master: 'formulas', label: (r) => `${r.name}: ${r.expression}` }, showIf: (v) => v.kind === 'CALCULATED' },
+      { name: 'showOnReport', label: 'Show on report (untick for working values such as dimensions, loads or individual readings)', type: 'checkbox', default: true },
+      { name: 'resultSetId', label: 'Result set', type: 'select', source: sourceOf('result-sets', (r) => r.name), showIf: (v) => v.kind === 'RESULT_SET' },
+      { name: 'formulaId', label: 'Formula', type: 'select', source: sourceOf('formulas', (r) => `${r.name}: ${r.expression}`), showIf: (v) => v.kind === 'CALCULATED' },
       ...ACCREDITATION,
     ],
     extra: (p) => <BindingsEditor {...p} />,
-  },
-  {
+  }),
+  defineMaster<'test-methods'>({
     key: 'test-methods', label: 'Test methods', view: 'masters.view', edit: 'masters.edit',
     columns: [col('code', 'Code', true), col('name', 'Name', true), col('standardRef', 'Standard')],
     fields: [...CODE_NAME, { name: 'standardRef', label: 'Standard reference' }, ...ACCREDITATION],
-  },
-  {
+  }),
+  defineMaster<'specifications'>({
     key: 'specifications', label: 'Specifications and grades', view: 'masters.view', edit: 'masters.edit', importable: false,
     columns: [col('code', 'Code', true), col('name', 'Name', true), { id: 'scope', header: 'Scope', cell: ({ row }) => (row.original.customerId ? 'Customer-specific' : 'General') }, { id: 'limitCount', header: 'Limits', cell: ({ row }) => row.original.limits.length }],
     fields: [...CODE_NAME, { name: 'customerId', label: 'Customer (for a customer-wise specification)', type: 'select', hint: 'Leave empty for a general specification.', source: undefined }],
     extra: (p) => <LimitsEditor {...p} />,
-  },
-  {
+  }),
+  defineMaster<'test-groups'>({
     key: 'test-groups', label: 'Test and chemical groups', view: 'masters.view', edit: 'masters.edit', importable: false,
     columns: [col('code', 'Code', true), col('name', 'Name', true), col('kind', 'Kind'), { id: 'n', header: 'Tests', cell: ({ row }) => row.original.items.length }],
     fields: [...CODE_NAME, { name: 'kind', label: 'Kind', type: 'select', required: true, default: 'TEST', options: [{ value: 'TEST', label: 'Test group' }, { value: 'CHEMICAL', label: 'Chemical group' }] }],
     extra: (p) => <GroupItemsEditor {...p} />,
-  },
-  {
+  }),
+  defineMaster<'result-sets'>({
     key: 'result-sets', label: 'Result sets', view: 'masters.view', edit: 'masters.edit', importable: false,
-    columns: [col('code', 'Code', true), col('name', 'Name', true), { id: 'o', header: 'Results', cell: ({ row }) => row.original.options.map((o: Row) => o.value).join(', ') }],
+    columns: [col('code', 'Code', true), col('name', 'Name', true), { id: 'o', header: 'Results', cell: ({ row }) => row.original.options.map((o) => o.value).join(', ') }],
     fields: CODE_NAME,
     extra: (p) => <ResultOptionsEditor {...p} />,
-  },
-  {
+  }),
+  defineMaster<'formulas'>({
     key: 'formulas', label: 'Formulas', view: 'masters.view', edit: 'masters.edit',
     columns: [col('code', 'Code', true), col('name', 'Name', true), { id: 'expr', header: 'Expression', cell: ({ row }) => <code className="text-xs">{row.original.expression}</code> }, col('currentVersion', 'Version')],
     fields: [...CODE_NAME, { name: 'expression', label: 'Expression', required: true, type: 'textarea', hint: 'Saving a changed expression creates a new version. Existing results keep the version they used.' }, { name: 'decimals', label: 'Decimal places', type: 'number', default: 2 }, { name: 'description', label: 'Description' }],
     extra: (p) => <FormulaConsole value={p.value} />,
-  },
-  {
+  }),
+  defineMaster<'instruments'>({
     key: 'instruments', label: 'Instruments', view: 'masters.view', edit: 'masters.edit',
     columns: [col('code', 'Code', true), col('name', 'Name', true), col('departmentName', 'Department'), dateCol('lastCalibratedAt', 'Last calibrated'), { id: 'calibrationDueAt', header: 'Calibration due', enableSorting: true, cell: ({ row }) => (row.original.calibrationOverdue ? <Badge tone="red">{formatDate(row.original.calibrationDueAt)} overdue</Badge> : formatDate(row.original.calibrationDueAt)) }],
     fields: [...CODE_NAME, { name: 'serialNo', label: 'Serial no.' }, { name: 'departmentId', label: 'Department', type: 'select', source: deptSource }, { name: 'lastCalibratedAt', label: 'Last calibrated', type: 'date' }, { name: 'calibrationDueAt', label: 'Calibration due', type: 'date' }],
-  },
-  {
+  }),
+  defineMaster<'departments'>({
     key: 'departments', label: 'Departments', view: 'masters.view', edit: 'masters.edit',
     columns: [col('code', 'Code', true), col('name', 'Name', true)],
     fields: CODE_NAME,
-  },
-  {
+  }),
+  defineMaster<'units'>({
     key: 'units', label: 'Units', view: 'masters.view', edit: 'masters.edit',
     columns: [col('code', 'Code', true), col('name', 'Name', true), col('symbol', 'Symbol')],
     fields: [...CODE_NAME, { name: 'symbol', label: 'Symbol', required: true }],
-  },
-  {
+  }),
+  defineMaster<'unit-conversions'>({
     key: 'unit-conversions', label: 'Unit conversions', view: 'masters.view', edit: 'masters.edit', searchable: false,
     columns: [col('fromUnitCode', 'From'), col('toUnitCode', 'To'), col('factor', 'Multiply by')],
     fields: [{ name: 'fromUnitId', label: 'From unit', type: 'select', required: true, source: unitSource }, { name: 'toUnitId', label: 'To unit', type: 'select', required: true, source: unitSource }, { name: 'factor', label: 'Multiply by', required: true }],
-  },
-  {
+  }),
+  defineMaster<'standard-rates'>({
     key: 'standard-rates', label: 'Standard rates', view: 'rates.view', edit: 'rates.edit',
     columns: [col('testCode', 'Code'), col('testName', 'Test'), { id: 'rate', header: 'Rate (₹)', enableSorting: true, cell: ({ row }) => formatINR(row.original.rate) }, dateCol('effectiveFrom', 'From', true), dateCol('effectiveTo', 'To')],
     fields: [{ name: 'testId', label: 'Test', type: 'select', required: true, source: testSource }, { name: 'rate', label: 'Rate (₹)', required: true }, { name: 'effectiveFrom', label: 'Effective from', type: 'date', required: true }, { name: 'effectiveTo', label: 'Effective to', type: 'date' }],
-  },
-  {
+  }),
+  defineMaster<'customer-rates'>({
     key: 'customer-rates', label: 'Customer rates', view: 'rates.view', edit: 'rates.edit',
     columns: [col('customerName', 'Customer'), col('testName', 'Test'), { id: 'rate', header: 'Rate (₹)', enableSorting: true, cell: ({ row }) => formatINR(row.original.rate) }, dateCol('effectiveFrom', 'From', true), dateCol('effectiveTo', 'To')],
     fields: [{ name: 'customerId', label: 'Customer', type: 'select', required: true, source: undefined }, { name: 'testId', label: 'Test', type: 'select', required: true, source: testSource }, { name: 'rate', label: 'Rate (₹)', required: true }, { name: 'effectiveFrom', label: 'Effective from', type: 'date', required: true }, { name: 'effectiveTo', label: 'Effective to', type: 'date' }],
-  },
-  {
+  }),
+  defineMaster<'remark-templates'>({
     key: 'remark-templates', label: 'Remark templates', view: 'masters.view', edit: 'masters.edit',
     columns: [col('code', 'Code', true), col('outcome', 'Suggest when'), col('text', 'Text')],
     fields: [{ name: 'code', label: 'Code', required: true }, { name: 'outcome', label: 'Suggest when', type: 'select', required: true, default: 'ANY', options: [{ value: 'ANY', label: 'Any result' }, { value: 'PASS', label: 'Result passes' }, { value: 'FAIL', label: 'Result fails' }] }, { name: 'testId', label: 'Only for test', type: 'select', source: testSource }, { name: 'text', label: 'Text', type: 'textarea', required: true }],
-  },
-  {
+  }),
+  defineMaster<'lookups'>({
     key: 'lookups', label: 'Deviation types and modes', view: 'masters.view', edit: 'masters.edit',
     columns: [col('kind', 'Kind', true), col('code', 'Code', true), col('label', 'Label', true)],
     fields: [{ name: 'kind', label: 'Kind', type: 'select', required: true, options: [{ value: 'DEVIATION_TYPE', label: 'Deviation type' }, { value: 'RECEIPT_MODE', label: 'Receipt mode' }, { value: 'DISPATCH_MODE', label: 'Dispatch mode' }] }, { name: 'code', label: 'Code', required: true }, { name: 'label', label: 'Label', required: true }],
-  },
+  }),
 ];
 
 // Customers are not a master endpoint, so their select loads through the customers API.
@@ -687,7 +773,7 @@ function useCustomerSource(enabled: boolean) {
     queryKey: ['customer-options'],
     enabled,
     staleTime: 60_000,
-    queryFn: async () => unwrap(await api.GET('/api/v1/customers', { params: { query: { pageSize: 200 } } })).data,
+    queryFn: () => fetchAllPages(async (page) => unwrap(await api.GET('/api/v1/customers', { params: { query: { page, pageSize: 200 } } }))),
   });
 }
 
@@ -711,7 +797,7 @@ export default function MastersPage() {
   return (
     <>
       <PageHeader title="Masters" description={cfg.label} />
-      <div className="grid gap-4 lg:grid-cols-[13rem_1fr]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[13rem_1fr]">
         <nav aria-label="Masters" className="hidden flex-col gap-0.5 lg:flex">
           {available.map((m) => (
             <NavLink key={m.key} to={`/masters/${m.key}`} className={() => cn('rounded-md px-2.5 py-1.5 text-[13px]', m.key === cfg.key ? 'bg-gray-200 font-medium text-gray-900' : 'text-gray-700 hover:bg-gray-100')}>

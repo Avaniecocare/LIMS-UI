@@ -2,27 +2,55 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState, type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
 import { useBranding, useSession } from '@/app/providers';
-import { Button, Field, Input, Spinner, Textarea } from '@/components/ui/primitives';
+import { Button, Field, Input, Spinner, Textarea, usePageTitle } from '@/components/ui/primitives';
 import { ApiError, api, unwrap } from '@/lib/api';
 import { applyServerErrors } from '@/lib/forms';
+import { returnPath } from '@/lib/safe-path';
 
 function AuthShell({ title, children, wide }: { title: string; children: ReactNode; wide?: boolean }) {
   const branding = useBranding();
+  usePageTitle({ current: null }, title);
+  const links = [
+    branding?.supportEmail && { href: `mailto:${branding.supportEmail}`, label: branding.supportEmail },
+    branding?.supportPhone && { href: `tel:${branding.supportPhone.replace(/[^+\d]/g, '')}`, label: branding.supportPhone },
+    branding?.termsUrl && { href: branding.termsUrl, label: 'Terms' },
+    branding?.privacyUrl && { href: branding.privacyUrl, label: 'Privacy' },
+    branding?.privacyContactEmail && { href: `mailto:${branding.privacyContactEmail}`, label: 'Privacy requests' },
+  ].filter((x): x is { href: string; label: string } => !!x);
+  const showPoweredBy = branding?.poweredBy && branding.poweredByName && branding.poweredByName !== branding.productName;
   return (
-    <main className="flex min-h-full items-center justify-center p-4">
-      <div className={`w-full rounded-lg border border-gray-200 bg-white p-6 ${wide ? 'max-w-xl' : 'max-w-sm'}`}>
-        <div className="mb-5 flex items-center gap-3">
-          {branding && <img src={branding.logoUrl} alt={`${branding.companyName} logo`} className="size-10 rounded object-contain" />}
-          <div>
-            <p className="text-sm font-semibold text-gray-900">{branding?.productName}</p>
-            <p className="text-xs text-gray-600">{branding?.companyName}</p>
+    <main className="auth-backdrop flex min-h-full items-center justify-center p-4">
+      <div className={`flex w-full overflow-hidden rounded-xl border-t-4 border-accent-brand bg-surface shadow-lg ${branding?.loginImageUrl ? (wide ? 'max-w-4xl' : 'max-w-3xl') : wide ? 'max-w-xl' : 'max-w-sm'}`}>
+        {branding?.loginImageUrl && <img src={branding.loginImageUrl} alt="" className="hidden w-1/2 object-cover md:block" />}
+        <div className="flex-1 p-6">
+          <div className="mb-5 flex items-center gap-3">
+            {branding && <img src={branding.logoUrl} alt={`${branding.companyName} logo`} className="size-14 rounded object-contain" />}
+            <div>
+              <p className="text-sm font-semibold text-gray-900">{branding?.productName}</p>
+              {branding?.companyName !== branding?.productName && <p className="text-xs text-gray-600">{branding?.companyName}</p>}
+              {branding?.loginTagline && <p className="mt-0.5 text-xs text-gray-700">{branding.loginTagline}</p>}
+            </div>
           </div>
+          <h1 className="mb-4 text-lg font-semibold text-gray-900">{title}</h1>
+          {children}
+          {(links.length > 0 || showPoweredBy) && (
+            <div className="mt-6 space-y-1 border-t border-gray-100 pt-3 text-xs text-gray-600">
+              {links.length > 0 && (
+                <p className="flex flex-wrap gap-x-3 gap-y-1">
+                  {links.map((l) => (
+                    <a key={l.href} href={l.href} className="underline" target={l.href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer">
+                      {l.label}
+                    </a>
+                  ))}
+                </p>
+              )}
+              {showPoweredBy && <p>Powered by {branding!.poweredByName}</p>}
+            </div>
+          )}
         </div>
-        <h1 className="mb-4 text-lg font-semibold text-gray-900">{title}</h1>
-        {children}
       </div>
     </main>
   );
@@ -33,6 +61,7 @@ const loginSchema = z.object({ email: z.email('Enter a valid email'), password: 
 export function LoginPage() {
   const { setUser } = useSession();
   const navigate = useNavigate();
+  const location = useLocation();
   const [challenge, setChallenge] = useState<string | null>(null);
   const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +71,8 @@ export function LoginPage() {
 
   const signedIn = (user: Parameters<typeof setUser>[0]) => {
     setUser(user);
-    navigate('/', { replace: true });
+    // Back to the page that sent the user here (a link from an email or notification), never off-site.
+    navigate(returnPath(location.state), { replace: true });
   };
   const login = useMutation({
     mutationFn: async (values: z.infer<typeof loginSchema>) => unwrap(await api.POST('/api/v1/auth/login', { body: values })),
@@ -239,7 +269,7 @@ export function SetupPage() {
         )}
         <fieldset className="space-y-3">
           <legend className="text-sm font-semibold text-gray-900">First Admin user</legend>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2">
             <Field label="Name" htmlFor="adminName" error={e.adminName?.message} required>
               <Input id="adminName" autoComplete="name" {...form.register('adminName')} />
             </Field>
@@ -253,7 +283,7 @@ export function SetupPage() {
         </fieldset>
         <fieldset className="space-y-3">
           <legend className="text-sm font-semibold text-gray-900">Operating settings</legend>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2">
             <Field label="GST rate (%)" htmlFor="gstRate" error={e.gstRate?.message}>
               <Input id="gstRate" type="number" step="1" {...form.register('gstRate')} />
             </Field>
@@ -271,7 +301,7 @@ export function SetupPage() {
             <p className="mb-1 text-[13px] font-medium text-gray-700">Working days</p>
             <div className="flex flex-wrap gap-1.5">
               {DAYS.map((d, i) => (
-                <button key={d} type="button" aria-pressed={workingDays.includes(i)} className={`rounded-md border px-2.5 py-1 text-[13px] ${workingDays.includes(i) ? 'border-brand bg-brand text-brand-fg' : 'border-gray-300 bg-white text-gray-800'}`} onClick={() => setWorkingDays((w) => (w.includes(i) ? w.filter((x) => x !== i) : [...w, i].sort()))}>
+                <button key={d} type="button" aria-pressed={workingDays.includes(i)} className={`rounded-md border px-2.5 py-1 text-[13px] ${workingDays.includes(i) ? 'border-brand bg-brand text-brand-fg' : 'border-gray-300 bg-surface text-gray-800'}`} onClick={() => setWorkingDays((w) => (w.includes(i) ? w.filter((x) => x !== i) : [...w, i].sort()))}>
                   {d}
                 </button>
               ))}

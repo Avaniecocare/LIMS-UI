@@ -5,12 +5,14 @@ import { Link, useBlocker, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import type { components } from '@/api/schema';
 import { useSession } from '@/app/providers';
+import { PhoneUploadButton } from '@/components/PhoneUpload';
+import { ReportProblemButton } from '@/features/quality/ReportProblem';
 import { Attachments, DocumentButton, HistoryList, ReasonDialog, StatusBadge } from '@/components/shared';
 import { Badge, Button, Card, CardHeader, ConfirmDialog, ErrorState, Field, Input, PageHeader, Select, Spinner, Tabs, TabsContent, TabsList, TabsTrigger, Textarea } from '@/components/ui/primitives';
 import { ApiError, api, unwrap } from '@/lib/api';
 import { cn, formatDate, formatDateTime } from '@/lib/format';
 import { isConflict, toastError, writeError } from '@/lib/forms';
-import { AutosaveQueue, isNumberText, mergeEntryPatch, patchKeys, reconcileDrafts, type EntryPatch, type SaveStatus } from './autosave';
+import { AutosaveQueue, isNumberText, isResultText, mergeEntryPatch, patchKeys, reconcileDrafts, type EntryPatch, type SaveStatus } from './autosave';
 import { Outcome, ResultTable, type ParameterResult } from './result-table';
 
 type Test = components['schemas']['TestDetailDto'];
@@ -31,7 +33,7 @@ function serverValues(t: Test): Record<string, string> {
 
 /** Fields holding what cannot be saved: not a number yet, or refused by the server with a message. */
 function invalidKeys(t: Test | undefined, drafts: Record<string, string>, refused: Record<string, string> = {}) {
-  return (t?.results ?? []).filter((r) => r.parameterId in refused || r.kind === 'NUMERIC' && (drafts[r.parameterId] ?? '').trim() !== '' && !isNumberText(drafts[r.parameterId])).map((r) => r.parameterId);
+  return (t?.results ?? []).filter((r) => r.parameterId in refused || r.kind === 'NUMERIC' && (drafts[r.parameterId] ?? '').trim() !== '' && !isResultText(drafts[r.parameterId])).map((r) => r.parameterId);
 }
 
 
@@ -430,7 +432,7 @@ export default function TestDetailPage() {
   };
   const onResult = (r: ParameterResult, text: string) => {
     markRefused(Object.fromEntries(Object.entries(refusedRef.current).filter(([k]) => k !== r.parameterId)));
-    if (r.kind === 'NUMERIC' && text.trim() !== '' && !isNumberText(text)) {
+    if (r.kind === 'NUMERIC' && text.trim() !== '' && !isResultText(text)) {
       setDrafts((d) => ({ ...d, [r.parameterId]: text }));
       return;
     }
@@ -479,6 +481,7 @@ export default function TestDetailPage() {
         }
         actions={
           <>
+            <ReportProblemButton reference={`${test.sampleNo} · ${test.testCode}`} context={`${test.testName} on ${test.sampleNo}`} />
             <DocumentButton kind="test-data" params={{ sampleTestId: test.id }}>
               Print test data
             </DocumentButton>
@@ -528,7 +531,7 @@ export default function TestDetailPage() {
         </TabsList>
         <TabsContent value="results">
           <div className="space-y-4">
-            <div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-4 md:grid-cols-2 xl:grid-cols-3">
               <Stages test={test} busy={action.isPending} onComplete={complete} />
               <Card>
                 <CardHeader title="Instrument and analyst" />
@@ -586,7 +589,7 @@ export default function TestDetailPage() {
             <Card>
               <CardHeader
                 title="Results"
-                description={entering ? 'Saved as you type. Enter moves to the next reading.' : undefined}
+                description={entering ? 'Saved as you type. Enter moves to the next reading. For a result below or above what the method can measure, type < or > before it, for example <0.005.' : undefined}
                 actions={
                   <span className="text-[13px] text-gray-700">
                     Overall: <Outcome outcome={test.outcome} />
@@ -595,7 +598,7 @@ export default function TestDetailPage() {
               />
               <ResultTable results={test.results} entry={entering ? entry : undefined} caption={`Results for ${test.testCode}`} />
             </Card>
-            <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
+            <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
               <Card>
                 <CardHeader title="Remarks, observations and notes" />
                 <div className="space-y-3 p-4">
@@ -618,10 +621,19 @@ export default function TestDetailPage() {
           </div>
         </TabsContent>
         <TabsContent value="attachments">
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-2">
             <Card>
               <div className="p-4">
-                <Attachments entity="SampleTest" entityId={test.id} category="result-image" title="Result images" canEdit={test.canEdit} withPrintSize accept="image/png,image/jpeg" />
+                <Attachments
+                  entity="SampleTest"
+                  entityId={test.id}
+                  category="result-image"
+                  title="Result images"
+                  canEdit={test.canEdit}
+                  withPrintSize
+                  accept="image/png,image/jpeg"
+                  extraActions={<PhoneUploadButton purpose="result-image" entityId={test.id} onReceived={() => void client.invalidateQueries({ queryKey: ['files', 'SampleTest', test.id, 'result-image'] })} />}
+                />
               </div>
             </Card>
             <Card>
@@ -638,7 +650,7 @@ export default function TestDetailPage() {
         </TabsContent>
       </Tabs>
       {entering && (
-        <div className="sticky bottom-0 z-10 mt-4 flex items-center justify-end gap-3 rounded-lg border border-gray-200 bg-white px-4 py-2 shadow-sm">
+        <div className="sticky bottom-0 z-10 mt-4 flex items-center justify-end gap-3 rounded-lg border border-gray-200 bg-surface px-4 py-2 shadow-sm">
           <SaveIndicator status={status} canRetry={queue.hasUnsaved()} onRetry={() => void queue.flush()} />
           <Button className="h-11" loading={submit.isPending} onClick={() => setDialog('submit')}>
             Submit results

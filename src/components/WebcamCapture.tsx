@@ -140,7 +140,7 @@ export function WebcamCapture({ title, buttonLabel = 'Use camera', accept = 'ima
       </Button>
       <Dialog open={open} onOpenChange={(o) => !o && close()} title={title} wide>
         <div className="space-y-3">
-          {state === 'live' && <video ref={attach} className="max-h-[50vh] w-full rounded-md bg-black" muted playsInline aria-label="Camera preview" />}
+          {state === 'live' && <video ref={attach} className="max-h-[50dvh] w-full rounded-md bg-black" muted playsInline aria-label="Camera preview" />}
           {MESSAGE[state] && (
             <p role={state === 'starting' ? 'status' : 'alert'} className="rounded-md bg-gray-100 p-3 text-sm text-gray-800">
               {MESSAGE[state]}

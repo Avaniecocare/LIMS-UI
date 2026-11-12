@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { apiAs, freshCustomer, issuedJob, plannedJob, signIn } from './helpers';
+import { apiAs, DEMO_PASSWORD, freshCustomer, issuedJob, plannedJob, signIn } from './helpers';
 
 const nav = (page: Page) => page.getByRole('navigation', { name: 'Main' });
 
@@ -21,10 +21,12 @@ async function issueOpen(page: Page) {
 
 test('the navigation follows permissions, in the product order', async ({ page }) => {
   const expected: Record<string, string[]> = {
-    admin: ['Dashboard', 'Orders', 'Quotations', 'Samples', 'Planning', 'Approvals', 'Reports', 'Dispatch', 'Invoices', 'Due Invoices', 'Analytics', 'Customers', 'Masters', 'Admin'],
+    admin: ['Dashboard', 'Orders', 'Quotations', 'Samples', 'Planning', 'Approvals', 'Reports', 'Dispatch', 'Invoices', 'Due Invoices', 'Analytics', 'Customers', 'Quality', 'Files', 'Masters', 'Admin'],
     accounts: ['Dashboard', 'Samples', 'Approvals', 'Reports', 'Invoices', 'Due Invoices', 'Analytics', 'Customers', 'Masters'],
     dispatch: ['Dashboard', 'Samples', 'Approvals', 'Dispatch', 'Customers', 'Masters'],
     tech: ['Dashboard', 'My Tests'],
+    docs: ['Dashboard', 'Customers', 'Files'],
+    quality: ['Dashboard', 'Samples', 'Quality', 'Files', 'Masters'],
   };
   for (const [user, links] of Object.entries(expected)) {
     await signIn(page, user);
@@ -32,11 +34,25 @@ test('the navigation follows permissions, in the product order', async ({ page }
   }
 });
 
+test('the menu shrinks to icons and expands with the hamburger', async ({ page }) => {
+  await signIn(page, 'admin');
+  const samples = nav(page).getByRole('link', { name: 'Samples' });
+  const label = samples.locator('span');
+  await expect(samples.locator('svg')).toBeVisible();
+  await expect(label).toHaveClass(/sr-only/);
+  await page.getByRole('button', { name: 'Open menu' }).click();
+  await expect(label).not.toHaveClass(/sr-only/);
+  await page.getByRole('button', { name: 'Close menu' }).click();
+  await expect(label).toHaveClass(/sr-only/);
+  await samples.click();
+  await expect(page).toHaveURL(/\/samples$/);
+});
+
 test('a route the role lacks says so', async ({ page }) => {
   await signIn(page, 'tech');
   for (const path of ['/invoices', '/due-invoices', '/dispatch', '/reports', '/analytics']) {
     await page.goto(path);
-    await expect(page.getByText('You do not have access to this page')).toBeVisible();
+    await expect(page.getByRole('heading', { name: "You don't have access to this page" })).toBeVisible();
   }
 });
 
@@ -294,6 +310,12 @@ test('due invoices: honours URL filters, chips, statement and export', async ({ 
   let tab = page.context().waitForEvent('page');
   await page.getByRole('button', { name: 'Excel' }).click();
   expect((await made).request().postDataJSON()).toMatchObject({ kind: 'due-invoices-export', params: { customerId: customer.id } });
+  // A bulk export of money owed asks for the password first, then goes through.
+  const confirm = page.getByRole('dialog', { name: 'Confirm your password' });
+  made = page.waitForResponse((r) => r.url().endsWith('/documents') && r.request().method() === 'POST' && r.ok());
+  await confirm.getByLabel('Your password').fill(DEMO_PASSWORD);
+  await confirm.getByRole('button', { name: 'Confirm' }).click();
+  await made;
   await (await tab).close();
 
   await outstanding.getByRole('button', { name: `Statement of account for ${customer.name}` }).click();
@@ -427,6 +449,8 @@ test('a crash in a page shows a friendly message with a reload button', async ({
   await page.route('**/api/v1/dashboard*', (route) => route.fulfill({ json: { from: '2026-01-01', to: '2026-01-02', myWork: 'not a list', operations: null, quality: null, people: null, commercial: null } }));
   await page.reload();
   await expect(page.getByRole('alert')).toContainText('Something went wrong on this page');
+  // The crash stays inside the page: the menu still works.
+  await expect(page.getByRole('navigation', { name: 'Main' })).toBeVisible();
   await page.unroute('**/api/v1/dashboard*');
   await page.getByRole('button', { name: 'Reload page' }).click();
   await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();

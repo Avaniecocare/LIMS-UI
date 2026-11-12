@@ -1,6 +1,8 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { apiAs, DEMO_PASSWORD, signIn, unique } from './helpers';
 
+const nav = (page: Page) => page.getByRole('navigation', { name: 'Main' });
+
 /** The one journey, through the real UI, signing in as each role in turn. Uses a fresh customer, so it works on any database. */
 
 const LINES = [
@@ -11,7 +13,6 @@ const LINES = [
   { code: 'GCMS', label: 'GCMS — Qualitative Analysis (GC-MSD)', name: 'Qualitative Analysis', rate: '10,450.00' },
 ];
 
-const nav = (page: Page) => page.getByRole('navigation', { name: 'Main' });
 const row = (page: Page, code: string) => page.locator(`tr[data-parameter="${code}"]`);
 
 async function pickCustomer(page: Page, label: RegExp, name: string) {
@@ -195,6 +196,8 @@ test('the full cycle, from a new customer to dashboard numbers that match their 
     await approvals.getByRole('row', { name: /Flash Point/ }).getByRole('button', { name: 'Reject' }).click();
     await page.getByRole('dialog').getByLabel('Reason').fill('Flash point looks low, repeat');
     await page.getByRole('dialog').getByRole('button', { name: 'Reject' }).click();
+    // Wait for the server's answer: while the dialog is open the table is hidden from the accessibility tree.
+    await expect(page.getByText(/sent back/).first()).toBeVisible();
     await expect(approvals.getByRole('row', { name: /Flash Point/ })).toHaveCount(0);
   });
 
@@ -336,11 +339,11 @@ test('the full cycle, from a new customer to dashboard numbers that match their 
     await expect(page.getByRole('region', { name: 'Operations' })).toBeVisible();
     const tiles = page.getByRole('region', { name: 'Operations' }).locator('[data-metric]');
     const metrics = await tiles.evaluateAll((els) => els.map((e) => ({ key: e.getAttribute('data-metric')!, href: e.getAttribute('href'), value: e.querySelector('span:last-child')!.textContent! })));
-    expect(metrics.map((m) => m.key)).toEqual(expect.arrayContaining(['received-today', 'received-month', 'tat-crossed', 'urgent-jobs', 'on-hold', 'tat-compliance']));
+    expect(metrics.map((m) => m.key)).toEqual(expect.arrayContaining(['received-today', 'received-month', 'tat-crossed', 'urgent-samples', 'jobs-on-hold', 'tests-on-hold', 'tat-compliance']));
     const number = (text: string) => Number(text.replace(/[^\d.]/g, ''));
 
     // A count that links to a report must equal that report's record count.
-    for (const key of ['received-today', 'received-month', 'tat-crossed']) {
+    for (const key of ['received-today', 'received-month', 'tat-crossed', 'urgent-samples', 'tests-on-hold']) {
       const metric = metrics.find((m) => m.key === key)!;
       await page.goto('/');
       await page.locator(`[data-metric="${key}"]`).click();
@@ -350,13 +353,11 @@ test('the full cycle, from a new customer to dashboard numbers that match their 
     }
     expect(number(metrics.find((m) => m.key === 'received-today')!.value)).toBeGreaterThanOrEqual(0);
 
-    // These two link to filtered lists wider than the count: see the backend notes in DECISIONS.md.
-    for (const [key, url] of [['urgent-jobs', /urgent=true/], ['on-hold', /status=ON_HOLD/]] as const) {
-      await page.goto('/');
-      await page.locator(`[data-metric="${key}"]`).click();
-      await expect(page).toHaveURL(url);
-      await expect(page.getByRole('table', { name: 'Jobs' })).toBeVisible();
-    }
+    // Jobs on hold opens the jobs list filtered to exactly those jobs.
+    await page.goto('/');
+    await page.locator('[data-metric="jobs-on-hold"]').click();
+    await expect(page).toHaveURL(/status=ON_HOLD/);
+    await expect(page.getByRole('table', { name: 'Jobs' })).toBeVisible();
 
     // The percentage opens its report, and has no record count to compare.
     await page.goto('/');

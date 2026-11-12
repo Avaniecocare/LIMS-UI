@@ -34,16 +34,42 @@ export const setCsrfToken = (token: string | null) => {
 };
 
 let onUnauthenticated: (() => void) | null = null;
+
+/**
+ * Sensitive actions answer REAUTH_REQUIRED until the person confirms their password. The app registers a prompt
+ * here; the request is then sent once more, so a confirmed action simply goes through.
+ */
+let reauthPrompt: (() => Promise<boolean>) | null = null;
+export const setReauthPrompt = (fn: (() => Promise<boolean>) | null) => {
+  reauthPrompt = fn;
+};
+const pending = new WeakMap<Request, () => Request>();
 export const setUnauthenticatedHandler = (fn: () => void) => {
   onUnauthenticated = fn;
 };
 
 const middleware: Middleware = {
-  onRequest({ request }) {
+  async onRequest({ request }) {
     if (csrfToken && request.method !== 'GET') request.headers.set('X-CSRF-Token', csrfToken);
-    return request;
+    if (request.method === 'GET') return request;
+    // The body is kept as bytes (not a cloned stream, which browsers then send as a stream) so a request refused
+    // for re-authentication can be sent again after the password is confirmed.
+    const body = request.body ? await request.arrayBuffer() : undefined;
+    const build = () => new Request(request.url, { method: request.method, headers: request.headers, body, credentials: request.credentials, signal: request.signal });
+    const sent = build();
+    pending.set(sent, build);
+    return sent;
   },
-  async onResponse({ response, request }) {
+  async onResponse({ response: first, request }) {
+    let response = first;
+    if (response.status === 403 && reauthPrompt && pending.has(request)) {
+      const code = await response.clone().json().then((b: { error?: { code?: string } }) => b.error?.code).catch(() => null);
+      if (code === 'REAUTH_REQUIRED' && (await reauthPrompt())) {
+        const again = pending.get(request)!();
+        if (csrfToken) again.headers.set('X-CSRF-Token', csrfToken);
+        response = await fetch(again);
+      }
+    }
     if (response.ok) return response;
     let body: { error?: { code: string; message: string; fields?: FieldError[]; requestId?: string } } = {};
     try {

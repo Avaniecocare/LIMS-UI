@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSession } from '@/app/providers';
 import { DataTable, type Col } from '@/components/DataTable';
 import { CustomerPicker } from '@/components/pickers';
-import { DocumentButton, RowActions, SavedFilters, SearchBox } from '@/components/shared';
+import { DocumentButton, RowActions, SavedFilters, SearchBox, MobileFilters } from '@/components/shared';
 import { Badge, Button, Card, CardHeader, Dialog, ErrorState, Field, Input, PageHeader, Select, Spinner } from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
 import { cn, formatDate, formatINR } from '@/lib/format';
@@ -15,7 +15,7 @@ const BUCKETS = ['Not Due', '0-30', '31-60', '61-90', '90+'];
 
 function Chip({ label, amount, count, active, onClick }: { label: string; amount: string; count?: number; active: boolean; onClick: () => void }) {
   return (
-    <button type="button" aria-pressed={active} onClick={onClick} className={cn('min-w-32 rounded-lg border px-3 py-2 text-left hover:bg-gray-50', active ? 'border-brand bg-white ring-2 ring-brand' : 'border-gray-200 bg-white')}>
+    <button type="button" aria-pressed={active} onClick={onClick} className={cn('min-w-32 rounded-lg border px-3 py-2 text-left hover:bg-gray-50', active ? 'border-brand-focus bg-surface ring-2 ring-brand-focus' : 'border-gray-200 bg-surface')}>
       <span className="block text-xs font-medium text-gray-700">{label}</span>
       <span className="block text-base font-semibold text-gray-900 tabular-nums">{formatINR(amount)}</span>
       {count !== undefined && (
@@ -137,9 +137,10 @@ export default function DueInvoicesPage() {
         </section>
         <div className="flex flex-wrap items-center gap-2">
           <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search invoice or customer" label="Search due invoices" />
+          <MobileFilters filters={list.filters} onClear={list.clearFilters}>
           {can('customers.view') && (
             <div className="w-56">
-              <CustomerPicker ariaLabel="Customer filter" placeholder="All customers" value={customerId ?? ''} onChange={(v) => list.setFilter('customerId', v || null)} />
+              <CustomerPicker allowCreate={false} ariaLabel="Customer filter" placeholder="All customers" value={customerId ?? ''} onChange={(v) => list.setFilter('customerId', v || null)} />
             </div>
           )}
           <Select aria-label="Ageing filter" className="w-32" value={bucket} onChange={(e) => list.setFilter('bucket', e.target.value || null)}>
@@ -156,8 +157,9 @@ export default function DueInvoicesPage() {
             <option value="false">Not overdue</option>
           </Select>
           <SavedFilters screen="due-invoices" current={list.allParams} onApply={list.applyFilters} />
+          </MobileFilters>
         </div>
-        <DataTable ariaLabel="Due invoices" columns={columns} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} sort={list.sort} onSortChange={list.setSort} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} onRowClick={(r) => navigate(`/invoices/${r.id}`)} getRowId={(r) => r.id} emptyTitle="No invoices are due" emptyHint={bucket || list.filters.overdue || customerId || list.q ? 'Try clearing the filters.' : undefined} maxHeightClass="max-h-[60vh]" />
+        <DataTable ariaLabel="Due invoices" columns={columns} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} sort={list.sort} onSortChange={list.setSort} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} onRowClick={(r) => navigate(`/invoices/${r.id}`)} getRowId={(r) => r.id} emptyTitle="No invoices are due" emptyHint={bucket || list.filters.overdue || customerId || list.q ? 'Try clearing the filters.' : undefined} maxHeightClass="max-h-[60dvh]" />
         <Card>
           <CardHeader title="Outstanding by customer" />
           {summary.data?.customers.length ? (

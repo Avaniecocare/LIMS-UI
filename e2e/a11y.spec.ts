@@ -10,6 +10,9 @@ async function check(page: Page, name: string, include?: string) {
   // mode opens a helper page to combine frames, and that hangs on it, so legacy mode runs in the page instead.
   // A toast mid-fade measures as low contrast, so wait for it to finish arriving.
   await page.locator('[data-sonner-toast]').evaluateAll((els) => Promise.all(els.flatMap((e) => [...e.getAnimations({ subtree: true })].map((a) => a.finished.catch(() => undefined)))));
+  // Elements fading in measure as low contrast: let entrance animations (page, dialog, menus) finish first.
+  // At most two seconds: an animation cancelled mid-way (a page replaced while it fades in) never reports finishing.
+  await page.evaluate(() => Promise.race([Promise.all(document.getAnimations().filter((a) => a.effect?.getTiming().iterations !== Infinity).map((a) => a.finished.catch(() => undefined))), new Promise((r) => setTimeout(r, 2000))]));
   let axe = new AxeBuilder({ page }).setLegacyMode(true).exclude('iframe[title^="Preview of"]').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']);
   if (include) axe = axe.include(include);
   const { violations } = await axe.analyze();
@@ -105,3 +108,54 @@ test('report, dispatch, invoice and payment dialogs', async ({ page }) => {
   await page.getByRole('button', { name: 'Send reminder' }).click();
   await check(page, 'send reminder', '[role="alertdialog"]');
 });
+
+// The same screens in the dark theme (chosen here through the device setting, which "Same as this device" follows).
+test.describe('dark theme', () => {
+  test.use({ colorScheme: 'dark' });
+
+  test('login and password screens, dark', async ({ page }) => {
+    for (const path of ['/login', '/forgot-password']) {
+      await page.goto(path);
+      await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+      await check(page, `${path} (dark)`);
+    }
+  });
+
+  for (const { user, paths } of SCREENS) {
+    test(`main screens as ${user}, dark`, async ({ page }) => {
+      await signIn(page, user);
+      for (const path of paths) {
+        await page.goto(path);
+        await check(page, `${path} as ${user} (dark)`);
+      }
+    });
+  }
+
+  test('a dialog and the user menu, dark', async ({ page }) => {
+    await signIn(page, 'admin');
+    await page.goto('/customers');
+    await page.getByRole('button', { name: /Asha Admin/ }).click();
+    await expect(page.getByRole('menuitemradio', { name: 'Dark' })).toBeVisible();
+    await check(page, 'user menu (dark)', '[role="menu"]');
+  });
+});
+
+// Phone layout: bottom bar, cards instead of tables, filters in a sheet, in both themes.
+for (const colorScheme of ['light', 'dark'] as const) {
+  test.describe(`phone, ${colorScheme}`, () => {
+    test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true, colorScheme });
+    test(`main phone screens, ${colorScheme}`, async ({ page }) => {
+      await signIn(page, 'admin');
+      for (const path of ['/', '/samples', '/customers', '/due-invoices', '/approvals?tab=issued', '/masters']) {
+        await page.goto(path);
+        await check(page, `${path} on a phone (${colorScheme})`);
+      }
+      await page.goto('/samples');
+      await page.getByRole('button', { name: /^Filters/ }).click();
+      await check(page, `filters sheet (${colorScheme})`, '[role="dialog"]');
+      await page.keyboard.press('Escape');
+      await page.getByRole('button', { name: 'More' }).click();
+      await check(page, `menu drawer (${colorScheme})`, 'aside');
+    });
+  });
+}

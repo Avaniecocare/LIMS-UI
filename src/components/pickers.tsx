@@ -1,8 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { useId, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useSession } from '@/app/providers';
+import { Plus } from 'lucide-react';
 import { Badge, Checkbox, Input } from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
+import { fetchAllPages } from '@/lib/fetch-all';
 import { cn } from '@/lib/format';
 import { useDebounced } from '@/lib/use-debounced';
 
@@ -13,7 +16,9 @@ export interface PickerOption {
 }
 
 /** Type-to-find picker for lists too long for a native select. The list itself comes from the server. */
-export function AsyncPicker({ id, name, value, onChange, search, resolve, placeholder, disabled, invalid, ariaLabel }: { id?: string; name: string; value: string; onChange: (value: string) => void; search: (q: string) => Promise<PickerOption[]>; resolve: (value: string) => Promise<string>; placeholder?: string; disabled?: boolean; invalid?: boolean; ariaLabel?: string }) {
+type FieldAria = { 'aria-describedby'?: string; 'aria-required'?: boolean | 'true' | 'false'; 'aria-invalid'?: boolean | 'true' | 'false' };
+
+export function AsyncPicker({ id, name, value, onChange, search, resolve, placeholder, disabled, invalid, ariaLabel, create, ...aria }: { id?: string; name: string; value: string; onChange: (value: string) => void; search: (q: string) => Promise<PickerOption[]>; resolve: (value: string) => Promise<string>; placeholder?: string; disabled?: boolean; invalid?: boolean; ariaLabel?: string; /** a last row that creates a new record from what was typed */ create?: { label: string; onCreate: (typed: string) => void } } & FieldAria) {
   const listId = useId();
   const [text, setText] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
@@ -22,6 +27,16 @@ export function AsyncPicker({ id, name, value, onChange, search, resolve, placeh
   const options = useQuery({ queryKey: ['picker', name, q], enabled: open, staleTime: 15_000, queryFn: () => search(q) });
   const label = useQuery({ queryKey: ['picker-label', name, value], enabled: !!value, staleTime: 60_000, queryFn: () => resolve(value) });
   const items = options.data ?? [];
+  // The create row, when offered, comes first for the keyboard as well; the found items follow it.
+  const offset = create ? 1 : 0;
+  const count = items.length + offset;
+  const startCreate = () => {
+    const typed = text ?? '';
+    setText(null);
+    setOpen(false);
+    setActive(-1);
+    create?.onCreate(typed);
+  };
   const pick = (o: PickerOption) => {
     onChange(o.value);
     setText(null);
@@ -37,7 +52,9 @@ export function AsyncPicker({ id, name, value, onChange, search, resolve, placeh
         aria-expanded={open}
         aria-controls={listId}
         aria-autocomplete="list"
-        aria-invalid={invalid}
+        aria-invalid={invalid ?? aria['aria-invalid']}
+        aria-describedby={aria['aria-describedby']}
+        aria-required={aria['aria-required']}
         aria-activedescendant={open && active >= 0 ? `${listId}-${active}` : undefined}
         autoComplete="off"
         disabled={disabled}
@@ -58,24 +75,45 @@ export function AsyncPicker({ id, name, value, onChange, search, resolve, placeh
           if (e.key === 'ArrowDown') {
             e.preventDefault();
             setOpen(true);
-            if (items.length) setActive((i) => (i + 1) % items.length);
+            if (count) setActive((i) => (i + 1) % count);
           } else if (e.key === 'ArrowUp') {
             e.preventDefault();
-            if (items.length) setActive((i) => (i <= 0 ? items.length - 1 : i - 1));
+            if (count) setActive((i) => (i <= 0 ? count - 1 : i - 1));
           } else if (e.key === 'Escape') {
             setOpen(false);
           } else if (e.key === 'Enter' && open) {
             // Enter chooses here; it must not submit the surrounding form.
             e.preventDefault();
-            const chosen = items[active] ?? (items.length === 1 ? items[0] : undefined);
+            if (create && active === 0) return startCreate();
+            const chosen = items[active - offset] ?? (items.length === 1 ? items[0] : undefined);
             if (chosen) pick(chosen);
           }
         }}
       />
-      <div id={listId} role="listbox" hidden={!open} className="absolute top-full left-0 z-30 mt-1 max-h-60 w-full min-w-64 overflow-y-auto rounded-md border border-gray-200 bg-white py-1 shadow-lg">
+      <div id={listId} role="listbox" hidden={!open} className="absolute top-full left-0 z-30 mt-1 max-h-60 w-full min-w-64 overflow-y-auto rounded-md border border-gray-200 bg-surface py-1 shadow-lg">
+        {open && create && (
+          <button
+            id={`${listId}-0`}
+            type="button"
+            role="option"
+            aria-selected={false}
+            tabIndex={-1}
+            className={cn('flex w-full items-center gap-2 border-b border-gray-200 bg-surface px-2.5 py-2 text-left text-[13px] font-medium text-brand', active === 0 ? 'bg-gray-100' : 'hover:bg-gray-50')}
+            onMouseEnter={() => setActive(0)}
+            onClick={startCreate}
+          >
+            <Plus className="size-4" aria-hidden />
+            {create.label}
+            {(text ?? '').trim() && (
+              <span aria-hidden className="truncate font-normal text-gray-700">
+                “{(text ?? '').trim()}”
+              </span>
+            )}
+          </button>
+        )}
         {open &&
           items.map((o, i) => (
-            <button key={o.value} id={`${listId}-${i}`} type="button" role="option" aria-selected={o.value === value} tabIndex={-1} className={cn('flex w-full items-center justify-between gap-2 px-2.5 py-1.5 text-left text-[13px]', i === active ? 'bg-gray-100' : 'hover:bg-gray-50')} onMouseEnter={() => setActive(i)} onClick={() => pick(o)}>
+            <button key={o.value} id={`${listId}-${i + offset}`} type="button" role="option" aria-selected={o.value === value} tabIndex={-1} className={cn('flex w-full items-center justify-between gap-2 px-2.5 py-1.5 text-left text-[13px]', i + offset === active ? 'bg-gray-100' : 'hover:bg-gray-50')} onMouseEnter={() => setActive(i + offset)} onClick={() => pick(o)}>
               <span className="truncate text-gray-900">{o.label}</span>
               {o.hint && <span className="shrink-0 text-xs text-gray-600">{o.hint}</span>}
             </button>
@@ -86,7 +124,15 @@ export function AsyncPicker({ id, name, value, onChange, search, resolve, placeh
   );
 }
 
-export function CustomerPicker(props: { id?: string; value: string; onChange: (value: string) => void; disabled?: boolean; invalid?: boolean; ariaLabel?: string; placeholder?: string }) {
+/**
+ * Find a customer by name or CRN. People who may add customers also get "Create new customer" at the top of the
+ * list: it opens the full New customer page with the typed name filled in, and saving there comes back here with
+ * the new customer chosen (`?customerId=`).
+ */
+export function CustomerPicker({ allowCreate = true, ...props }: { id?: string; value: string; onChange: (value: string) => void; disabled?: boolean; invalid?: boolean; ariaLabel?: string; placeholder?: string; allowCreate?: boolean } & FieldAria) {
+  const { can } = useSession();
+  const navigate = useNavigate();
+  const location = useLocation();
   return (
     <AsyncPicker
       name="customers"
@@ -94,6 +140,17 @@ export function CustomerPicker(props: { id?: string; value: string; onChange: (v
       {...props}
       search={async (q) => unwrap(await api.GET('/api/v1/customers', { params: { query: { pageSize: 20, ...(q ? { q } : {}) } } })).data.map((c) => ({ value: c.id, label: c.name, hint: c.crn }))}
       resolve={async (id) => unwrap(await api.GET('/api/v1/customers/{id}', { params: { path: { id } } })).name}
+      create={
+        allowCreate && can('customers.edit')
+          ? {
+              label: 'Create new customer',
+              onCreate: (typed) => {
+                const back = location.pathname + location.search.replace(/([?&])customerId=[^&]*&?/, '$1').replace(/[?&]$/, '');
+                navigate(`/customers/new?${new URLSearchParams({ ...(typed.trim() ? { name: typed.trim() } : {}), returnTo: back })}`);
+              },
+            }
+          : undefined
+      }
     />
   );
 }
@@ -112,13 +169,14 @@ export function JobPicker(props: { id?: string; value: string; onChange: (value:
 
 const STALE = 60_000;
 
+/** Every test in the master, all pages, so no list built from it silently stops at the first 200. */
 export function useTests() {
-  return useQuery({ queryKey: ['test-options'], staleTime: STALE, queryFn: async () => unwrap(await api.GET('/api/v1/masters/tests', { params: { query: { pageSize: 200 } } })).data });
+  return useQuery({ queryKey: ['test-options'], staleTime: STALE, queryFn: () => fetchAllPages(async (page) => unwrap(await api.GET('/api/v1/masters/tests', { params: { query: { page, pageSize: 200 } } }))) });
 }
 
 export function useLookups(kind: 'DEVIATION_TYPE' | 'RECEIPT_MODE' | 'DISPATCH_MODE') {
   const { can } = useSession();
-  return useQuery({ queryKey: ['lookups', kind], enabled: can('masters.view'), staleTime: STALE, queryFn: async () => unwrap(await api.GET('/api/v1/masters/lookups', { params: { query: { kind, pageSize: 200 } } })).data });
+  return useQuery({ queryKey: ['lookups', kind], enabled: can('masters.view'), staleTime: STALE, queryFn: () => fetchAllPages(async (page) => unwrap(await api.GET('/api/v1/masters/lookups', { params: { query: { kind, page, pageSize: 200 } } }))) });
 }
 
 /** Choose any number of tests from the test master. */

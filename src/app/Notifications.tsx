@@ -6,6 +6,7 @@ import { Button, Spinner } from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
 import { cn, formatDateTime } from '@/lib/format';
 import { toastError } from '@/lib/forms';
+import { safeAppPath } from '@/lib/safe-path';
 
 const KEY = ['notifications'];
 
@@ -52,12 +53,12 @@ export function NotificationBell() {
       <Button ref={button} variant="ghost" size="icon" className="relative size-9" aria-label={unread ? `Notifications, ${unread} unread` : 'Notifications'} aria-expanded={open} aria-controls={panelId} onClick={() => setOpen((o) => !o)}>
         <Bell aria-hidden />
         {unread > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-700 px-1 text-[10px] font-semibold text-white" aria-hidden>
+          <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-semibold text-white" aria-hidden>
             {unread > 99 ? '99+' : unread}
           </span>
         )}
       </Button>
-      <div id={panelId} role="region" aria-label="Notifications" hidden={!open} className="absolute top-full right-0 z-30 mt-1 w-96 max-w-[calc(100vw-2rem)] rounded-lg border border-gray-200 bg-white shadow-lg">
+      <div id={panelId} role="region" aria-label="Notifications" hidden={!open} className="absolute top-full right-0 z-30 mt-1 w-96 max-w-[calc(100vw-2rem)] rounded-lg border border-gray-200 bg-surface shadow-lg">
         {open && (
           <>
             <div className="flex items-center justify-between gap-2 border-b border-gray-200 px-3 py-2">
@@ -70,12 +71,14 @@ export function NotificationBell() {
             {q.error && <p className="p-3 text-[13px] text-red-800">Notifications could not be loaded.</p>}
             {q.data && !rows.length && <p className="p-6 text-center text-[13px] text-gray-700">You have no notifications.</p>}
             <ul className="max-h-96 divide-y divide-gray-100 overflow-y-auto">
-              {rows.map((n) => (
+              {rows.map((n) => {
+                const link = safeAppPath(n.link);
+                return (
                 <li key={n.id} className={cn('flex items-start justify-between gap-2 px-3 py-2 text-[13px]', !n.readAt && 'bg-blue-50')}>
                   <div className="min-w-0">
-                    {n.link?.startsWith('/') ? (
+                    {link ? (
                       <Link
-                        to={n.link}
+                        to={link}
                         className="font-medium text-gray-900 underline"
                         onClick={() => {
                           setOpen(false);
@@ -99,7 +102,8 @@ export function NotificationBell() {
                     </Button>
                   )}
                 </li>
-              ))}
+                );
+              })}
             </ul>
             {(q.data?.meta.total ?? 0) > rows.length && <p className="border-t border-gray-100 px-3 py-1.5 text-xs text-gray-600">Showing the latest {rows.length} of {q.data?.meta.total}.</p>}
           </>

@@ -323,7 +323,7 @@ test('booking without a quotation, deviations, camera, letter and scanning', asy
   await page.locator('input[aria-label="Upload to Scanned letter (PDF)"]').setInputFiles({ name: 'scan.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF') });
   await expect(page.getByRole('button', { name: 'scan.pdf', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Email acknowledgement' }).click();
-  await expect(page.getByRole('dialog').getByLabel('To')).toHaveValue('rohan@contoso.example');
+  await expect(page.getByRole('dialog').getByRole('textbox', { name: 'To', exact: true })).toHaveValue('rohan@contoso.example');
   await page.getByRole('dialog').getByRole('button', { name: 'Send' }).click();
   await expect(page.getByText('Acknowledgement queued')).toBeVisible();
   await expect(page.getByRole('table', { name: 'Email delivery log' })).toContainText('rohan@contoso.example', { timeout: 60_000 });

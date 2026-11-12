@@ -83,10 +83,10 @@ export function VersionTerms({ version: v }: { version: Version }) {
     ['Estimated days', v.estimatedDays === null ? null : String(v.estimatedDays)],
     ['Contact person', v.contactPerson],
     ['Payment terms', v.paymentTerms],
-    ['Delivery address', v.deliveryAddress],
+    ['Send samples to', v.deliveryAddress],
   ];
   return (
-    <dl className="grid gap-x-6 gap-y-2 text-[13px] sm:grid-cols-2 lg:grid-cols-3">
+    <dl className="grid grid-cols-[minmax(0,1fr)] gap-x-6 gap-y-2 text-[13px] sm:grid-cols-2 lg:grid-cols-3">
       {items.map(([label, value]) => (
         <div key={label}>
           <dt className="text-xs font-medium text-gray-600">{label}</dt>

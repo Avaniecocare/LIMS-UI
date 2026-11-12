@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import type { components } from '@/api/schema';
 import { useSession } from '@/app/providers';
 import { DataTable, type Col } from '@/components/DataTable';
-import { ReasonDialog, SavedFilters, SearchBox, StatusBadge } from '@/components/shared';
+import { ReasonDialog, SavedFilters, SearchBox, StatusBadge, MobileFilters } from '@/components/shared';
 import { Badge, Button, Card, ConfirmDialog, EmptyState, PageHeader, Select, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
 import { formatDate, formatDateTime } from '@/lib/format';
@@ -31,8 +31,8 @@ function ResultsTab() {
   const client = useQueryClient();
   const { can } = useSession();
   const list = useListState();
-  // The tab lives in the URL with the filters, but it is not an API parameter.
-  const query = Object.fromEntries(Object.entries(list.query).filter(([k]) => k !== 'tab'));
+  // The tab lives in the URL with the filters; list.query already leaves it out of API calls.
+  const query = list.query;
   const q = useQuery({ queryKey: ['test-approvals', query], queryFn: async () => unwrap(await api.GET('/api/v1/tests/approvals', { params: { query } })) });
   const departments = useQuery({ queryKey: ['department-options'], enabled: can('masters.view'), staleTime: 60_000, queryFn: async () => unwrap(await api.GET('/api/v1/masters/departments', { params: { query: { pageSize: 200 } } })).data });
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
@@ -160,6 +160,7 @@ function ResultsTab() {
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
         <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search test, sample or job" label="Search results to approve" />
+        <MobileFilters filters={list.filters} onClear={list.clearFilters}>
         {departments.data && (
           <Select aria-label="Department filter" className="w-44" value={list.filters.departmentId ?? ''} onChange={(e) => list.setFilter('departmentId', e.target.value || null)}>
             <option value="">All departments</option>
@@ -171,6 +172,7 @@ function ResultsTab() {
           </Select>
         )}
         <SavedFilters screen="approvals-results" current={list.allParams} onApply={list.applyFilters} />
+        </MobileFilters>
       </div>
       {bulkResult && (
         <Card role="status" className="p-3 text-[13px]">
@@ -231,7 +233,7 @@ function ResultsTab() {
         renderExpanded={(i) =>
           expanded[i.id] ? (
             <div className="bg-gray-50 p-3">
-              <div className="overflow-hidden rounded-md border border-gray-200 bg-white">
+              <div className="overflow-hidden rounded-md border border-gray-200 bg-surface">
                 <ResultTable results={i.results} caption={`Results of ${i.testCode} on ${i.sampleNo}`} />
               </div>
               {i.methodName && <p className="mt-2 text-xs text-gray-700">Method: {i.methodName}</p>}
@@ -290,7 +292,7 @@ function ReportsTable({ status, title, search, sort, onSortChange }: { status: R
         onRowClick={(r) => navigate(`/approvals/reports/${r.id}`)}
         getRowId={(r) => r.id}
         emptyTitle="No reports here"
-        maxHeightClass={title ? 'max-h-[40vh]' : undefined}
+        maxHeightClass={title ? 'max-h-[40dvh]' : undefined}
       />
     </section>
   );
@@ -302,7 +304,9 @@ function ReportsTab({ statuses, screen }: { statuses: { status: ReportStatus; ti
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
         <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search report, sample or customer" label="Search reports" />
+        <MobileFilters filters={list.filters} onClear={list.clearFilters}>
         <SavedFilters screen={screen} current={list.allParams} onApply={list.applyFilters} />
+        </MobileFilters>
       </div>
       {statuses.map((s) => (
         <ReportsTable key={s.status} status={s.status} title={s.title} search={list.q} sort={list.sort} onSortChange={list.setSort} />

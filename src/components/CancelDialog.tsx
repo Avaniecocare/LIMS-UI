@@ -87,7 +87,7 @@ export function CancelDialog({ target, onClose, onCancelled }: { target: CancelT
               </ul>
             </div>
           )}
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-4 md:grid-cols-2">
             <Effect title="Samples" count={d.samples.length}>
               {d.samples.map((s) => (
                 <li key={s.id}>{s.sampleNo}</li>

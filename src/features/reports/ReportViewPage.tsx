@@ -107,7 +107,7 @@ export default function ReportViewPage() {
           {hasDate && <DateRangeFilter from={f.from ?? ''} to={f.to ?? ''} onChange={list.setFilter} />}
           {filters.includes('customer') && can('customers.view') && (
             <div className="w-56">
-              <CustomerPicker ariaLabel="Customer filter" placeholder="All customers" value={f.customerId ?? ''} onChange={(v) => list.setFilter('customerId', v || null)} />
+              <CustomerPicker allowCreate={false} ariaLabel="Customer filter" placeholder="All customers" value={f.customerId ?? ''} onChange={(v) => list.setFilter('customerId', v || null)} />
             </div>
           )}
           {departments.data && (

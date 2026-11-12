@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { WhatsappButton } from '@/features/whatsapp/WhatsappSend';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Download } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
@@ -11,6 +12,7 @@ import { useSession } from '@/app/providers';
 import { EmailLogTable, HistoryList, reserveTab, ReasonDialog, StatusBadge, toastDocumentError } from '@/components/shared';
 import { Badge, Button, Card, CardHeader, Checkbox, Dialog, EmptyState, ErrorState, Field, Input, PageHeader, Select, Spinner, Tabs, TabsContent, TabsList, TabsTrigger, Textarea } from '@/components/ui/primitives';
 import { ApiError, api, unwrap } from '@/lib/api';
+import { ReportPhotos } from './ReportPhotos';
 import { cn, formatDateTime, humanize } from '@/lib/format';
 import { applyServerErrors, isConflict, toastError, writeError } from '@/lib/forms';
 
@@ -55,7 +57,7 @@ function RejectDialog({ report, revision, open, onOpenChange, onDone, onConflict
           if (ready) m.mutate();
         }}
       >
-        <Field label="Reason" htmlFor="reject-reason" required>
+        <Field label="Reason" htmlFor="reject-reason" required hint="Whoever corrects or re-tests sees this.">
           <Textarea id="reject-reason" autoFocus required maxLength={REASON_MAX} value={reason} onChange={(e) => setReason(e.target.value)} />
         </Field>
         <fieldset className="space-y-1.5">
@@ -128,7 +130,7 @@ function CorrectDialog({ report, revision, open, onOpenChange, onDone, onConflic
         <Field label="Sample description" htmlFor="c-desc" required error={e.sampleDescription?.message}>
           <Input id="c-desc" aria-invalid={!!e.sampleDescription} {...form.register('sampleDescription')} />
         </Field>
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-3 md:grid-cols-2">
           <Field label="Customer reference" htmlFor="c-ref" error={e.customerReference?.message}>
             <Input id="c-ref" {...form.register('customerReference')} />
           </Field>
@@ -136,7 +138,7 @@ function CorrectDialog({ report, revision, open, onOpenChange, onDone, onConflic
             <Input id="c-attn" {...form.register('kindAttention')} />
           </Field>
         </div>
-        <Field label="Report remarks" htmlFor="c-remarks" error={e.reportRemarks?.message}>
+        <Field label="Report remarks" htmlFor="c-remarks" error={e.reportRemarks?.message} hint="Printed on the report.">
           <Textarea id="c-remarks" rows={4} {...form.register('reportRemarks')} />
         </Field>
         <div className="flex justify-end gap-2">
@@ -289,12 +291,12 @@ function RevisionCard({ report, revision }: { report: Report; revision: Revision
               Download revision {revision.revisionNo}
             </Button>
           ) : (
-            <span className="text-[13px] text-gray-600">{['APPROVED'].includes(revision.status) ? 'Preparing the PDF…' : 'No PDF yet'}</span>
+            revision.status === 'APPROVED' ? <RegeneratePdf reportId={report.id} approvedAt={revision.approvedAt} /> : <span className="text-[13px] text-gray-600">No PDF yet</span>
           )
         }
       />
       <div className="space-y-3 p-4 text-[13px]">
-        <dl className="grid gap-x-4 gap-y-2 sm:grid-cols-2 xl:grid-cols-3">
+        <dl className="grid grid-cols-[minmax(0,1fr)] gap-x-4 gap-y-2 sm:grid-cols-2 xl:grid-cols-3">
           {revision.revisionReason && <Detail label="Reason for revision">{revision.revisionReason}</Detail>}
           <Detail label="ULR">{revision.ulrNumber ?? '—'}</Detail>
           <Detail label="Reviewed by">{revision.reviewedByName ? `${revision.reviewedByName} · ${formatDateTime(revision.reviewedAt)}` : '—'}</Detail>
@@ -497,6 +499,7 @@ export default function ReportDetailPage() {
                 Email again
               </Button>
             )}
+            {status === 'ISSUED' && <WhatsappButton kind="report" entityId={report.id} title={report.reportNo} />}
             {status === 'ISSUED' && can('reports.revise') && (
               <Button variant="secondary" onClick={() => setDialog('revise')}>
                 Revise
@@ -531,6 +534,7 @@ export default function ReportDetailPage() {
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="mb-4">
           <TabsTrigger value="preview">Preview</TabsTrigger>
+          <TabsTrigger value="photos">Photos ({report.samplePhotos.length})</TabsTrigger>
           <TabsTrigger value="revisions">Revisions and tests ({report.revisions.length})</TabsTrigger>
           <TabsTrigger value="delivery">Delivery</TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
@@ -550,7 +554,10 @@ export default function ReportDetailPage() {
           </div>
           {preview.isLoading && <Spinner label="Preparing the preview" />}
           {preview.error && <ErrorState error={preview.error} onRetry={preview.refetch} />}
-          {preview.data && <iframe title={`Preview of ${report.reportNo} revision ${shownNo}`} sandbox="" srcDoc={preview.data.html} className={cn('h-[calc(100vh-14rem)] min-h-[32rem] w-full rounded-lg border border-gray-200 bg-white', preview.isFetching && 'opacity-70')} />}
+          {preview.data && <iframe title={`Preview of ${report.reportNo} revision ${shownNo}`} sandbox="" srcDoc={preview.data.html} className={cn('h-[calc(100dvh-14rem)] min-h-[32rem] w-full rounded-lg border border-gray-200 bg-surface', preview.isFetching && 'opacity-70')} />}
+        </TabsContent>
+        <TabsContent value="photos">
+          <ReportPhotos report={report} version={latest.version} editable={canCorrect} onSaved={applied} onConflict={reload} />
         </TabsContent>
         <TabsContent value="revisions">
           <div className="space-y-4">
@@ -601,5 +608,37 @@ export default function ReportDetailPage() {
       <SendDialog report={report} mode="email" open={dialog === 'email'} onOpenChange={(o) => setDialog(o ? 'email' : null)} onSubmit={(v) => email.mutate(v)} loading={email.isPending} />
       <ReasonDialog open={dialog === 'revise'} onOpenChange={(o) => !o && setDialog(null)} title={`Revise ${report.reportNo}`} description="This starts a new revision, which goes through review and approval again. The issued revision stays valid until the new one is issued." confirmLabel="Start revision" loading={revise.isPending} onConfirm={(reason) => revise.mutate(reason)} />
     </>
+  );
+}
+
+/**
+ * The final PDF renders in the background after signing, normally within seconds. If it has not appeared after
+ * a couple of minutes (the worker was down, for example), offer to render it again from the frozen report.
+ */
+function RegeneratePdf({ reportId, approvedAt }: { reportId: string; approvedAt: string | null }) {
+  const client = useQueryClient();
+  const { can } = useSession();
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 15_000);
+    return () => clearInterval(t);
+  }, []);
+  const m = useMutation({
+    mutationFn: async () => unwrap(await api.POST('/api/v1/reports/{id}/regenerate-pdf', { params: { path: { id: reportId } } })),
+    onSuccess: (r) => {
+      client.setQueryData(['report', reportId], r);
+      toast.success('The PDF is being prepared again');
+    },
+    onError: toastError,
+  });
+  const late = approvedAt !== null && now - new Date(approvedAt).getTime() > 2 * 60_000;
+  if (!late || !(can('reports.approve') || can('reports.issue'))) return <span className="text-[13px] text-gray-600">Preparing the PDF…</span>;
+  return (
+    <span className="flex items-center gap-2 text-[13px] text-amber-800">
+      The PDF is taking longer than usual.
+      <Button variant="secondary" size="sm" loading={m.isPending} onClick={() => m.mutate()}>
+        Prepare it again
+      </Button>
+    </span>
   );
 }

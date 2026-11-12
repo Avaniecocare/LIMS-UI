@@ -1,6 +1,9 @@
 import { useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
+/** Address parameters that belong to the page, not to the list query. */
+const PAGE_ONLY = ['tab'];
+
 export interface ListState {
   page: number;
   pageSize: number;
@@ -31,8 +34,9 @@ export function useListState(defaults: { pageSize?: number } = {}) {
   const patch = useCallback(
     (changes: Record<string, string | number | null | undefined>) => {
       setParams(
-        (prev) => {
-          const next = new URLSearchParams(prev);
+        () => {
+          // Read the address now, not at render: a delayed search must not undo a tab change made since.
+          const next = new URLSearchParams(window.location.search);
           for (const [k, v] of Object.entries(changes)) {
             if (v === null || v === undefined || v === '') next.delete(k);
             else next.set(k, String(v));
@@ -53,7 +57,8 @@ export function useListState(defaults: { pageSize?: number } = {}) {
       pageSize: state.pageSize,
       ...(state.q ? { q: state.q } : {}),
       ...(state.sort ? { sort: state.sort.id, order: state.sort.desc ? ('desc' as const) : ('asc' as const) } : {}),
-      ...state.filters,
+      // The page's tab shares the address with the filters, but it is never an API parameter.
+      ...Object.fromEntries(Object.entries(state.filters).filter(([k]) => !PAGE_ONLY.includes(k))),
     },
     setPage: (page: number) => patch({ page }),
     setPageSize: (pageSize: number) => patch({ pageSize, page: 1 }),
@@ -61,6 +66,8 @@ export function useListState(defaults: { pageSize?: number } = {}) {
     setSort: (sort: { id: string; desc: boolean } | null) => patch({ sort: sort?.id ?? null, order: sort ? (sort.desc ? 'desc' : 'asc') : null, page: 1 }),
     setFilter: (key: string, value: string | null) => patch({ [key]: value, page: 1 }),
     applyFilters: (filters: Record<string, string>) => setParams(new URLSearchParams(filters), { replace: true }),
+    /** Drops the filters but keeps the search, sorting, page size and the page's tab. */
+    clearFilters: () => setParams(new URLSearchParams([...params.entries()].filter(([k]) => ['q', 'sort', 'order', 'pageSize', 'tab', 'view'].includes(k))), { replace: true }),
     allParams: Object.fromEntries(params.entries()) as Record<string, string>,
   };
 }

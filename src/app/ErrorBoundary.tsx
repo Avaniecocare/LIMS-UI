@@ -8,7 +8,7 @@ export function CrashMessage() {
     <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center" role="alert">
       <h1 className="text-lg font-semibold text-gray-900">Something went wrong on this page</h1>
       <p className="max-w-md text-sm text-gray-800">Your saved work is safe. Reload the page to carry on. If this keeps happening, tell your administrator what you were doing.</p>
-      <button type="button" className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-900 hover:bg-gray-50" onClick={() => window.location.reload()}>
+      <button type="button" className="rounded-md border border-gray-300 bg-surface px-3 py-1.5 text-sm font-medium text-gray-900 hover:bg-gray-50" onClick={() => window.location.reload()}>
         Reload page
       </button>
     </div>

@@ -172,6 +172,11 @@ export default function QuotationDetailPage() {
               </Button>
             )}
             {(status === 'DRAFT' || status === 'SENT') && can('quotations.send') && <Button variant={status === 'DRAFT' ? 'primary' : 'secondary'} onClick={() => setDialog('send')}>{status === 'DRAFT' ? 'Send' : 'Send again'}</Button>}
+            {status === 'DRAFT' && can('quotations.decide') && (
+              <Button variant="secondary" onClick={() => setDialog('accept')}>
+                Customer accepted
+              </Button>
+            )}
             {status === 'SENT' && can('quotations.decide') && (
               <>
                 <Button onClick={() => setDialog('accept')}>Accept</Button>
@@ -233,7 +238,7 @@ export default function QuotationDetailPage() {
           {history.data?.length === 0 && <EmptyState title="No status changes yet" />}
           <ol className="space-y-2">
             {history.data?.map((h) => (
-              <li key={h.id} className="rounded border border-gray-200 bg-white p-2 text-[13px]">
+              <li key={h.id} className="rounded border border-gray-200 bg-surface p-2 text-[13px]">
                 <div className="flex flex-wrap justify-between gap-2">
                   <span className="font-medium text-gray-900">
                     {h.fromStatus ? `${humanize(h.fromStatus)} → ` : ''}
@@ -250,7 +255,7 @@ export default function QuotationDetailPage() {
         </TabsContent>
       </Tabs>
       <SendDialog quotation={quotation} open={dialog === 'send'} onOpenChange={(o) => setDialog(o ? 'send' : null)} onSent={applied} />
-      <ConfirmDialog open={dialog === 'accept'} onOpenChange={(o) => !o && setDialog(null)} title="Accept this quotation?" description="Record that the customer accepted the current version." confirmLabel="Accept" loading={accept.isPending} onConfirm={() => accept.mutate(quotation.version)} />
+      <ConfirmDialog open={dialog === 'accept'} onOpenChange={(o) => !o && setDialog(null)} title="Accept this quotation?" description={status === 'DRAFT' ? 'For a customer who accepted on the phone or in person. The prices and terms on this version are frozen now, as if it had been sent; nothing is emailed.' : 'Record that the customer accepted the current version.'} confirmLabel="Accept" loading={accept.isPending} onConfirm={() => accept.mutate(quotation.version)} />
       <ConfirmDialog open={dialog === 'convert'} onOpenChange={(o) => !o && setDialog(null)} title="Convert to a job?" description="This creates a job with the samples and tests on this quotation. It can only be done once." confirmLabel="Convert to job" loading={convert.isPending} onConfirm={() => convert.mutate()} />
       <ReasonDialog open={dialog === 'reject'} onOpenChange={(o) => !o && setDialog(null)} title="Reject this quotation" confirmLabel="Reject" danger loading={reject.isPending} onConfirm={(reason) => reject.mutate({ version: quotation.version, reason })} />
       <ReasonDialog open={dialog === 'revise'} onOpenChange={(o) => !o && setDialog(null)} title="Revise this quotation" description="Creates a new draft version. Earlier versions stay as they were." confirmLabel="Revise" loading={revise.isPending} onConfirm={(reason) => revise.mutate({ version: quotation.version, reason })} />

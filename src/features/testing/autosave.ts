@@ -161,3 +161,5 @@ const NUMBER = /^[-+]?(\d+\.?\d*|\.\d+)([eE][-+]?\d+)?$/;
 
 /** Format check only, so half-typed text is not sent. The server does all the arithmetic. */
 export const isNumberText = (text: string) => NUMBER.test(text.trim());
+/** A numeric result as an analyst may type it: a number, or "<0.005" / ">250" when it is below or above what the method can measure. */
+export const isResultText = (text: string) => isNumberText(text.trim().replace(/^[<>]\s*/, ''));

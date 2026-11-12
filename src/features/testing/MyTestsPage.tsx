@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { components } from '@/api/schema';
 import { DataTable, type Col } from '@/components/DataTable';
-import { SavedFilters, SearchBox, StatusBadge } from '@/components/shared';
+import { SavedFilters, SearchBox, StatusBadge, MobileFilters } from '@/components/shared';
 import { Badge, PageHeader, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
 import { formatDate } from '@/lib/format';
@@ -82,7 +82,9 @@ export default function MyTestsPage() {
       <TabsContent value={view} className="space-y-3">
         <div className="flex flex-wrap items-center gap-2">
           <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search test, sample or job" label="Search my tests" />
+          <MobileFilters filters={list.filters} onClear={list.clearFilters}>
           <SavedFilters screen="my-tests" current={list.allParams} onApply={list.applyFilters} />
+          </MobileFilters>
         </div>
         <DataTable ariaLabel="My tests" columns={columns} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} onRowClick={(t) => navigate(`/my-tests/${t.id}`)} getRowId={(t) => t.id} emptyTitle={view === 'open' ? 'Nothing is waiting for you' : 'Nothing submitted yet'} />
       </TabsContent>

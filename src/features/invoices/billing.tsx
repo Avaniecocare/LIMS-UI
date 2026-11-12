@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useCanWhatsapp, WhatsappDialog } from '@/features/whatsapp/WhatsappSend';
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useForm, type FieldValues, type Path, type UseFormRegister } from 'react-hook-form';
@@ -118,10 +119,10 @@ export function RecordPaymentDialog({ open, onOpenChange, invoice, customerId, o
   return (
     <Dialog open={open} onOpenChange={onOpenChange} title="Record payment" wide>
       <form className="space-y-3" onSubmit={form.handleSubmit((v) => m.mutate(v))} noValidate>
-        <div className="grid gap-3 md:grid-cols-3">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-3 md:grid-cols-3">
           {!fixedCustomer && (
             <Field label="Customer" htmlFor="pay-customer" required error={e.customerId?.message} className="md:col-span-3">
-              <CustomerPicker id="pay-customer" value={chosen} invalid={!!e.customerId} onChange={(v) => form.setValue('customerId', v, { shouldValidate: true })} />
+              <CustomerPicker allowCreate={false} id="pay-customer" value={chosen} invalid={!!e.customerId} onChange={(v) => form.setValue('customerId', v, { shouldValidate: true })} />
             </Field>
           )}
           <Field label="Date" htmlFor="pay-date" required error={e.paidOn?.message}>
@@ -136,7 +137,7 @@ export function RecordPaymentDialog({ open, onOpenChange, invoice, customerId, o
               ))}
             </Select>
           </Field>
-          <Field label="Reference" htmlFor="pay-ref" error={e.reference?.message}>
+          <Field label="Reference" htmlFor="pay-ref" error={e.reference?.message} hint="Cheque, UTR or transaction number.">
             <Input id="pay-ref" {...form.register('reference')} />
           </Field>
           <Field label="Amount" htmlFor="pay-amount" required error={e.amount?.message}>
@@ -227,8 +228,11 @@ export function ApplyAdvanceDialog({ payment, onClose }: { payment: Payment | nu
 /** Sends a logged reminder to the customer's contact. */
 export function ReminderDialog({ invoice, onClose }: { invoice: { id: string; invoiceNo: string | null; customerName: string } | null; onClose: () => void }) {
   const client = useQueryClient();
+  const [to, setTo] = useState('');
+  const [whatsappFor, setWhatsappFor] = useState<{ id: string; invoiceNo: string | null } | null>(null);
+  const whatsapp = useCanWhatsapp('reminder');
   const m = useMutation({
-    mutationFn: async () => unwrap(await api.POST('/api/v1/invoices/{id}/remind', { params: { path: { id: invoice!.id } }, body: {} })),
+    mutationFn: async () => unwrap(await api.POST('/api/v1/invoices/{id}/remind', { params: { path: { id: invoice!.id } }, body: to.trim() ? { to: to.trim() } : {} })),
     onSuccess: () => {
       toast.success('Reminder sent');
       refreshBilling(client);
@@ -239,7 +243,27 @@ export function ReminderDialog({ invoice, onClose }: { invoice: { id: string; in
       toastError(error);
     },
   });
-  return <ConfirmDialog open={!!invoice} onOpenChange={(o) => !o && onClose()} title={`Send a reminder for ${invoice?.invoiceNo ?? ''}?`} description={`${invoice?.customerName ?? 'The customer'}'s contact receives it by email, and it is logged on the invoice.`} confirmLabel="Send reminder" loading={m.isPending} onConfirm={() => m.mutate()} />;
+  if (whatsappFor) return <WhatsappDialog kind="reminder" entityId={whatsappFor.id} title={`a reminder for ${whatsappFor.invoiceNo ?? 'this invoice'}`} onClose={() => setWhatsappFor(null)} />;
+  return (
+    <ConfirmDialog open={!!invoice} onOpenChange={(o) => !o && onClose()} title={`Send a reminder for ${invoice?.invoiceNo ?? ''}?`} description={`${invoice?.customerName ?? 'The customer'}'s contact receives it by email, and it is logged on the invoice.`} confirmLabel="Send reminder" loading={m.isPending} onConfirm={() => m.mutate()} >
+      <Field label="Send to" htmlFor="reminder-to" hint="Leave empty to use the customer's contact email.">
+        <Input id="reminder-to" type="email" value={to} onChange={(e) => setTo(e.target.value)} />
+      </Field>
+      {whatsapp && invoice && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="mt-2"
+          onClick={() => {
+            setWhatsappFor(invoice);
+            onClose();
+          }}
+        >
+          Send it on WhatsApp instead
+        </Button>
+      )}
+    </ConfirmDialog>
+  );
 }
 
 /** Whether this user may record money or send reminders on an invoice in this state. */

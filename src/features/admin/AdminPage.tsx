@@ -7,10 +7,16 @@ import type { components } from '@/api/schema';
 import { useSession } from '@/app/providers';
 import { DataTable, useDebounced, type Col } from '@/components/DataTable';
 import { uploadEntityFile } from '@/components/shared';
-import { Badge, Button, Card, CardHeader, Checkbox, Dialog, ErrorState, Field, Input, PageHeader, Select, Spinner, Tabs, TabsContent, TabsList, TabsTrigger, Textarea } from '@/components/ui/primitives';
+import { Badge, Button, Card, CardHeader, Checkbox, ConfirmDialog, Dialog, ErrorState, Field, Input, PageHeader, Select, Spinner, Tabs, TabsContent, TabsList, TabsTrigger, Textarea } from '@/components/ui/primitives';
+import { DirtyScope, useCloseGuard, useDirtyScope, useLeaveGuard, useReportDirty } from '@/lib/use-leave-guard';
 import { api, unwrap } from '@/lib/api';
 import { formatDate, formatDateTime } from '@/lib/format';
 import { applyServerErrors, toastError } from '@/lib/forms';
+import { EmailTemplatesTab, ModulesTab } from './LabExtras';
+import { PrivacyTab } from './PrivacyTab';
+import { WhatsappTab } from './WhatsappTab';
+import { BrandingTab, LabProfileTab } from './LabSettings';
+import { AccessRequestsTab, AccessReviewTab, PreviewRoleButton } from './SecurityTabs';
 import { useListState } from '@/lib/use-list-state';
 
 type User = components['schemas']['UserDto'];
@@ -50,7 +56,7 @@ function SignatureSection({ user, onChange }: { user: User; onChange: (user: Use
       <div className="mt-2 flex flex-wrap items-center gap-3">
         {user.signatureFileId ? (
           <>
-            {url.data ? <img src={url.data} alt={`Signature of ${user.name}`} className="h-14 max-w-48 rounded border border-gray-200 bg-white object-contain p-1" /> : <span className="text-[13px] text-gray-700">{url.isError ? 'The image could not be shown.' : 'Loading…'}</span>}
+            {url.data ? <img src={url.data} alt={`Signature of ${user.name}`} className="h-14 max-w-48 rounded border border-gray-200 bg-surface object-contain p-1" /> : <span className="text-[13px] text-gray-700">{url.isError ? 'The image could not be shown.' : 'Loading…'}</span>}
             <span className="text-[13px] text-gray-800">Signature on file</span>
           </>
         ) : (
@@ -82,6 +88,8 @@ function UserForm({ user, onDone, onChange }: { user: User | null; onDone: () =>
   const [roleIds, setRoleIds] = useState<string[]>(user?.roles.map((r) => r.id) ?? []);
   const [isActive, setActive] = useState(user?.isActive ?? true);
   const form = useForm({ defaultValues: { name: user?.name ?? '', email: user?.email ?? '', designation: user?.designation ?? '', phone: user?.phone ?? '', password: '' } });
+  const initialRoles = user?.roles.map((r) => r.id).sort().join() ?? '';
+  useReportDirty(form.formState.isDirty || [...roleIds].sort().join() !== initialRoles || isActive !== (user?.isActive ?? true));
   const m = useMutation({
     mutationFn: async (v: { name: string; email: string; designation: string; phone: string; password: string }) => {
       if (user) {
@@ -99,7 +107,7 @@ function UserForm({ user, onDone, onChange }: { user: User | null; onDone: () =>
   const e = form.formState.errors;
   return (
     <form className="space-y-3" onSubmit={form.handleSubmit((v) => m.mutate(v))} noValidate>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2">
         <Field label="Name" htmlFor="u-name" error={e.name?.message} required>
           <Input id="u-name" {...form.register('name')} />
         </Field>
@@ -120,7 +128,7 @@ function UserForm({ user, onDone, onChange }: { user: User | null; onDone: () =>
       )}
       <fieldset>
         <legend className="mb-1 text-[13px] font-medium text-gray-700">Roles</legend>
-        <div className="grid gap-1.5 sm:grid-cols-2">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-1.5 sm:grid-cols-2">
           {roles.data?.map((r) => (
             <Checkbox key={r.id} id={`role-${r.id}`} label={r.name} checked={roleIds.includes(r.id)} onCheckedChange={(v) => setRoleIds((ids) => (v ? [...ids, r.id] : ids.filter((x) => x !== r.id)))} />
           ))}
@@ -176,6 +184,8 @@ function UsersTab() {
   }, [debounced]);
   const [editing, setEditing] = useState<User | 'new' | null>(null);
   const [resetting, setResetting] = useState<User | null>(null);
+  const formScope = useDirtyScope();
+  const closeGuard = useCloseGuard(formScope.dirty, () => setEditing(null));
   const q = useQuery({
     queryKey: ['users', list.query],
     queryFn: async () => unwrap(await api.GET('/api/v1/admin/users', { params: { query: list.query } })),
@@ -215,9 +225,10 @@ function UsersTab() {
         </Button>
       </div>
       <DataTable ariaLabel="Users" columns={columns} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} sort={list.sort} onSortChange={list.setSort} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} onRowClick={setEditing} getRowId={(r) => r.id} emptyTitle="No users match" />
-      <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)} title={editing === 'new' ? 'Add user' : 'Edit user'}>
-        {editing && <UserForm user={editing === 'new' ? null : editing} onDone={() => setEditing(null)} onChange={setEditing} />}
+      <Dialog open={!!editing} onOpenChange={(o) => !o && closeGuard.requestClose()} title={editing === 'new' ? 'Add user' : 'Edit user'}>
+        <DirtyScope value={formScope.report}>{editing && <UserForm user={editing === 'new' ? null : editing} onDone={() => setEditing(null)} onChange={setEditing} />}</DirtyScope>
       </Dialog>
+      {closeGuard.dialog}
       <Dialog open={!!resetting} onOpenChange={(o) => !o && setResetting(null)} title={`Reset password for ${resetting?.name ?? ''}`}>
         {resetting && <ResetPasswordForm user={resetting} onDone={() => setResetting(null)} />}
       </Dialog>
@@ -232,6 +243,7 @@ function RoleEditor({ role, onDone }: { role: Role | null; onDone: () => void })
   const [name, setName] = useState(role?.name ?? '');
   const [description, setDescription] = useState(role?.description ?? '');
   const [selected, setSelected] = useState<string[]>(role?.permissions ?? []);
+  useReportDirty(name !== (role?.name ?? '') || description !== (role?.description ?? '') || [...selected].sort().join() !== [...(role?.permissions ?? [])].sort().join());
   const grouped = useMemo(() => {
     const out = new Map<string, components['schemas']['PermissionDto'][]>();
     for (const p of perms.data ?? []) out.set(p.module, [...(out.get(p.module) ?? []), p]);
@@ -257,7 +269,7 @@ function RoleEditor({ role, onDone }: { role: Role | null; onDone: () => void })
         m.mutate();
       }}
     >
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2">
         <Field label="Role name" htmlFor="r-name" required>
           <Input id="r-name" value={name} onChange={(e) => setName(e.target.value)} />
         </Field>
@@ -265,7 +277,7 @@ function RoleEditor({ role, onDone }: { role: Role | null; onDone: () => void })
           <Input id="r-desc" value={description} onChange={(e) => setDescription(e.target.value)} />
         </Field>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">
         {grouped.map(([module, items]) => (
           <fieldset key={module}>
             <legend className="mb-1 text-[13px] font-semibold text-gray-900">{module}</legend>
@@ -291,12 +303,15 @@ function RoleEditor({ role, onDone }: { role: Role | null; onDone: () => void })
 function RolesTab() {
   const roles = useRoles();
   const [editing, setEditing] = useState<Role | 'new' | null>(null);
+  const formScope = useDirtyScope();
+  const closeGuard = useCloseGuard(formScope.dirty, () => setEditing(null));
   const columns = useMemo<Col<Role>[]>(
     () => [
       { accessorKey: 'name', header: 'Role' },
       { accessorKey: 'description', header: 'Description' },
       { accessorKey: 'userCount', header: 'Users' },
       { id: 'perms', header: 'Permissions', cell: ({ row }) => row.original.permissions.length },
+      { id: 'preview', header: '', cell: ({ row }) => <PreviewRoleButton role={row.original} /> },
     ],
     [],
   );
@@ -306,9 +321,10 @@ function RolesTab() {
         <Button onClick={() => setEditing('new')}>Add role</Button>
       </div>
       <DataTable ariaLabel="Roles" columns={columns} rows={roles.data} loading={roles.isLoading} error={roles.error} onRetry={roles.refetch} onRowClick={setEditing} getRowId={(r) => r.id} />
-      <Dialog wide open={!!editing} onOpenChange={(o) => !o && setEditing(null)} title={editing === 'new' ? 'Add role' : `Edit ${(editing as Role | null)?.name ?? ''}`}>
-        {editing && <RoleEditor role={editing === 'new' ? null : editing} onDone={() => setEditing(null)} />}
+      <Dialog wide open={!!editing} onOpenChange={(o) => !o && closeGuard.requestClose()} title={editing === 'new' ? 'Add role' : `Edit ${(editing as Role | null)?.name ?? ''}`}>
+        <DirtyScope value={formScope.report}>{editing && <RoleEditor role={editing === 'new' ? null : editing} onDone={() => setEditing(null)} />}</DirtyScope>
       </Dialog>
+      {closeGuard.dialog}
     </div>
   );
 }
@@ -324,6 +340,7 @@ function SettingRow({ setting }: { setting: Setting }) {
   const [reason, setReason] = useState('');
   useEffect(() => setText(initial), [initial]);
   const dirty = text !== initial;
+  useReportDirty(dirty);
   const m = useMutation({
     mutationFn: async () => {
       let value: unknown = text;
@@ -342,7 +359,7 @@ function SettingRow({ setting }: { setting: Setting }) {
   const id = `s-${setting.key}`;
   return (
     <form
-      className="grid items-start gap-2 border-b border-gray-100 px-4 py-3 last:border-0 md:grid-cols-[16rem_1fr_auto]"
+      className="grid grid-cols-[minmax(0,1fr)] items-start gap-2 border-b border-gray-100 px-4 py-3 last:border-0 md:grid-cols-[16rem_1fr_auto]"
       onSubmit={(e) => {
         e.preventDefault();
         m.mutate();
@@ -364,7 +381,7 @@ function SettingRow({ setting }: { setting: Setting }) {
         )}
         {dirty && isSensitive(setting.key) && <Input aria-label="Reason for this change" placeholder="Reason for this change (required, written to the audit log)" value={reason} onChange={(e) => setReason(e.target.value)} />}
       </div>
-      <Button type="submit" variant="secondary" size="sm" className="mt-0.5" disabled={!dirty} loading={m.isPending}>
+      <Button type="submit" variant={dirty ? 'primary' : 'secondary'} size="sm" className="mt-0.5" disabled={!dirty} loading={m.isPending}>
         Save
       </Button>
     </form>
@@ -396,6 +413,7 @@ function TermsCard({ kind, label, current }: { kind: 'QUOTATION' | 'INVOICE' | '
   const client = useQueryClient();
   const [body, setBody] = useState(current?.body ?? '');
   useEffect(() => setBody(current?.body ?? ''), [current?.body]);
+  useReportDirty(body !== (current?.body ?? ''));
   const m = useMutation({
     mutationFn: () => api.POST('/api/v1/admin/terms', { body: { kind, body } }),
     onSuccess: () => {
@@ -447,7 +465,18 @@ function HolidaysTab() {
     },
     onError: toastError,
   });
-  const remove = useMutation({ mutationFn: (id: string) => api.DELETE('/api/v1/admin/holidays/{id}', { params: { path: { id } } }), onSuccess: invalidate, onError: toastError });
+  const [removing, setRemoving] = useState<components['schemas']['HolidayDto'] | null>(null);
+  const remove = useMutation({
+    mutationFn: (id: string) => api.DELETE('/api/v1/admin/holidays/{id}', { params: { path: { id } } }),
+    onSuccess: () => {
+      setRemoving(null);
+      invalidate();
+    },
+    onError: (e) => {
+      setRemoving(null);
+      toastError(e);
+    },
+  });
   const columns = useMemo<Col<components['schemas']['HolidayDto']>[]>(
     () => [
       { id: 'date', header: 'Date', cell: ({ row }) => formatDate(row.original.date) },
@@ -456,13 +485,13 @@ function HolidaysTab() {
         id: 'x',
         header: '',
         cell: ({ row }) => (
-          <Button variant="ghost" size="sm" onClick={() => remove.mutate(row.original.id)}>
+          <Button variant="ghost" size="sm" aria-label={`Remove ${row.original.name}`} onClick={() => setRemoving(row.original)}>
             Remove
           </Button>
         ),
       },
     ],
-    [remove],
+    [],
   );
   return (
     <div className="space-y-3">
@@ -484,6 +513,7 @@ function HolidaysTab() {
         </Button>
       </form>
       <DataTable ariaLabel="Holidays" columns={columns} rows={q.data} loading={q.isLoading} error={q.error} getRowId={(r) => r.id} emptyTitle="No holidays added" emptyHint="Due dates skip these days, along with non-working weekdays." />
+      <ConfirmDialog open={!!removing} onOpenChange={(o) => !o && setRemoving(null)} title={`Remove ${removing?.name ?? 'this holiday'}?`} description="Due dates worked out from now on will count this day as a working day." confirmLabel="Remove" danger loading={remove.isPending} onConfirm={() => removing && remove.mutate(removing.id)} />
     </div>
   );
 }
@@ -523,7 +553,7 @@ function AuditTab() {
       <DataTable ariaLabel="Audit log" columns={columns} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} onRowClick={setSelected} getRowId={(r) => r.id} emptyTitle="No entries match" />
       <Dialog wide open={!!selected} onOpenChange={(o) => !o && setSelected(null)} title={selected?.action ?? ''} description={selected ? `${formatDateTime(selected.at)} · ${(selected.userName) ?? 'System'}` : undefined}>
         {selected && (
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-3 md:grid-cols-2">
             {(['before', 'after'] as const).map((k) => (
               <div key={k}>
                 <p className="mb-1 text-[13px] font-semibold capitalize">{k}</p>
@@ -538,41 +568,21 @@ function AuditTab() {
 }
 
 // ---------------------------------------------------------------- company
-function CompanyTab() {
-  const q = useQuery({ queryKey: ['company'], queryFn: async () => unwrap(await api.GET('/api/v1/admin/company')) });
-  if (q.isLoading) return <Spinner />;
-  if (q.error) return <ErrorState error={q.error} onRetry={q.refetch} />;
-  const c = q.data!;
-  const rows: [string, unknown][] = [
-    ['Product name', c.productName], ['Company name', c.companyName], ['Legal name', c.legalName], ['GSTIN', c.gstin], ['PAN', c.pan], ['CIN', c.cin],
-    ['State', `${c.stateName} (${c.gstStateCode})`], ['SAC', `${c.sacCode} — ${c.sacDescription}`], ['Registered address', c.registeredAddress], ['Lab address', c.labAddress],
-    ['Phone', c.phone], ['Email', c.email], ['Website', c.website], ['Report verification email', c.reportVerificationEmail],
-    ['Bank account name', c.bankAccountName], ['Bank account number', c.bankAccountNumber], ['Bank', `${c.bankName}, ${c.bankBranch}`], ['IFSC', c.bankIfsc], ['SWIFT', c.bankSwift],
-    ['Certification text', c.certificationText], ['NABL mode', c.nablMode ? 'On' : 'Off'], ['NABL certificate no.', c.nablCertificateNo], ['ULR format', c.ulrFormat], ['Document prefix', c.documentPrefix],
-  ];
-  return (
-    <Card>
-      <CardHeader title="Company details" description={c.note} />
-      <dl className="grid gap-x-6 p-4 text-[13px] md:grid-cols-2">
-        {rows.map(([k, v]) => (
-          <div key={k} className="grid grid-cols-[11rem_1fr] gap-2 border-b border-gray-100 py-1.5">
-            <dt className="font-medium text-gray-700">{k}</dt>
-            <dd className="text-gray-900">{String(v ?? '') || '—'}</dd>
-          </div>
-        ))}
-      </dl>
-    </Card>
-  );
-}
-
 const TABS = [
   { id: 'users', label: 'Users', perm: 'admin.users', body: UsersTab },
   { id: 'roles', label: 'Roles', perm: 'admin.roles', body: RolesTab },
+  { id: 'access', label: 'Access requests', perm: 'admin.users', body: AccessRequestsTab },
+  { id: 'review', label: 'Access review', perm: 'admin.users', body: AccessReviewTab },
   { id: 'settings', label: 'Settings', perm: 'admin.settings', body: SettingsTab },
   { id: 'terms', label: 'Terms', perm: 'admin.settings', body: TermsTab },
   { id: 'holidays', label: 'Holidays', perm: 'admin.settings', body: HolidaysTab },
   { id: 'audit', label: 'Audit log', perm: 'admin.audit', body: AuditTab },
-  { id: 'company', label: 'Company', perm: 'admin.company.view', body: CompanyTab },
+  { id: 'company', label: 'Lab profile', perm: 'admin.company.view', body: LabProfileTab },
+  { id: 'branding', label: 'Branding', perm: 'admin.company.view', body: BrandingTab },
+  { id: 'emails', label: 'Email templates', perm: 'admin.company.view', body: EmailTemplatesTab },
+  { id: 'modules', label: 'Modules', perm: 'admin.company.view', body: ModulesTab },
+  { id: 'whatsapp', label: 'WhatsApp', perm: 'admin.company.view', body: WhatsappTab },
+  { id: 'privacy', label: 'Privacy', perm: 'privacy.manage', body: PrivacyTab },
 ];
 
 export default function AdminPage() {
@@ -580,10 +590,14 @@ export default function AdminPage() {
   const [params, setParams] = useSearchParams();
   const tabs = TABS.filter((t) => can(t.perm));
   const active = tabs.find((t) => t.id === params.get('tab'))?.id ?? tabs[0]?.id;
+  // Unsaved edits anywhere on the page: leaving the page, or switching tab (which unmounts it), asks first.
+  const scope = useDirtyScope();
+  const guard = useLeaveGuard(scope.dirty);
+  const [pendingTab, setPendingTab] = useState<string | null>(null);
   return (
-    <>
+    <DirtyScope value={scope.report}>
       <PageHeader title="Admin" />
-      <Tabs value={active} onValueChange={(tab) => setParams({ tab })}>
+      <Tabs value={active} onValueChange={(tab) => (scope.dirty ? setPendingTab(tab) : setParams({ tab }))}>
         <TabsList className="mb-4">
           {tabs.map((t) => (
             <TabsTrigger key={t.id} value={t.id}>
@@ -597,6 +611,19 @@ export default function AdminPage() {
           </TabsContent>
         ))}
       </Tabs>
-    </>
+      <ConfirmDialog
+        open={!!pendingTab}
+        onOpenChange={(o) => !o && setPendingTab(null)}
+        title="Discard your changes?"
+        description="Some changes on this tab have not been saved. They will be lost if you switch tab."
+        confirmLabel="Discard changes"
+        danger
+        onConfirm={() => {
+          if (pendingTab) setParams({ tab: pendingTab });
+          setPendingTab(null);
+        }}
+      />
+      {guard.dialog}
+    </DirtyScope>
   );
 }

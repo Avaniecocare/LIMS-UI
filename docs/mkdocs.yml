@@ -1,0 +1,52 @@
+# Template: build.mjs copies this with the placeholders filled in. Do not run mkdocs on it directly.
+site_name: "{{PRODUCT_NAME}} user guide"
+docs_dir: user-guide
+site_dir: ../dist/site
+use_directory_urls: false
+copyright: "{{PRODUCT_NAME}} user guide {{DOCS_VERSION}} · written for product version {{PRODUCT_VERSION}}"
+theme:
+  name: material
+  custom_dir: overrides
+  language: en
+  logo: assets/logo.png
+  favicon: assets/logo.png
+  palette:
+    primary: custom
+  features:
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+    - search.highlight
+    - search.suggest
+    - content.tabs.link
+    - toc.follow
+extra_css:
+  - assets/extra.css
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+plugins:
+  - search
+  - print-site:
+      add_to_navigation: false
+      add_cover_page: true
+      cover_page_template: overrides/cover.tpl
+      add_table_of_contents: true
+      toc_depth: 2
+      add_full_urls: false
+      enumerate_headings: true
+nav: {{NAV}}

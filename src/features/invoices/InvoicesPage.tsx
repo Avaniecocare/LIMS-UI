@@ -7,7 +7,7 @@ import type { components } from '@/api/schema';
 import { useSession } from '@/app/providers';
 import { DataTable, type Col } from '@/components/DataTable';
 import { CustomerPicker } from '@/components/pickers';
-import { DateRangeFilter, ReasonDialog, RowActions, SavedFilters, SearchBox, StatusBadge } from '@/components/shared';
+import { DateRangeFilter, ReasonDialog, RowActions, SavedFilters, SearchBox, StatusBadge, MobileFilters } from '@/components/shared';
 import { Badge, Button, ConfirmDialog, PageHeader, Select, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
 import { formatDate, humanize } from '@/lib/format';
@@ -27,7 +27,7 @@ function CustomerFilter({ value, onChange }: { value: string; onChange: (v: stri
   if (!can('customers.view')) return null;
   return (
     <div className="w-56">
-      <CustomerPicker ariaLabel="Customer filter" placeholder="All customers" value={value} onChange={(v) => onChange(v || null)} />
+      <CustomerPicker allowCreate={false} ariaLabel="Customer filter" placeholder="All customers" value={value} onChange={(v) => onChange(v || null)} />
     </div>
   );
 }
@@ -84,8 +84,10 @@ function ReadyTab() {
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
         <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search job or customer" label="Search jobs ready to invoice" />
+        <MobileFilters filters={list.filters} onClear={list.clearFilters}>
         <CustomerFilter value={list.filters.customerId ?? ''} onChange={(v) => list.setFilter('customerId', v)} />
         <SavedFilters screen="invoices-ready" current={list.allParams} onApply={list.applyFilters} />
+        </MobileFilters>
       </div>
       {canEdit && <p className="text-[13px] text-gray-700">Select one job, or several for the same customer, to create a draft invoice.</p>}
       <DataTable
@@ -163,6 +165,7 @@ function AllTab() {
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
         <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search invoice or customer" label="Search invoices" />
+        <MobileFilters filters={list.filters} onClear={list.clearFilters}>
         <Select aria-label="Status filter" className="w-40" value={list.filters.status ?? ''} onChange={(e) => list.setFilter('status', e.target.value || null)}>
           <option value="">All statuses</option>
           {['DRAFT', 'ISSUED', 'PARTIALLY_PAID', 'PAID', 'CANCELLED'].map((s) => (
@@ -174,6 +177,7 @@ function AllTab() {
         <CustomerFilter value={list.filters.customerId ?? ''} onChange={(v) => list.setFilter('customerId', v)} />
         <DateRangeFilter label="Invoice date" from={list.filters.from ?? ''} to={list.filters.to ?? ''} onChange={list.setFilter} />
         <SavedFilters screen="invoices" current={list.allParams} onApply={list.applyFilters} />
+        </MobileFilters>
       </div>
       <DataTable ariaLabel="Invoices" columns={columns} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} sort={list.sort} onSortChange={list.setSort} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} onRowClick={(r) => navigate(`/invoices/${r.id}`)} getRowId={(r) => r.id} emptyTitle="No invoices found" />
     </div>
@@ -263,6 +267,7 @@ function PaymentsTab() {
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
         <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search receipt, reference or customer" label="Search payments" />
+        <MobileFilters filters={list.filters} onClear={list.clearFilters}>
         <CustomerFilter value={list.filters.customerId ?? ''} onChange={(v) => list.setFilter('customerId', v)} />
         <Select aria-label="On account filter" className="w-44" value={list.filters.unapplied ?? ''} onChange={(e) => list.setFilter('unapplied', e.target.value || null)}>
           <option value="">All payments</option>
@@ -270,6 +275,7 @@ function PaymentsTab() {
         </Select>
         <DateRangeFilter label="Payment date" from={list.filters.from ?? ''} to={list.filters.to ?? ''} onChange={list.setFilter} />
         <SavedFilters screen="payments" current={list.allParams} onApply={list.applyFilters} />
+        </MobileFilters>
         {canEdit && (
           <Button className="ml-auto" onClick={() => setRecording(true)}>
             <Plus aria-hidden />

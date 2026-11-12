@@ -1,7 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { WhatsappButton } from '@/features/whatsapp/WhatsappSend';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { FileStack, Pencil, Plus } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -12,10 +13,14 @@ import { CancelDialog, type CancelTarget } from '@/components/CancelDialog';
 import { useLookups } from '@/components/pickers';
 import { Attachments, DocumentButton, EmailLogTable, HistoryList, pollDocumentJob, ReasonDialog, reserveTab, StatusBadge, toastDocumentError, uploadEntityFile } from '@/components/shared';
 import { Badge, Button, Card, CardHeader, ConfirmDialog, Dialog, EmptyState, ErrorState, Field, Input, PageHeader, Select, Spinner, Tabs, TabsContent, TabsList, TabsTrigger, Textarea } from '@/components/ui/primitives';
+import { PhoneUploadButton } from '@/components/PhoneUpload';
+import { ReportProblemButton } from '@/features/quality/ReportProblem';
+import { AckPhotoPicker } from './AckPhotoPicker';
 import { WebcamCapture } from '@/components/WebcamCapture';
 import { api, unwrap } from '@/lib/api';
 import { cn, formatDate, formatDateTime, humanize, toDateInput } from '@/lib/format';
 import { applyServerErrors, writeError } from '@/lib/forms';
+import { useLeaveGuard } from '@/lib/use-leave-guard';
 import { emptyHeader, HEADER_FIELDS, headerSchema, headerToBody, JobHeaderFields, sampleSchema, sampleShape, SampleFields, type HeaderValues, type SampleValues } from './job-fields';
 
 type Job = components['schemas']['JobDto'];
@@ -55,10 +60,20 @@ function JobHeaderForm({ job }: { job: Job }) {
   const updated = useJobUpdated();
   const identity = job.customerName !== null;
   const form = useForm<HeaderValues>({ resolver: zodResolver(headerSchema), defaultValues: toHeader(job) });
-  useEffect(() => form.reset(toHeader(job)), [job, form]);
+  const dirty = form.formState.isDirty;
+  const dirtyRef = useRef(dirty);
+  dirtyRef.current = dirty;
+  const guard = useLeaveGuard(dirty, 'The job details have changes that have not been saved. They will be lost if you leave this page.');
+  // Other actions on this page (sample edits, deviations, acknowledgement) refresh the job too. Take the
+  // fresh values only while nothing has been typed here, so a half-finished edit is never wiped.
+  // A different job remounts the page (router key), and a save of this form resets it below.
+  useEffect(() => {
+    if (!dirtyRef.current) form.reset(toHeader(job));
+  }, [job, form]);
   const m = useMutation({
     mutationFn: async (v: HeaderValues) => unwrap(await api.PATCH('/api/v1/jobs/{id}', { params: { path: { id: job.id } }, body: { version: job.version, ...headerToBody(v, identity) } })),
     onSuccess: (j) => {
+      form.reset(toHeader(j));
       updated(j);
       toast.success('Job saved');
     },
@@ -72,13 +87,15 @@ function JobHeaderForm({ job }: { job: Job }) {
           <JobHeaderFields form={form} identity={identity} idPrefix="j" disabled={!canEdit} />
         </fieldset>
         {canEdit && (
-          <div className="flex justify-end border-t border-gray-200 px-4 py-3">
+          <div className="flex items-center justify-end gap-3 border-t border-gray-200 px-4 py-3">
+            {dirty && <span className="text-[13px] text-gray-700">You have unsaved changes.</span>}
             <Button type="submit" loading={m.isPending}>
               Save job details
             </Button>
           </div>
         )}
       </Card>
+      {guard.dialog}
     </form>
   );
 }
@@ -126,7 +143,7 @@ function SampleCard({ job, sample, highlighted, onCancel }: { job: Job; sample: 
   const canFiles = can('jobs.create', 'jobs.edit');
   const canCancelTests = can('jobs.cancel', 'planning.edit');
   return (
-    <section id={`sample-${sample.id}`} tabIndex={-1} aria-label={`Sample ${sample.sampleNo}`} aria-current={highlighted ? 'true' : undefined} className={cn('scroll-mt-4 rounded-lg border bg-white outline-none', highlighted ? 'border-brand ring-2 ring-brand' : 'border-gray-200')}>
+    <section id={`sample-${sample.id}`} tabIndex={-1} aria-label={`Sample ${sample.sampleNo}`} aria-current={highlighted ? 'true' : undefined} className={cn('scroll-mt-4 rounded-lg border bg-surface outline-none', highlighted ? 'border-brand-focus ring-2 ring-brand-focus' : 'border-gray-200')}>
       <div className="flex flex-wrap items-start justify-between gap-2 border-b border-gray-200 px-4 py-3">
         <div>
           <h3 className="flex flex-wrap items-center gap-2 text-sm font-semibold text-gray-900">
@@ -154,7 +171,7 @@ function SampleCard({ job, sample, highlighted, onCancel }: { job: Job; sample: 
           )}
         </div>
       </div>
-      <div className="grid gap-4 p-4 lg:grid-cols-[1fr_2fr]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 p-4 lg:grid-cols-[1fr_2fr]">
         <div className="space-y-3">
           <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[13px]">
             {([
@@ -178,13 +195,16 @@ function SampleCard({ job, sample, highlighted, onCancel }: { job: Job; sample: 
             canEdit={canFiles}
             accept="image/png,image/jpeg"
             extraActions={
-              <WebcamCapture
-                title={`Sample images for ${sample.sampleNo}`}
-                onSave={async (files) => {
-                  for (const file of files) await uploadEntityFile('Sample', sample.id, 'sample-image', file);
-                  client.invalidateQueries({ queryKey: ['files', 'Sample', sample.id, 'sample-image'] });
-                }}
-              />
+              <>
+                <WebcamCapture
+                  title={`Sample images for ${sample.sampleNo}`}
+                  onSave={async (files) => {
+                    for (const file of files) await uploadEntityFile('Sample', sample.id, 'sample-image', file);
+                    client.invalidateQueries({ queryKey: ['files', 'Sample', sample.id, 'sample-image'] });
+                  }}
+                />
+                <PhoneUploadButton purpose="sample-image" entityId={sample.id} onReceived={() => void client.invalidateQueries({ queryKey: ['files', 'Sample', sample.id, 'sample-image'] })} />
+              </>
             }
           />
         </div>
@@ -387,8 +407,10 @@ function Acknowledgement({ job }: { job: Job }) {
     if (waiting && (emails.data?.length ?? 0) > before.current) setWaiting(false);
   }, [waiting, emails.data]);
   const form = useForm<AckValues>({ resolver: zodResolver(ackSchema), defaultValues: { to: '', cc: '' } });
+  const [photoIds, setPhotoIds] = useState<string[]>([]);
+  const samples = useMemo(() => job.samples.map((s) => ({ id: s.id, sampleNo: s.sampleNo })), [job.samples]);
   const m = useMutation({
-    mutationFn: async (v: AckValues) => unwrap(await api.POST('/api/v1/jobs/{id}/acknowledgement', { params: { path: { id: job.id } }, body: { to: v.to, cc: v.cc || null } })),
+    mutationFn: async (v: AckValues) => unwrap(await api.POST('/api/v1/jobs/{id}/acknowledgement', { params: { path: { id: job.id } }, body: { to: v.to, cc: v.cc || null, photoIds } })),
     onSuccess: () => {
       before.current = emails.data?.length ?? 0;
       setWaiting(true);
@@ -405,6 +427,8 @@ function Acknowledgement({ job }: { job: Job }) {
         title="Acknowledgement emails"
         actions={
           can('jobs.create', 'jobs.edit') && (
+            <div className="flex flex-wrap gap-2">
+            <WhatsappButton kind="acknowledgement" entityId={job.id} title={`the acknowledgement for ${job.jobNo}`} />
             <Button
               variant="secondary"
               size="sm"
@@ -415,10 +439,16 @@ function Acknowledgement({ job }: { job: Job }) {
             >
               Email acknowledgement
             </Button>
+            </div>
           )
         }
       />
       <div className="p-4">
+        {emails.data?.length === 0 && !waiting && can('jobs.create', 'jobs.edit') && (
+          <p className="mb-3 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-[13px] text-amber-900">
+            The customer has not been sent an acknowledgement yet. You can add photos of the samples as received (optional) and send it with <strong>Email acknowledgement</strong>.
+          </p>
+        )}
         <EmailLogTable rows={emails.data} loading={emails.isLoading} error={emails.error} onRetry={emails.refetch} />
         {waiting && (
           <p role="status" className="mt-2 text-[13px] text-gray-700">
@@ -426,7 +456,7 @@ function Acknowledgement({ job }: { job: Job }) {
           </p>
         )}
       </div>
-      <Dialog open={open} onOpenChange={setOpen} title="Email the acknowledgement">
+      <Dialog open={open} onOpenChange={setOpen} title="Email the acknowledgement" wide>
         <form className="space-y-3" onSubmit={form.handleSubmit((v) => m.mutate(v))} noValidate>
           <Field label="To" htmlFor="ack-to" required error={e.to?.message}>
             <Input id="ack-to" type="email" aria-invalid={!!e.to} {...form.register('to')} />
@@ -434,7 +464,15 @@ function Acknowledgement({ job }: { job: Job }) {
           <Field label="Cc" htmlFor="ack-cc" error={e.cc?.message}>
             <Input id="ack-cc" type="email" aria-invalid={!!e.cc} {...form.register('cc')} />
           </Field>
-          <div className="flex justify-end gap-2">
+          <fieldset className="space-y-2">
+            <legend className="text-[13px] font-medium text-gray-900">Photos of the samples as received</legend>
+            <AckPhotoPicker samples={samples} value={photoIds} onChange={setPhotoIds} />
+          </fieldset>
+          <div className="flex flex-wrap justify-end gap-2">
+            <DocumentButton variant="secondary" kind="job-acknowledgement" params={{ jobId: job.id, photoIds }}>
+              Preview letter
+            </DocumentButton>
+            <WhatsappButton kind="acknowledgement" entityId={job.id} title={`the acknowledgement for ${job.jobNo}`} label="Use WhatsApp instead" photoIds={photoIds} />
             <Button variant="secondary" onClick={() => setOpen(false)}>
               Cancel
             </Button>
@@ -473,7 +511,7 @@ function CustomerLetter({ jobId }: { jobId: string }) {
   return (
     <Card>
       <CardHeader title="Customer letter" description="Upload a scanned PDF, or capture the pages and combine them." />
-      <div className="grid gap-6 p-4 lg:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 p-4 lg:grid-cols-2">
         <Attachments entity="Job" entityId={jobId} category="letter" title="Scanned letter (PDF)" canEdit={canEdit} accept="application/pdf" />
         <div className="space-y-3">
           <Attachments
@@ -484,14 +522,17 @@ function CustomerLetter({ jobId }: { jobId: string }) {
             canEdit={canEdit}
             accept="image/png,image/jpeg"
             extraActions={
-              <WebcamCapture
-                title="Capture letter pages"
-                buttonLabel="Capture pages"
-                onSave={async (files) => {
-                  for (const file of files) await uploadEntityFile('Job', jobId, 'letter-page', file);
-                  client.invalidateQueries({ queryKey: pagesKey });
-                }}
-              />
+              <>
+                <WebcamCapture
+                  title="Capture letter pages"
+                  buttonLabel="Capture pages"
+                  onSave={async (files) => {
+                    for (const file of files) await uploadEntityFile('Job', jobId, 'letter-page', file);
+                    client.invalidateQueries({ queryKey: pagesKey });
+                  }}
+                />
+                <PhoneUploadButton purpose="letter-page" entityId={jobId} onReceived={() => void client.invalidateQueries({ queryKey: pagesKey })} />
+              </>
             }
           />
           {canEdit && (
@@ -594,6 +635,7 @@ export default function JobDetailPage() {
         }
         actions={
           <>
+            <ReportProblemButton reference={job.jobNo} context={`job ${job.jobNo}`} />
             {job.quotationId && can('quotations.view') && (
               <Button asChild variant="secondary">
                 <Link to={`/quotations/${job.quotationId}`}>Open quotation</Link>

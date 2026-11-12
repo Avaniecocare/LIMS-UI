@@ -1,0 +1,15 @@
+:root, [data-md-color-primary="custom"] {
+  --md-primary-fg-color: {{PRIMARY_COLOR}};
+  --md-primary-fg-color--light: {{PRIMARY_COLOR}};
+  --md-primary-fg-color--dark: {{PRIMARY_COLOR}};
+  --md-accent-fg-color: {{PRIMARY_COLOR}};
+}
+.md-banner { background: #f3f4f6; color: #374151; font-size: .7rem; }
+.md-typeset img.screenshot { border: 1px solid #d1d5db; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.md-typeset table:not([class]) { font-size: .72rem; }
+.md-typeset .mermaid { text-align: center; }
+/* Print: keep figures and tables whole, start chapters on a new page. */
+@media print {
+  .md-typeset img, .md-typeset table, .md-typeset .mermaid { break-inside: avoid; }
+  .print-site-enumerate-headings h1, #print-site-page h1 { break-before: page; }
+}

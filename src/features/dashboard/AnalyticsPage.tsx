@@ -11,7 +11,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section aria-label={`${title} charts`} className="space-y-3">
       <Suspense fallback={<Spinner label={`Loading ${title.toLowerCase()} charts`} />}>
-        <div className="grid gap-3 lg:grid-cols-2">{children}</div>
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-3 lg:grid-cols-2">{children}</div>
       </Suspense>
     </section>
   );

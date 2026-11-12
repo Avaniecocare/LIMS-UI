@@ -1,19 +1,24 @@
 import { expect, test } from '@playwright/test';
-import { signIn, unique } from './helpers';
+import { DEMO_PASSWORD, RATE_LIMIT_WAIT_MS, signIn, unique } from './helpers';
 
 test('branding and admin screens', async ({ page }) => {
   await page.goto('/login');
   await expect(page).toHaveTitle(/.+/);
-  const productName = await page.title();
-  expect(productName).not.toBe('Loading…');
+  await expect(page).not.toHaveTitle('Loading…');
+  // Each page names the browser tab after itself, then the product.
+  await expect(page).toHaveTitle(/^Sign in · .+/);
   await signIn(page, 'admin');
   await page.getByRole('link', { name: 'Admin' }).click();
   await expect(page.getByRole('table', { name: 'Users' })).toContainText('admin@demo.example');
-  for (const tab of ['Roles', 'Settings', 'Terms', 'Holidays', 'Audit log', 'Company']) {
+  await expect(page).toHaveTitle(/^Admin · .+/);
+  // Focus moves to the new page's heading after in-app navigation.
+  await expect(page.getByRole('heading', { level: 1, name: 'Admin' })).toBeFocused();
+  for (const tab of ['Roles', 'Settings', 'Terms', 'Holidays', 'Audit log', 'Branding', 'Lab profile']) {
     await page.getByRole('tab', { name: tab }).click();
     await expect(page.getByRole('tabpanel')).toBeVisible();
   }
-  await expect(page.getByRole('tabpanel')).toContainText('LIMS-Deploy');
+  // The lab's details are edited here now, not in a file on the server.
+  await expect(page.getByLabel('Laboratory name')).toBeEditable();
 });
 
 test('masters: create, edit, deactivate, history', async ({ page }) => {
@@ -68,4 +73,21 @@ test('customers: validation, create, contacts', async ({ page }) => {
   await page.locator('#ct-0-email').fill('asha@example.example');
   await page.getByRole('button', { name: 'Save customer' }).click();
   await expect(page.getByRole('heading', { name })).toBeVisible();
+});
+
+test('a deep link survives signing in', async ({ page }) => {
+  await page.context().clearCookies();
+  await page.goto('/admin?tab=roles');
+  await expect(page).toHaveURL(/\/login$/);
+  await page.getByLabel('Email').fill('admin@demo.example');
+  await page.getByLabel('Password').fill(DEMO_PASSWORD);
+  await page.getByRole('button', { name: 'Sign in' }).click();
+  const limited = page.getByRole('alert').filter({ hasText: 'Too many attempts' });
+  await expect(page.getByRole('navigation', { name: 'Main' }).or(limited).first()).toBeVisible();
+  if (await limited.isVisible()) {
+    await page.waitForTimeout(RATE_LIMIT_WAIT_MS);
+    await page.getByRole('button', { name: 'Sign in' }).click();
+  }
+  await expect(page).toHaveURL(/\/admin\?tab=roles$/);
+  await expect(page.getByRole('table', { name: 'Roles' })).toBeVisible();
 });

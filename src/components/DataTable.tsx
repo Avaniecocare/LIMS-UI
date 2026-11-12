@@ -1,9 +1,10 @@
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef, type RowSelectionState } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Fragment, useRef, type ReactNode } from 'react';
-import { Button, Checkbox, EmptyState, ErrorState, Select, Spinner } from '@/components/ui/primitives';
+import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
+import { Button, Checkbox, EmptyState, ErrorState, Select, TableSkeleton } from '@/components/ui/primitives';
 import { cn } from '@/lib/format';
+import { useMediaQuery } from '@/lib/use-media-query';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- each column has its own value type
 export type Col<T> = ColumnDef<T, any>;
@@ -42,6 +43,8 @@ export interface DataTableProps<T> {
 }
 
 const ROW_HEIGHT = 37;
+/** Fields a phone card shows before "More details". */
+const CARD_FIELDS = 4;
 
 /** Server-driven table: no client-side sort or pagination. Rows are virtualized. */
 export function DataTable<T>({
@@ -65,7 +68,7 @@ export function DataTable<T>({
   isRowSelectable,
   renderExpanded,
   ariaLabel,
-  maxHeightClass = 'max-h-[calc(100vh-15rem)]',
+  maxHeightClass = 'max-h-[calc(100dvh-15rem)]',
 }: DataTableProps<T>) {
   const allColumns: Col<T>[] = onSelectionChange
     ? [
@@ -111,17 +114,78 @@ export function DataTable<T>({
   const paddingBottom = items.length ? virtualizer.getTotalSize() - items[items.length - 1].end : 0;
 
   const selectedCount = Object.keys(selection ?? {}).length;
+  // Rows that arrive on a refresh (a sample just booked, a test just assigned) glow briefly. A new page or filter
+  // replaces most rows; that is not news, so nothing glows then.
+  const seen = useRef<Set<string> | null>(null);
+  const [fresh, setFresh] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    // Without real ids rows are numbered by position, which would mark the wrong ones.
+    if (!rows || !getRowId) return;
+    const ids = tableRows.map((r) => r.id);
+    const before = seen.current;
+    seen.current = new Set(ids);
+    if (!before || !before.size) return;
+    const added = ids.filter((id) => !before.has(id));
+    setFresh(added.length && added.length <= Math.max(1, Math.floor(ids.length / 3)) ? new Set(added) : new Set());
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- runs when the rows change
+  }, [rows]);
+  // On a phone a wide table only scrolls sideways; each row becomes a card of label and value instead.
+  const compact = useMediaQuery('(max-width: 639px)') && !renderExpanded;
+  const labelOf = (header: unknown, id: string) => (typeof header === 'string' ? header : id === '__select' ? '' : id);
 
   return (
-    <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+    <div className="overflow-hidden rounded-lg border border-gray-200 bg-surface">
       {selectedCount > 0 && bulkActions && (
         <div className="flex items-center gap-3 border-b border-gray-200 bg-gray-50 px-3 py-2 text-sm">
           <span className="font-medium">{selectedCount} selected</span>
           {bulkActions}
         </div>
       )}
-      <div ref={scrollRef} className={cn('overflow-auto', maxHeightClass)} tabIndex={0} role="group" aria-label={`${ariaLabel}, scrollable`}>
-        <table className="w-full border-collapse text-[13px]" aria-label={ariaLabel} aria-rowcount={meta?.total}>
+      <div ref={scrollRef} className={cn('overflow-auto', !compact && maxHeightClass)} tabIndex={0} role="group" aria-label={`${ariaLabel}, scrollable`}>
+        {compact && !loading && !error && tableRows.length > 0 && (
+          <ul className="divide-y divide-gray-100" aria-label={ariaLabel}>
+            {tableRows.map((row) => (
+              <li
+                key={row.id}
+                className={cn('px-3 py-2.5 text-[13px] transition-colors duration-(--motion-fast)', onRowClick && 'cursor-pointer active:bg-gray-100', row.getIsSelected() && 'bg-blue-50', fresh.has(row.id) && 'flash-new')}
+                onClick={onRowClick ? () => onRowClick(row.original) : undefined}
+                onKeyDown={onRowClick ? (e) => e.key === 'Enter' && e.target === e.currentTarget && onRowClick(row.original) : undefined}
+                tabIndex={onRowClick ? 0 : undefined}
+              >
+                {(() => {
+                  // The first few named columns are the record; buttons and ticks always show; the rest fold away.
+                  const cells = row.getVisibleCells();
+                  const named = cells.filter((c) => typeof c.column.columnDef.header === 'string');
+                  const key = new Set(named.slice(0, CARD_FIELDS).map((c) => c.id));
+                  const always = cells.filter((c) => key.has(c.id) || typeof c.column.columnDef.header !== 'string');
+                  const more = cells.filter((c) => !always.includes(c));
+                  const pairs = (list: typeof cells) =>
+                    list.map((cell) => (
+                      <Fragment key={cell.id}>
+                        <dt className="text-xs text-gray-600">{labelOf(cell.column.columnDef.header, cell.column.id)}</dt>
+                        <dd className="min-w-0 break-words text-gray-900">{flexRender(cell.column.columnDef.cell, cell.getContext())}</dd>
+                      </Fragment>
+                    ));
+                  return (
+                    <>
+                      <dl className="grid grid-cols-[minmax(6rem,auto)_1fr] gap-x-3 gap-y-1">{pairs(always)}</dl>
+                      {more.length > 0 && (
+                        <details className="group mt-1" onClick={(e) => e.stopPropagation()}>
+                          <summary className="cursor-pointer py-1 text-xs font-medium text-gray-700 select-none">
+                            <span className="group-open:hidden">More details</span>
+                            <span className="hidden group-open:inline">Fewer details</span>
+                          </summary>
+                          <dl className="grid animate-enter grid-cols-[minmax(6rem,auto)_1fr] gap-x-3 gap-y-1">{pairs(more)}</dl>
+                        </details>
+                      )}
+                    </>
+                  );
+                })()}
+              </li>
+            ))}
+          </ul>
+        )}
+        <table className={cn('w-full border-collapse text-[13px]', compact && !loading && !error && tableRows.length > 0 && 'hidden')} aria-label={ariaLabel} aria-rowcount={meta?.total}>
           <thead className="sticky top-0 z-10 bg-gray-50">
             {table.getHeaderGroups().map((group) => (
               <tr key={group.id} className="border-b border-gray-200">
@@ -148,7 +212,7 @@ export function DataTable<T>({
               </tr>
             ))}
           </thead>
-          {!loading && !error && tableRows.length > 0 && (
+          {!loading && !error && tableRows.length > 0 && !compact && (
             <tbody>
               {paddingTop > 0 && (
                 <tr aria-hidden>
@@ -163,7 +227,7 @@ export function DataTable<T>({
                     <tr
                       data-index={v.index}
                       ref={items.length ? virtualizer.measureElement : undefined}
-                      className={cn('border-b border-gray-100', onRowClick && 'cursor-pointer hover:bg-gray-50', row.getIsSelected() && 'bg-blue-50')}
+                      className={cn('border-b border-gray-100 transition-colors duration-(--motion-fast)', onRowClick && 'cursor-pointer hover:bg-gray-50', row.getIsSelected() && 'bg-blue-50', fresh.has(row.id) && 'flash-new')}
                       onClick={onRowClick ? () => onRowClick(row.original) : undefined}
                       onKeyDown={onRowClick ? (e) => e.key === 'Enter' && e.target === e.currentTarget && onRowClick(row.original) : undefined}
                       tabIndex={onRowClick ? 0 : undefined}
@@ -192,7 +256,7 @@ export function DataTable<T>({
             </tbody>
           )}
         </table>
-        {loading && <Spinner />}
+        {loading && <TableSkeleton columns={allColumns.length} />}
         {!loading && !!error && <ErrorState error={error} onRetry={onRetry} />}
         {!loading && !error && tableRows.length === 0 && <EmptyState title={emptyTitle}>{emptyHint}</EmptyState>}
       </div>

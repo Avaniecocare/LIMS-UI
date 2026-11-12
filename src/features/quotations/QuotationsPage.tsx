@@ -6,7 +6,7 @@ import type { components } from '@/api/schema';
 import { useSession } from '@/app/providers';
 import { DataTable, type Col } from '@/components/DataTable';
 import { CustomerPicker } from '@/components/pickers';
-import { DateRangeFilter, SavedFilters, SearchBox, StatusBadge } from '@/components/shared';
+import { DateRangeFilter, SavedFilters, SearchBox, StatusBadge, MobileFilters } from '@/components/shared';
 import { Button, PageHeader, Select } from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
 import { formatDate, formatINR, humanize } from '@/lib/format';
@@ -47,6 +47,7 @@ export default function QuotationsPage() {
       <div className="space-y-3">
         <div className="flex flex-wrap items-center gap-2">
           <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search quotation or customer" label="Search quotations" />
+          <MobileFilters filters={list.filters} onClear={list.clearFilters}>
           <Select aria-label="Status filter" className="w-36" value={list.filters.status ?? ''} onChange={(e) => list.setFilter('status', e.target.value || null)}>
             <option value="">All statuses</option>
             {['DRAFT', 'SENT', 'ACCEPTED', 'REJECTED', 'EXPIRED'].map((s) => (
@@ -57,11 +58,12 @@ export default function QuotationsPage() {
           </Select>
           {can('customers.view') && (
             <div className="w-56">
-              <CustomerPicker ariaLabel="Customer filter" placeholder="All customers" value={list.filters.customerId ?? ''} onChange={(v) => list.setFilter('customerId', v || null)} />
+              <CustomerPicker allowCreate={false} ariaLabel="Customer filter" placeholder="All customers" value={list.filters.customerId ?? ''} onChange={(v) => list.setFilter('customerId', v || null)} />
             </div>
           )}
           <DateRangeFilter label="Created" from={list.filters.from ?? ''} to={list.filters.to ?? ''} onChange={list.setFilter} />
           <SavedFilters screen="quotations" current={list.allParams} onApply={list.applyFilters} />
+          </MobileFilters>
         </div>
         <DataTable ariaLabel="Quotations" columns={columns} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} sort={list.sort} onSortChange={list.setSort} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} onRowClick={(r) => navigate(`/quotations/${r.id}`)} getRowId={(r) => r.id} emptyTitle="No quotations found" />
       </div>

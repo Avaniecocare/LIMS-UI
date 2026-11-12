@@ -144,8 +144,8 @@ function PlanDialog({ jobId, sampleIds, testIds, open, onOpenChange, onPlanned }
               ))}
             </div>
           </fieldset>
-          <div className="grid gap-3 md:grid-cols-[1fr_1fr_1fr_auto] md:items-end">
-            <Field label="Grade / specification" htmlFor="plan-spec">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-3 md:grid-cols-[1fr_1fr_1fr_auto] md:items-start">
+            <Field label="Grade / specification" htmlFor="plan-spec" hint="Results are checked against its limits.">
               <Select id="plan-spec" value={specificationId} onChange={(e) => {
                   setSpecificationId(e.target.value);
                   if (!e.target.value || e.target.value === dualSpecificationId) setDualSpecificationId('');
@@ -154,19 +154,19 @@ function PlanDialog({ jobId, sampleIds, testIds, open, onOpenChange, onPlanned }
                 {specs.data?.map(specOption)}
               </Select>
             </Field>
-            <Field label="Second grade (dual grade)" htmlFor="plan-dual">
+            <Field label="Second grade (dual grade)" htmlFor="plan-dual" hint="Optional. Results are checked against both.">
               <Select id="plan-dual" value={dualSpecificationId} disabled={!specificationId} onChange={(e) => setDualSpecificationId(e.target.value)}>
                 <option value="">None</option>
                 {specs.data?.filter((s) => s.id !== specificationId).map(specOption)}
               </Select>
             </Field>
-            <Field label="Test or chemical group" htmlFor="plan-group">
+            <Field label="Test or chemical group" htmlFor="plan-group" hint="Then use Suggest tests to add its tests.">
               <Select id="plan-group" value={groupId} onChange={(e) => setGroupId(e.target.value)}>
                 <option value="">None</option>
                 {groups.data?.map(specOption)}
               </Select>
             </Field>
-            <Button variant="secondary" disabled={!specificationId && !groupId} loading={suggest.isPending} onClick={() => suggest.mutate()}>
+            <Button variant="secondary" className="md:mt-6" disabled={!specificationId && !groupId} loading={suggest.isPending} onClick={() => suggest.mutate()}>
               Suggest tests
             </Button>
           </div>
@@ -213,7 +213,7 @@ function PlanDialog({ jobId, sampleIds, testIds, open, onOpenChange, onPlanned }
                     </Button>
                   </div>
                   <TestParameters testId={testId} />
-                  <div className="grid gap-2 md:grid-cols-4">
+                  <div className="grid grid-cols-[minmax(0,1fr)] gap-2 md:grid-cols-4">
                     {t?.category === 'CHEMICAL' && (
                       <Field label="Analysis mode" htmlFor={`plan-${testId}-mode`}>
                         <Select id={`plan-${testId}-mode`} value={v.analysisMode} onChange={(e) => set(testId, { analysisMode: e.target.value as PlanTestValues['analysisMode'] })}>
@@ -223,13 +223,13 @@ function PlanDialog({ jobId, sampleIds, testIds, open, onOpenChange, onPlanned }
                         </Select>
                       </Field>
                     )}
-                    <Field label="Office instructions" htmlFor={`plan-${testId}-office`}>
+                    <Field label="Office instructions" htmlFor={`plan-${testId}-office`} hint="Shown to the technician.">
                       <Textarea id={`plan-${testId}-office`} rows={1} className="min-h-9" value={v.officeInstructions} onChange={(e) => set(testId, { officeInstructions: e.target.value })} />
                     </Field>
-                    <Field label="Technical data" htmlFor={`plan-${testId}-tech`}>
+                    <Field label="Technical data" htmlFor={`plan-${testId}-tech`} hint="Sample details for the technician.">
                       <Textarea id={`plan-${testId}-tech`} rows={1} className="min-h-9" value={v.technicalData} onChange={(e) => set(testId, { technicalData: e.target.value })} />
                     </Field>
-                    <Field label="Assign to" htmlFor={`plan-${testId}-assignee`}>
+                    <Field label="Assign to" htmlFor={`plan-${testId}-assignee`} hint="Later leaves it in Unassigned.">
                       <Select id={`plan-${testId}-assignee`} value={v.assignedToId} onChange={(e) => set(testId, { assignedToId: e.target.value })}>
                         <option value="">Later</option>
                         {technicians.data?.map((u) => (
@@ -306,6 +306,17 @@ function AssignDialog({ rows, reassign, open, onOpenChange, onAssigned }: { rows
   });
   const chosenInstrument = instruments.data?.find((i) => i.id === instrumentId);
   const verb = reassign ? 'Reassign' : 'Assign';
+  // Quality: tests the chosen person is not authorised for (a warning, or a refusal if the lab enforces it).
+  const { moduleOn } = useSession();
+  const testIds = [...new Set(rows.map((r) => r.testId))];
+  const authorisation = useQuery({
+    queryKey: ['authorisation-check', assignedToId, testIds.join(',')],
+    enabled: open && !!assignedToId && moduleOn('quality'),
+    retry: false,
+    queryFn: async () => unwrap(await api.GET('/api/v1/quality/authorisations/check', { params: { query: { userId: assignedToId, testIds: testIds.join(',') } } })),
+  });
+  const unauthorised = rows.filter((r) => authorisation.data?.missing.includes(r.testId));
+  const unauthorisedNames = [...new Set(unauthorised.map((r) => r.testName))];
   return (
     <Dialog open={open} onOpenChange={onOpenChange} title={`${verb} ${rows.length} ${rows.length === 1 ? 'test' : 'tests'}`} description="Current open work is shown for each person and instrument." wide>
       <form
@@ -315,6 +326,12 @@ function AssignDialog({ rows, reassign, open, onOpenChange, onAssigned }: { rows
           if (assignedToId) m.mutate();
         }}
       >
+        {unauthorisedNames.length > 0 && (
+          <p role="status" className={cn('rounded-md border px-3 py-2 text-[13px]', authorisation.data?.enforced ? 'border-red-300 bg-red-50 text-red-900' : 'border-amber-300 bg-amber-50 text-amber-900')}>
+            {technicians.data?.find((t) => t.id === assignedToId)?.name ?? 'This person'} is not authorised for {unauthorisedNames.join(', ')}.{' '}
+            {authorisation.data?.enforced ? 'Your lab requires authorisation, so this assignment will be refused.' : 'You can still assign; consider authorising them in Quality, Competency.'}
+          </p>
+        )}
         <fieldset>
           <legend className="mb-1 text-[13px] font-semibold text-gray-900">Technician</legend>
           {(technicians.isLoading || workload.isLoading) && <Spinner />}
