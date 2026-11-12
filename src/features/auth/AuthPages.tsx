@@ -22,7 +22,7 @@ function AuthShell({ title, children, wide }: { title: string; children: ReactNo
   ].filter((x): x is { href: string; label: string } => !!x);
   const showPoweredBy = branding?.poweredBy && branding.poweredByName && branding.poweredByName !== branding.productName;
   return (
-    <main className="auth-backdrop flex min-h-full items-center justify-center p-4">
+    <main className="auth-backdrop flex min-h-full max-md:min-h-dvh items-center justify-center p-4">
       <div
         className={`flex w-full overflow-hidden rounded-xl border-t-4 border-accent-brand bg-surface shadow-lg ${branding?.loginImageUrl ? (wide ? 'max-w-4xl' : 'max-w-3xl') : wide ? 'max-w-xl' : 'max-w-sm'}`}
       >

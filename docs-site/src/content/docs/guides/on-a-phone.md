@@ -113,6 +113,8 @@ If the dialog says "The camera could not be opened", allow camera access for the
 
 **Result**: The LIMS icon appears on your home screen and opens in its own window without the browser's address bar.
 
+In the browser, without installing, the header and the bottom bar stay in place while you scroll, and the browser hides its own address and tool bars as you scroll down, so the page uses the whole screen. Scroll up a little to bring them back.
+
 :::note
 The installed app still needs a connection. No lab data is stored on the phone. Without a connection you see "You are offline"; select **Try again** when you are back online.
 :::

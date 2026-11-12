@@ -145,7 +145,7 @@ export default function VerifyReportPage() {
   const v = q.data;
 
   return (
-    <main className="auth-backdrop min-h-full p-3 sm:p-6">
+    <main className="auth-backdrop min-h-full p-3 max-md:min-h-dvh sm:p-6">
       <div className="mx-auto w-full max-w-2xl space-y-5 rounded-xl border-t-4 border-accent-brand bg-surface p-4 shadow-lg sm:p-6">
         <header className="flex items-center gap-3">
           {branding && <img src={branding.logoUrl} alt={`${branding.companyName} logo`} className="size-12 rounded object-contain" />}

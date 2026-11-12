@@ -92,11 +92,31 @@ test('going back returns to where the list was scrolled', async ({ page }) => {
   await page.goto('/samples');
   const list = page.getByRole('list', { name: 'Jobs' });
   await expect(list.getByRole('listitem').nth(8)).toBeVisible();
-  await page.locator('#main').evaluate((m) => m.scrollTo({ top: 1200 }));
-  await expect.poll(() => page.locator('#main').evaluate((m) => m.scrollTop)).toBeGreaterThan(1000);
-  const before = await page.locator('#main').evaluate((m) => m.scrollTop);
+  // On a phone the page itself scrolls, so the browser can tuck its own bars away.
+  await page.evaluate(() => window.scrollTo({ top: 1200 }));
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(1000);
+  const before = await page.evaluate(() => window.scrollY);
   await list.getByRole('listitem').nth(8).click();
   await expect(page).toHaveURL(/\/samples\/jobs\//);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(50);
   await page.goBack();
-  await expect.poll(() => page.locator('#main').evaluate((m) => m.scrollTop), { timeout: 5000 }).toBeGreaterThan(before - 50);
+  await expect.poll(() => page.evaluate(() => window.scrollY), { timeout: 5000 }).toBeGreaterThan(before - 50);
+});
+
+test('scrolling on a phone moves the page under a header and bottom bar that stay put, and does not bounce them', async ({ page }) => {
+  await signIn(page, 'reception');
+  await page.goto('/samples');
+  await expect(page.getByRole('list', { name: 'Jobs' }).getByRole('listitem').nth(5)).toBeVisible();
+  const header = page.locator('header').first();
+  const bar = page.getByRole('navigation', { name: 'Quick' });
+  const height = page.viewportSize()!.height;
+  const barTop = (await bar.boundingBox())!.y;
+  await page.evaluate(() => window.scrollTo({ top: 600 }));
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(300);
+  // The header is stuck to the top and the bar to the bottom while the page moves.
+  expect((await header.boundingBox())!.y).toBeLessThanOrEqual(1);
+  expect(Math.abs((await bar.boundingBox())!.y - barTop)).toBeLessThanOrEqual(1);
+  expect((await bar.boundingBox())!.y + (await bar.boundingBox())!.height).toBeGreaterThanOrEqual(height - 1);
+  // No rubber-band at the ends, which would drag them along.
+  expect(await page.evaluate(() => getComputedStyle(document.documentElement).overscrollBehaviorY)).toBe('none');
 });

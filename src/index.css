@@ -242,6 +242,23 @@ body,
   height: 100%;
 }
 
+/* Phones: the page itself scrolls (see Layout), so it may grow past the screen. No rubber-band bounce at the ends,
+   which would drag the stuck header and bottom bar along with the page. */
+@media (max-width: 767px) {
+  html,
+  body,
+  #root {
+    height: auto;
+  }
+  body,
+  #root {
+    min-height: 100dvh;
+  }
+  html {
+    overscroll-behavior-y: none;
+  }
+}
+
 body {
   font-size: 14px;
   color: var(--color-gray-900);

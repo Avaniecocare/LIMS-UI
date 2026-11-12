@@ -37,7 +37,7 @@ export function Layout() {
   // A new page fades in and rises 4px, so the change of screen registers. Nothing is remounted and nothing waits on it.
   // Going back returns to where the list was scrolled; a new page starts at the top.
   useEffect(() => {
-    const el = main.current;
+    const el = scroller(main.current);
     const key = location.key;
     if (pathname !== firstPath.current) {
       firstPath.current = '';
@@ -46,7 +46,7 @@ export function Layout() {
       if (saved) requestAnimationFrame(() => restoreScroll(el, saved));
       else el?.scrollTo?.({ top: 0 });
       if (!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
-        el?.firstElementChild?.animate?.(
+        main.current?.firstElementChild?.animate?.(
           [
             { opacity: 0, transform: 'translateY(4px)' },
             { opacity: 1, transform: 'none' },
@@ -60,6 +60,14 @@ export function Layout() {
   // Positions are recorded as the person scrolls, under the history entry being looked at.
   const entry = useRef(location.key);
   entry.current = location.key;
+  // On a phone the page itself scrolls (see scroller), so its position is recorded from the window.
+  useEffect(() => {
+    const onScroll = () => {
+      if (pageScrolls()) scrollPositions.set(entry.current, window.scrollY);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const phone = useIsPhone();
   const [searching, setSearching] = useState(false);
@@ -74,7 +82,7 @@ export function Layout() {
   useEffect(() => setSearching(false), [pathname]);
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full max-md:h-auto max-md:min-h-dvh">
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-surface focus:p-2">
         Skip to content
       </a>
@@ -143,7 +151,7 @@ export function Layout() {
         </aside>
       </div>
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="relative grid h-14 shrink-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-gray-200 bg-surface px-4 max-md:box-content max-md:gap-2 max-md:px-3 max-md:pt-[env(safe-area-inset-top)] md:grid-cols-[1fr_minmax(0,28rem)_1fr]">
+        <header className="relative grid h-14 max-md:sticky max-md:top-0 max-md:z-20 shrink-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-gray-200 bg-surface px-4 max-md:box-content max-md:gap-2 max-md:px-3 max-md:pt-[env(safe-area-inset-top)] md:grid-cols-[1fr_minmax(0,28rem)_1fr]">
           <Link to="/" className={cn('flex w-fit shrink-0 items-center gap-2', searching && 'max-md:invisible')} aria-label={`${branding?.productName ?? ''} home`}>
             {branding && <img src={branding.logoUrl} alt="" className="size-9 rounded object-contain" />}
             <span className="hidden text-sm font-semibold text-gray-900 md:inline">{branding?.productName}</span>
@@ -235,7 +243,7 @@ export function Layout() {
           ref={main}
           onScroll={(e) => scrollPositions.set(entry.current, e.currentTarget.scrollTop)}
           id="main"
-          className="relative min-h-0 flex-1 overflow-y-auto p-4 max-md:px-3 max-md:pb-[calc(var(--phone-bottom)+1rem)] lg:p-5"
+          className="relative min-h-0 flex-1 overflow-y-auto p-4 max-md:flex-none max-md:overflow-visible max-md:px-3 max-md:pb-[calc(var(--phone-bottom)+1rem)] lg:p-5"
         >
           <Outlet />
         </main>
@@ -284,6 +292,14 @@ export function Layout() {
 
 /** Shorter names for the phone's bottom bar, where each item has a fifth of the width. */
 const SHORT_LABEL: Record<string, string> = { '/due-invoices': 'Dues', '/my-tests': 'My tests', '/approvals': 'Approve' };
+
+/**
+ * On a phone the whole page scrolls, with the header stuck to the top and the bottom bar fixed. Then the header and
+ * bar stay still while the content moves, and Safari and Chrome tuck their own bars away for a full-screen view.
+ * On larger screens only the content area scrolls, under a header and menu that never move.
+ */
+const pageScrolls = () => !!window.matchMedia?.('(max-width: 767px)').matches;
+const scroller = (main: HTMLElement | null) => (pageScrolls() ? (document.scrollingElement as HTMLElement | null) : main);
 
 /** Scroll position of each visited page in this tab, by history entry. */
 const scrollPositions = new Map<string, number>();
