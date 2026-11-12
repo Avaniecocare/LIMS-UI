@@ -129,7 +129,7 @@ pre.mermaid {
   font-size: var(--sl-text-base);
 }
 .askai-close {
-  border: 0 !important;
+  border: 0;
   min-width: 2.25rem;
 }
 .askai-notice {
@@ -259,4 +259,120 @@ pre.mermaid {
 .sl-markdown-content .table-scroll:focus-visible {
   outline: 2px solid var(--sl-color-accent);
   outline-offset: 2px;
+}
+
+/* ---- Search: centred in the header, and a smooth opening ---------------------------------------------------- */
+@media (min-width: 50rem) {
+  /* Title | search | theme. The two outer columns share the space equally, so the search box sits in the middle of the page. */
+  .header:has(> .title-wrapper) {
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 34rem) minmax(0, 1fr);
+  }
+  .header:has(> .title-wrapper) > :nth-child(2) {
+    justify-content: center;
+  }
+  .header:has(> .title-wrapper) > .right-group {
+    justify-self: end;
+  }
+  button[data-open-modal] {
+    max-width: none;
+    height: 2.5rem;
+    border-radius: 999px;
+    padding-inline: 1rem 0.5rem;
+    background-color: var(--sl-color-gray-7, var(--sl-color-black));
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.06);
+    transition:
+      border-color 160ms ease,
+      box-shadow 200ms ease,
+      transform 200ms cubic-bezier(0.2, 0, 0, 1),
+      color 160ms ease;
+  }
+  button[data-open-modal]:hover {
+    border-color: var(--sl-color-accent);
+    box-shadow:
+      0 0 0 3px color-mix(in srgb, var(--sl-color-accent) 18%, transparent),
+      0 4px 14px rgb(0 0 0 / 0.08);
+  }
+  button[data-open-modal]:active {
+    transform: scale(0.98);
+  }
+  button[data-open-modal]:focus-visible {
+    outline: 2px solid var(--sl-color-accent);
+    outline-offset: 2px;
+  }
+  /* The search dialog: a little wider than the default, only as tall as its content, softer edges. */
+  site-search dialog {
+    max-width: 44rem;
+    min-height: 0;
+    margin-top: 5rem;
+    border-radius: 1rem;
+    border-color: color-mix(in srgb, var(--sl-color-gray-5) 70%, transparent);
+    box-shadow:
+      0 24px 60px -12px rgb(0 0 0 / 0.35),
+      0 0 0 1px rgb(0 0 0 / 0.03);
+  }
+  site-search .dialog-frame {
+    gap: 1.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  site-search dialog[open] {
+    animation: search-open 260ms cubic-bezier(0.2, 0, 0, 1);
+    transform-origin: top center;
+  }
+  site-search dialog[open]::backdrop {
+    animation: search-backdrop 220ms ease-out;
+  }
+  /* Results slide in one after another as they arrive. */
+  site-search .pagefind-ui__result {
+    animation: search-result 240ms cubic-bezier(0.2, 0, 0, 1) both;
+  }
+  site-search .pagefind-ui__result:nth-child(2) {
+    animation-delay: 30ms;
+  }
+  site-search .pagefind-ui__result:nth-child(3) {
+    animation-delay: 60ms;
+  }
+  site-search .pagefind-ui__result:nth-child(4) {
+    animation-delay: 90ms;
+  }
+  site-search .pagefind-ui__result:nth-child(n + 5) {
+    animation-delay: 120ms;
+  }
+  @keyframes search-open {
+    from {
+      opacity: 0;
+      transform: translateY(-12px) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes search-backdrop {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes search-result {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+}
+
+/* The search input in the dialog: calmer than Pagefind's default. */
+site-search .pagefind-ui {
+  --pagefind-ui-scale: 0.85;
+}
+site-search .pagefind-ui__search-input {
+  border-radius: 0.75rem;
+  font-weight: 400;
+  transition: box-shadow 160ms ease;
+}
+site-search .pagefind-ui__search-input:focus {
+  outline: none;
+  border-color: var(--sl-color-accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--sl-color-accent) 20%, transparent);
 }

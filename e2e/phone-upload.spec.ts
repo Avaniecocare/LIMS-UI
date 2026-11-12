@@ -135,7 +135,7 @@ test('the phone option is offered for result images and letter pages too', async
   await tech.post(`/tests/${sampleTestIds[0]}/start`, { version: t.version });
   await signIn(page, 'tech');
   await page.goto(`/my-tests/${sampleTestIds[0]}`);
-  await page.getByRole('tab', { name: 'Images and worksheets' }).click();
+  await page.getByRole('tab', { name: 'Images, graphs and files' }).click();
   await page.getByRole('button', { name: 'Use phone' }).click();
   await expect(page.getByRole('dialog', { name: 'Send photos from your phone' }).getByText(/^Result photos: Density, sample /)).toBeVisible();
 });

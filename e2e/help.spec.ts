@@ -27,6 +27,27 @@ test('the help site loads on the app address, with search, theme and the assista
   await expect(panel.getByRole('link', { name: 'Contact support' })).toHaveCount(0); // no HELP_SUPPORT_EMAIL locally
 });
 
+test('search: centred, popular topics when empty, typing works at once, and hands over to Ask AI', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 800 });
+  await page.goto('/help/features/reports/');
+  const open = page.locator('button[data-open-modal]');
+  const box = await open.boundingBox();
+  expect(Math.abs(box!.x + box!.width / 2 - 720)).toBeLessThan(40);
+  await open.click();
+  const dialog = page.locator('site-search dialog');
+  await expect(dialog.getByRole('link', { name: 'Quick start' })).toBeVisible();
+  // Typed straight away, before Pagefind has finished loading
+  await page.keyboard.type('signature');
+  await expect(dialog.locator('.pagefind-ui__search-input')).toHaveValue('signature');
+  await expect(dialog.getByRole('link', { name: 'Quick start' })).toBeHidden();
+  await expect(dialog.locator('.pagefind-ui__result').first()).toBeVisible();
+  const results = await new AxeBuilder({ page }).include('site-search dialog').analyze();
+  expect(results.violations).toEqual([]);
+  await dialog.getByRole('button', { name: /Ask AI about “signature”/ }).click();
+  await expect(dialog).not.toBeVisible();
+  await expect(page.locator('#askai-q')).toHaveValue('signature');
+});
+
 test('asks a question and gets an answer from the docs with source links, then gives feedback', async ({ page }) => {
   await page.goto('/help/features/booking/');
   const panel = await openAsk(page);

@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { ChevronDown, LayoutGrid, Menu, Monitor, Search, X } from 'lucide-react';
+import { BookOpen, ChevronDown, ExternalLink, LayoutGrid, Menu, Monitor, Search, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate, useNavigationType } from 'react-router-dom';
 import { Button, DropdownContent, DropdownItem, DropdownLabel, DropdownMenu, DropdownRadioGroup, DropdownRadioItem, DropdownSeparator, DropdownTrigger } from '@/components/ui/primitives';
@@ -121,6 +121,25 @@ export function Layout() {
               </NavLink>
             ))}
           </nav>
+          {/* The help site, always at the foot of the menu. It opens in a new tab so work in progress is not lost. */}
+          <div className="shrink-0 border-t border-nav-fg/15 p-2">
+            <a
+              href="/help/"
+              target="_blank"
+              rel="noopener"
+              title={open ? undefined : 'Help and documentation'}
+              className={cn(
+                'flex h-10 items-center gap-2.5 rounded-md text-sm font-medium text-nav-fg transition-colors duration-(--motion-fast) hover:bg-nav-fg/15 pointer-coarse:h-11',
+                open ? 'px-2.5' : 'justify-center',
+              )}
+            >
+              <BookOpen className="size-5 shrink-0" aria-hidden />
+              <span className={open ? 'truncate' : 'sr-only'}>
+                Documentation<span className="sr-only"> and help (opens in a new tab)</span>
+              </span>
+              {open && <ExternalLink className="ml-auto size-3.5 shrink-0 opacity-60" aria-hidden />}
+            </a>
+          </div>
         </aside>
       </div>
       <div className="flex min-w-0 flex-1 flex-col">

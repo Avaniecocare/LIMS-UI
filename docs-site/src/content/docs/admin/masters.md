@@ -73,6 +73,7 @@ What the laboratory tests. Columns: **Code**, **Name**, **Category**, **Departme
 | **Test method** | From **Test methods**. | No |
 | **Default TAT (working days)** | Turnaround time. Default 5. | No |
 | **Urgent TAT (working days)** | Turnaround for urgent work. Default 2. Cannot be longer than the default TAT. | No |
+| **Print result images and instrument reports on the report by default** | Ticked (the default): graphs and instrument PDFs added to this test print on the report unless the analyst unticks them. Untick for tests whose graphs are for the lab's records only. | No |
 | **In accreditation scope** | Tick if the test is in your accreditation scope. | No |
 | **Accreditation valid until** | | No |
 | **Stages, one per line** | The stages an analyst completes in order. Default: Sample Received by Analyst, Sample Preparation, Analysis, Calculation and Result Entry. | No |

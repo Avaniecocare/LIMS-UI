@@ -5,7 +5,7 @@ sidebar:
   order: 6
 ---
 
-**My Tests** is the analyst's worklist. It lists the tests assigned to you, and opens each one on a test page where you record the instrument, complete the stages, enter results, add images and worksheets, and submit the results for approval.
+**My Tests** is the analyst's worklist. It lists the tests assigned to you, and opens each one on a test page where you record the instrument, complete the stages, enter results, add graphs, instrument reports and raw data, and submit the results for approval.
 
 ## Who can use it
 
@@ -115,7 +115,7 @@ Banners above the tabs tell you what you need to know:
 - **On hold:** with the reason.
 - A note when you cannot edit, for example "Results were submitted on … and are waiting for approval. They are locked." or "Start the test to enter results."
 
-The page has three tabs: **Results**, **Images and worksheets** and **History**.
+The page has three tabs: **Results**, **Images, graphs and files** and **History**.
 
 <!-- screenshot: testing-test-page -->
 
@@ -197,22 +197,39 @@ Results, the instrument and the remarks fields are saved automatically about a s
 Every changed result is recorded in the test's history with its old and new value, and "entered by" moves to whoever changed that value. Do not use the result fields for scratch work.
 :::
 
-## Attach images and worksheets
+## Attach graphs, instrument reports and raw data
 
-**Goal:** keep photos of the test and its worksheets with the result.
+**Goal:** keep the evidence behind a result with the test, and put the parts the customer should see on the report.
 
-**Who can do it:** the assignee, with `tests.work`, while the test is In Progress.
+**Who can do it:** the assignee, with `tests.work`, while the test is In Progress. Once the results are submitted, the files are locked with them.
+
+The **Images, graphs and files** tab has four sections, by what the file is for:
+
+| Section | What to put there | On the report? |
+| --- | --- | --- |
+| **Result images and graphs** | A graph or photo exported from the instrument (PNG, JPEG or WebP), such as a stress–strain curve or a micrograph. | Yes, as a numbered figure under the results, labelled with the sample, test, instrument and date. |
+| **Instrument reports (PDF)** | The PDF the instrument's software produces: curves, chromatograms, its own result table. Up to 20 pages a file, 60 a test. | Yes, as annexure pages after the report body. |
+| **Raw data files** | The instrument's original data files, in any format (CSV, the vendor's own format, and so on). | No. Kept as the original record, with its SHA-256 fingerprint. |
+| **Worksheets** | Calculations and notes made while testing. | No. |
 
 **Steps:**
 
-1. Open the **Images and worksheets** tab.
-2. Under **Result images**, set **Print width (mm)** and **Print height (mm)** if you want a size other than the default 80 × 60 mm.
-3. Select **Add file** and choose a PNG or JPEG image. Or select **Use phone** to send photos from a phone (see [Photos from a phone](/help/features/phone-upload/)).
-4. Under **Worksheets**, select **Add file** to attach a PDF or image.
+1. Open the **Images, graphs and files** tab.
+2. For a graph or photo: under **Result images and graphs**, set **Print width (mm)** and **Print height (mm)** if you want a size other than 80 × 60 mm. Select **Add file**, or **Use phone** to send photos from a phone (see [Photos from a phone](/help/features/phone-upload/)).
+3. For the instrument's PDF: under **Instrument reports (PDF)**, select **Add file** and choose the PDF.
+4. For original data: under **Raw data files**, select **Add file**.
+5. Optional: type a **Caption** (for a figure) or an **Annexure title** (for a PDF). It is saved when you leave the box.
+6. Untick **Print on report** for anything you want to keep with the test but not show the customer.
 
-**Result:** the file is listed by name, with its print size for images. Select the name to open it.
+**Result:** each file is listed with its date, its page count (PDFs) or print size (images), and an **On report** badge when it will print. The section heading shows how many of its files are on the report. Select a name to open the file.
 
-Result images print on the test report under the results, with the test name as caption. Photos are shrunk in the browser before upload (about 2000 pixels on the long side, under 1 MB). To remove a file, select the bin icon; the removal stays in the audit history.
+:::tip[Getting a sharp graph]
+Use the instrument software's **export** (PNG or PDF) rather than a photo of its screen. An image narrower than 1000 pixels gets a warning, because it may print blurry. If the software can print to PDF, add that under **Instrument reports (PDF)**; it keeps full quality.
+:::
+
+Whether files print by default is set per test in Masters (**Print result images and instrument reports on the report by default**; see [Masters](/help/admin/masters/)). Photos are shrunk in the browser before upload (about 2000 pixels on the long side, under 1 MB). To remove a file, select the bin icon; the removal stays in the audit history.
+
+A PDF that is password-protected or cannot be read is refused, with a message saying so. Print it again from the instrument software without a password.
 
 ## Submit results
 
@@ -305,7 +322,8 @@ The **History** tab lists every change to the test: status changes, stage comple
 - Only the assignee can enter results. A planner must reassign a test before someone else can work on it.
 - Results cannot be changed after submission unless they are sent back.
 - A calculated result cannot be overwritten by hand.
-- Result images accept PNG and JPEG only.
+- Result images accept PNG, JPEG and WebP. Instrument reports accept PDF only, up to 20 pages a file and 60 pages a test.
+- Files cannot be added, removed or changed after the results are submitted.
 
 ## Related
 

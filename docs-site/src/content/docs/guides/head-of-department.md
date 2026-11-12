@@ -96,7 +96,7 @@ If you entered the results yourself, **Approve** is greyed out with the note "Yo
 **Steps**:
 
 1. In **Approvals**, tab **Results**, select the test's name.
-2. Read the **Results** tab, then **Images and worksheets** and **History**.
+2. Read the **Results** tab, then **Images, graphs and files** and **History**.
 
 **Result**: The test opens read-only. The breadcrumb **Approvals** takes you back.
 

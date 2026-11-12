@@ -5,15 +5,15 @@ import { Link, useBlocker, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import type { components } from '@/api/schema';
 import { useSession } from '@/app/providers';
-import { PhoneUploadButton } from '@/components/PhoneUpload';
 import { ReportProblemButton } from '@/features/quality/ReportProblem';
-import { Attachments, DocumentButton, HistoryList, ReasonDialog, StatusBadge } from '@/components/shared';
+import { DocumentButton, HistoryList, ReasonDialog, StatusBadge } from '@/components/shared';
 import { Badge, Button, Card, CardHeader, ConfirmDialog, ErrorState, Field, Input, PageHeader, Select, Spinner, Tabs, TabsContent, TabsList, TabsTrigger, Textarea } from '@/components/ui/primitives';
 import { ApiError, api, unwrap } from '@/lib/api';
 import { cn, formatDate, formatDateTime } from '@/lib/format';
 import { isConflict, toastError, writeError } from '@/lib/forms';
 import { AutosaveQueue, isNumberText, isResultText, mergeEntryPatch, patchKeys, reconcileDrafts, type EntryPatch, type SaveStatus } from './autosave';
 import { Outcome, ResultTable, type ParameterResult } from './result-table';
+import { TestFiles } from './TestFiles';
 
 type Test = components['schemas']['TestDetailDto'];
 type TextField = 'remarks' | 'observations' | 'notes';
@@ -540,7 +540,7 @@ export default function TestDetailPage() {
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="mb-4">
           <TabsTrigger value="results">Results</TabsTrigger>
-          <TabsTrigger value="attachments">Images and worksheets</TabsTrigger>
+          <TabsTrigger value="attachments">Images, graphs and files</TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
         </TabsList>
         <TabsContent value="results">
@@ -642,29 +642,7 @@ export default function TestDetailPage() {
           </div>
         </TabsContent>
         <TabsContent value="attachments">
-          <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-2">
-            <Card>
-              <div className="p-4">
-                <Attachments
-                  entity="SampleTest"
-                  entityId={test.id}
-                  category="result-image"
-                  title="Result images"
-                  canEdit={test.canEdit}
-                  withPrintSize
-                  accept="image/png,image/jpeg"
-                  extraActions={
-                    <PhoneUploadButton purpose="result-image" entityId={test.id} onReceived={() => void client.invalidateQueries({ queryKey: ['files', 'SampleTest', test.id, 'result-image'] })} />
-                  }
-                />
-              </div>
-            </Card>
-            <Card>
-              <div className="p-4">
-                <Attachments entity="SampleTest" entityId={test.id} category="worksheet" title="Worksheets" canEdit={test.canEdit} />
-              </div>
-            </Card>
-          </div>
+          <TestFiles testId={test.id} canEdit={test.canEdit} />
         </TabsContent>
         <TabsContent value="history">
           {history.isLoading && <Spinner />}

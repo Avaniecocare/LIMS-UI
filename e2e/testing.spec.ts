@@ -11,6 +11,11 @@ async function shot(page: Page, name: string, size = { width: 1280, height: 1500
 const nav = (page: Page) => page.getByRole('navigation', { name: 'Main' });
 const row = (page: Page, code: string) => page.locator(`tr[data-parameter="${code}"]`);
 const reading = (row_: Locator) => row_.getByRole('textbox');
+// A two-page PDF, as an instrument's software exports it.
+const PDF = Buffer.from(
+  'JVBERi0xLjcKJYGBgYEKCjEgMCBvYmoKPDwKL1R5cGUgL1BhZ2VzCi9LaWRzIFsgNSAwIFIgNyAwIFIgXQovQ291bnQgMgo+PgplbmRvYmoKCjIgMCBvYmoKPDwKL1R5cGUgL0NhdGFsb2cKL1BhZ2VzIDEgMCBSCj4+CmVuZG9iagoKMyAwIG9iago8PAovUHJvZHVjZXIgPEZFRkYwMDcwMDA2NDAwNjYwMDJEMDA2QzAwNjkwMDYyMDAyMDAwMjgwMDY4MDA3NDAwNzQwMDcwMDA3MzAwM0EwMDJGMDAyRjAwNjcwMDY5MDA3NDAwNjgwMDc1MDA2MjAwMkUwMDYzMDA2RjAwNkQwMDJGMDA0ODAwNkYwMDcwMDA2NDAwNjkwMDZFMDA2NzAwMkYwMDcwMDA2NDAwNjYwMDJEMDA2QzAwNjkwMDYyMDAyOT4KL01vZERhdGUgKEQ6MjAyNjExMTIxNjMxNDBaKQovQ3JlYXRvciA8RkVGRjAwNzAwMDY0MDA2NjAwMkQwMDZDMDA2OTAwNjIwMDIwMDAyODAwNjgwMDc0MDA3NDAwNzAwMDczMDAzQTAwMkYwMDJGMDA2NzAwNjkwMDc0MDA2ODAwNzUwMDYyMDAyRTAwNjMwMDZGMDA2RDAwMkYwMDQ4MDA2RjAwNzAwMDY0MDA2OTAwNkUwMDY3MDAyRjAwNzAwMDY0MDA2NjAwMkQwMDZDMDA2OTAwNjIwMDI5PgovQ3JlYXRpb25EYXRlIChEOjIwMjYxMTEyMTYzMTQwWikKPj4KZW5kb2JqCgo0IDAgb2JqCjw8Ci9UeXBlIC9Gb250Ci9TdWJ0eXBlIC9UeXBlMQovQmFzZUZvbnQgL0hlbHZldGljYQovRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZwo+PgplbmRvYmoKCjUgMCBvYmoKPDwKL1R5cGUgL1BhZ2UKL1BhcmVudCAxIDAgUgovUmVzb3VyY2VzIDw8Ci9Gb250IDw8Ci9IZWx2ZXRpY2EtNzA5ODQ4MDc4OSA0IDAgUgo+PgovWE9iamVjdCA8PAo+PgovRXh0R1N0YXRlIDw8Cj4+Cj4+Ci9NZWRpYUJveCBbIDAgMCA1OTUgODQyIF0KL0Fubm90cyBbIF0KL0NvbnRlbnRzIFsgNiAwIFIgXQo+PgplbmRvYmoKCjYgMCBvYmoKPDwKL0ZpbHRlciAvRmxhdGVEZWNvZGUKL0xlbmd0aCAxMTgKPj4Kc3RyZWFtCnicHYoxCgJBDEX7nCK1ICbZmfwZEAtxxcJGyAVEVnFZC0U8/87K4xfv8960DxJe+Dxocxqm3/B93q5rSC2pCEplLRx3ssRxJv2nyi6MtnjRNlXv0SHBkP3guVkygXmG+LG9i4mrw7NJpzuOkWJFfdCFZlFrG+kKZW5kc3RyZWFtCmVuZG9iagoKNyAwIG9iago8PAovVHlwZSAvUGFnZQovUGFyZW50IDEgMCBSCi9SZXNvdXJjZXMgPDwKL0ZvbnQgPDwKL0hlbHZldGljYS05NzQyNjgyNTY4IDQgMCBSCj4+Ci9YT2JqZWN0IDw8Cj4+Ci9FeHRHU3RhdGUgPDwKPj4KPj4KL01lZGlhQm94IFsgMCAwIDU5NSA4NDIgXQovQW5ub3RzIFsgXQovQ29udGVudHMgWyA4IDAgUiBdCj4+CmVuZG9iagoKOCAwIG9iago8PAovRmlsdGVyIC9GbGF0ZURlY29kZQovTGVuZ3RoIDExNwo+PgpzdHJlYW0KeJwdirEKAlEMBPt8RWpBzMslm3cgFuKJhY2QHxA5xUMLRfx+38mwxSzzom2S8Mz7RqvD+PiOn/vlvOzDFFUdlUvlvJIa55HKPy0M4WjLJ62txxBdWGg4dvBmphIKD8G+vbMJCgKu0umGc6Jc0JB0oh9QbBvnCmVuZHN0cmVhbQplbmRvYmoKCnhyZWYKMCA5CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDAxNiAwMDAwMCBuIAowMDAwMDAwMDgyIDAwMDAwIG4gCjAwMDAwMDAxMzIgMDAwMDAgbiAKMDAwMDAwMDYwMiAwMDAwMCBuIAowMDAwMDAwNzAwIDAwMDAwIG4gCjAwMDAwMDA4OTUgMDAwMDAgbiAKMDAwMDAwMTA4NiAwMDAwMCBuIAowMDAwMDAxMjgxIDAwMDAwIG4gCgp0cmFpbGVyCjw8Ci9TaXplIDkKL1Jvb3QgMiAwIFIKL0luZm8gMyAwIFIKPj4KCnN0YXJ0eHJlZgoxNDcxCiUlRU9G',
+  'base64',
+);
 const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M/wHwAEAQH/hZ9X5gAAAABJRU5ErkJggg==', 'base64');
 
 async function completeStages(page: Page, count: number) {
@@ -143,9 +148,29 @@ test('from result entry to an issued, then revised, report', async ({ page }) =>
   await completeStages(page, 2);
 
   // Attachments while editable
-  await page.getByRole('tab', { name: 'Images and worksheets' }).click();
-  await page.getByLabel('Upload to Result images').setInputFiles({ name: 'micrograph.png', mimeType: 'image/png', buffer: PNG });
+  await page.getByRole('tab', { name: 'Images, graphs and files' }).click();
+  await page.getByLabel('Upload to Result images and graphs').setInputFiles({ name: 'micrograph.png', mimeType: 'image/png', buffer: PNG });
   await expect(page.getByRole('button', { name: 'micrograph.png', exact: true })).toBeVisible();
+  const image = page.getByRole('list', { name: 'Result images and graphs' }).getByRole('listitem').first();
+  await expect(image.getByRole('checkbox', { name: 'Print on report' })).toBeChecked();
+  await image.getByLabel('Caption').fill('Fracture surface');
+  await image.getByLabel('Caption').blur();
+  await image.getByRole('checkbox', { name: 'Print on report' }).click();
+  await expect(image.getByRole('checkbox', { name: 'Print on report' })).not.toBeChecked();
+  await image.getByRole('checkbox', { name: 'Print on report' }).click();
+  await expect(image.getByText('On report')).toBeVisible();
+  // The instrument's own PDF prints as an annexure; a protected or oversized one is refused by the server
+  await page.getByLabel('Upload to Instrument reports (PDF)').setInputFiles({ name: 'utm-report.pdf', mimeType: 'application/pdf', buffer: PDF });
+  const annex = page.getByRole('list', { name: 'Instrument reports (PDF)' }).getByRole('listitem').first();
+  await expect(annex).toContainText('2 pages');
+  await expect(annex.getByRole('checkbox', { name: 'Print on report' })).toBeChecked();
+  await annex.getByLabel('Annexure title').fill('UTM load–extension curves');
+  await annex.getByLabel('Annexure title').blur();
+  // Raw data: any format, fingerprinted, never printed
+  await page.getByLabel('Upload to Raw data files').setInputFiles({ name: 'run-01.csv', mimeType: 'text/csv', buffer: Buffer.from('load,extension\n0,0\n10,0.2\n') });
+  const raw = page.getByRole('list', { name: 'Raw data files' }).getByRole('listitem').first();
+  await expect(raw).toContainText('SHA-256');
+  await expect(raw.getByRole('checkbox')).toHaveCount(0);
   await page.getByLabel('Upload to Worksheets').setInputFiles({ name: 'sheet.png', mimeType: 'image/png', buffer: PNG });
   await expect(page.getByRole('button', { name: 'sheet.png', exact: true })).toBeVisible();
   await page.getByRole('tab', { name: 'Results' }).click();
@@ -159,7 +184,7 @@ test('from result entry to an issued, then revised, report', async ({ page }) =>
   await expect(page.getByText(/waiting for approval/)).toBeVisible();
   await expect(page.locator('main input:not([type=file])')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Submit results' })).toHaveCount(0);
-  await page.getByRole('tab', { name: 'Images and worksheets' }).click();
+  await page.getByRole('tab', { name: 'Images, graphs and files' }).click();
   await expect(page.getByRole('button', { name: 'Add file' })).toHaveCount(0);
   await page.getByRole('tab', { name: 'Results' }).click();
   await shot(page, 'result-locked');

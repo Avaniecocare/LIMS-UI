@@ -1804,9 +1804,9 @@
         ]
       }
     },
-    "/api/v1/files/{id}/url": {
-      "get": {
-        "operationId": "FilesController_url",
+    "/api/v1/files/{id}": {
+      "patch": {
+        "operationId": "FilesController_update",
         "parameters": [
           {
             "name": "id",
@@ -1817,13 +1817,23 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateFileDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SignedUrlDto"
+                  "$ref": "#/components/schemas/FileDto"
                 }
               }
             }
@@ -1832,9 +1842,7 @@
         "tags": [
           "files"
         ]
-      }
-    },
-    "/api/v1/files/{id}": {
+      },
       "delete": {
         "operationId": "FilesController_remove",
         "parameters": [
@@ -1862,6 +1870,36 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/OkDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "files"
+        ]
+      }
+    },
+    "/api/v1/files/{id}/url": {
+      "get": {
+        "operationId": "FilesController_url",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignedUrlDto"
                 }
               }
             }
@@ -15977,6 +16015,11 @@
       "FileDto": {
         "type": "object",
         "properties": {
+          "pageCount": {
+            "type": "number",
+            "nullable": true,
+            "description": "PDFs: number of pages"
+          },
           "id": {
             "type": "string"
           },
@@ -16015,12 +16058,17 @@
             "type": "string",
             "nullable": true
           },
+          "printOnReport": {
+            "type": "boolean",
+            "description": "result images and instrument reports: printed on the test report"
+          },
           "createdAt": {
             "format": "date-time",
             "type": "string"
           }
         },
         "required": [
+          "pageCount",
           "id",
           "originalName",
           "mimeType",
@@ -16032,8 +16080,22 @@
           "printWidthMm",
           "printHeightMm",
           "caption",
+          "printOnReport",
           "createdAt"
         ]
+      },
+      "UpdateFileDto": {
+        "type": "object",
+        "properties": {
+          "caption": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 200
+          },
+          "printOnReport": {
+            "type": "boolean"
+          }
+        }
       },
       "SignedUrlDto": {
         "type": "object",
@@ -17333,6 +17395,9 @@
               "type": "string"
             }
           },
+          "printAttachments": {
+            "type": "boolean"
+          },
           "parameterCount": {
             "type": "number"
           },
@@ -17357,6 +17422,7 @@
           "accredited",
           "accreditedUntil",
           "stages",
+          "printAttachments",
           "parameterCount",
           "isActive",
           "version"
@@ -17436,6 +17502,10 @@
               "type": "string",
               "minLength": 1
             }
+          },
+          "printAttachments": {
+            "type": "boolean",
+            "description": "new result images and instrument reports on this test print on the report unless the analyst unticks them"
           },
           "version": {
             "type": "number",

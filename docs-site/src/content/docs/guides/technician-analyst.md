@@ -98,7 +98,7 @@ An instrument past its calibration due date may be refused, depending on your la
 
 **Related**: [Testing](/help/features/testing/), [Key concepts](/help/getting-started/concepts/)
 
-## How to add result images and worksheets
+## How to add graphs, instrument reports and raw data
 
 **Goal**: Attach photos, micrographs or worksheets to the test.
 
@@ -106,13 +106,15 @@ An instrument past its calibration due date may be refused, depending on your la
 
 **Steps**:
 
-1. Open the test and select the **Images and worksheets** tab.
-2. Under **Result images**, add PNG or JPEG images from this computer, or select **Use phone** to send photos from a phone.
-3. Under **Worksheets**, add any worksheet files.
+1. Open the test and select the **Images, graphs and files** tab.
+2. Under **Result images and graphs**, add the graph exported from the instrument software (not a photo of its screen), or select **Use phone** to send photos from a phone.
+3. Under **Instrument reports (PDF)**, add the PDF the instrument software printed.
+4. Under **Raw data files**, add the instrument's original data files; under **Worksheets**, any worksheets.
+5. Untick **Print on report** for anything the customer should not see.
 
-**Result**: The files are listed on the test. Result images can be printed on the report.
+**Result**: The files are listed on the test. Graphs print as figures and instrument PDFs as annexures of the report; raw data and worksheets stay with the test.
 
-**Related**: [Phone upload](/help/features/phone-upload/), [Files](/help/features/files/)
+**Related**: [Attach graphs, instrument reports and raw data](/help/features/testing/#attach-graphs-instrument-reports-and-raw-data), [Phone upload](/help/features/phone-upload/), [Files](/help/features/files/)
 
 ## How to submit results for approval
 

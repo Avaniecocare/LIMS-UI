@@ -748,22 +748,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/files/{id}/url": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["FilesController_url"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/files/{id}": {
         parameters: {
             query?: never;
@@ -775,6 +759,22 @@ export interface paths {
         put?: never;
         post?: never;
         delete: operations["FilesController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["FilesController_update"];
+        trace?: never;
+    };
+    "/api/v1/files/{id}/url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["FilesController_url"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -4686,6 +4686,8 @@ export interface components {
             filename: string | null;
         };
         FileDto: {
+            /** @description PDFs: number of pages */
+            pageCount: number | null;
             id: string;
             originalName: string;
             mimeType: string;
@@ -4697,8 +4699,14 @@ export interface components {
             printWidthMm: number | null;
             printHeightMm: number | null;
             caption: string | null;
+            /** @description result images and instrument reports: printed on the test report */
+            printOnReport: boolean;
             /** Format: date-time */
             createdAt: string;
+        };
+        UpdateFileDto: {
+            caption?: string | null;
+            printOnReport?: boolean;
         };
         SignedUrlDto: {
             url: string;
@@ -5031,6 +5039,7 @@ export interface components {
             /** Format: date-time */
             accreditedUntil: string | null;
             stages: string[];
+            printAttachments: boolean;
             parameterCount: number;
             isActive: boolean;
             version: number;
@@ -5053,6 +5062,8 @@ export interface components {
             accredited?: boolean;
             accreditedUntil?: string | null;
             stages?: string[];
+            /** @description new result images and instrument reports on this test print on the report unless the analyst unticks them */
+            printAttachments?: boolean;
             /** @description Required on update for optimistic concurrency */
             version?: number;
             isActive?: boolean;
@@ -8819,27 +8830,6 @@ export interface operations {
             };
         };
     };
-    FilesController_url: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SignedUrlDto"];
-                };
-            };
-        };
-    };
     FilesController_remove: {
         parameters: {
             query?: {
@@ -8859,6 +8849,52 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    FilesController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateFileDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FileDto"];
+                };
+            };
+        };
+    };
+    FilesController_url: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SignedUrlDto"];
                 };
             };
         };

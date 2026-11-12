@@ -1,0 +1,193 @@
+---
+// Starlight's search, with a friendlier dialog: popular topics while the box is empty, and a footer with the
+// keys and a way to hand the question to Ask AI when the search does not find it.
+import Default from '@astrojs/starlight/components/Search.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const topics = [
+  { label: 'Quick start', href: '/getting-started/quick-start/' },
+  { label: 'Book a job', href: '/features/booking/' },
+  { label: 'Enter results', href: '/features/testing/' },
+  { label: 'Test reports', href: '/features/reports/' },
+  { label: 'Invoices and payments', href: '/features/invoices-payments/' },
+  { label: 'Masters', href: '/admin/masters/' },
+];
+---
+
+<Default />
+
+<template id="search-extras">
+  <div class="search-topics" data-search-topics>
+    <p class="search-topics__title">Popular topics</p>
+    <ul>
+      {
+        topics.map((t) => (
+          <li>
+            <a href={`${base}${t.href}`}>{t.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+  <div class="search-footer" data-search-footer>
+    <span class="search-footer__keys">
+      <span><kbd>Tab</kbd> move</span>
+      <span><kbd>Enter</kbd> open</span>
+      <span><kbd>Esc</kbd> close</span>
+    </span>
+    <button type="button" class="search-footer__ask" data-search-ask hidden>Can't find it? <strong>Ask AI</strong></button>
+  </div>
+</template>
+
+<script>
+  const template = document.querySelector<HTMLTemplateElement>('#search-extras');
+  const dialog = document.querySelector<HTMLDialogElement>('site-search dialog');
+  const frame = dialog?.querySelector('.dialog-frame');
+  if (template && dialog && frame) {
+    frame.append(template.content.cloneNode(true));
+    const ask = frame.querySelector<HTMLButtonElement>('[data-search-ask]')!;
+    const askOpen = () => document.querySelector<HTMLButtonElement>('[data-askai-open]');
+    const query = () => frame.querySelector<HTMLInputElement>('.pagefind-ui__search-input')?.value.trim() ?? '';
+    // Shown only where the assistant is on (its button is on the page).
+    const sync = () => {
+      ask.hidden = !askOpen();
+      ask.querySelector('strong')!.textContent = query() ? `Ask AI about “${query().slice(0, 40)}”` : 'Ask AI';
+    };
+    frame.addEventListener('input', sync);
+    // The search box always gets the focus on opening. Pagefind creates it a moment after the first opening, by
+    // which time the dialog has focused the first topic, and the first letters typed would be lost.
+    const input = () => frame.querySelector<HTMLInputElement>('.pagefind-ui__search-input');
+    const focusInput = () => {
+      const box = input();
+      if (!box) return;
+      // Pagefind labels its box with a title only, which screen readers may not announce.
+      box.setAttribute('aria-label', 'Search the help pages');
+      if (!dialog.open) return;
+      if (document.activeElement !== box) box.focus();
+    };
+    // Once only: after that, results changing must not pull the focus back from them.
+    const waitForInput = new MutationObserver(() => {
+      if (!input()) return;
+      waitForInput.disconnect();
+      focusInput();
+    });
+    if (!input()) waitForInput.observe(frame, { childList: true, subtree: true });
+    new MutationObserver(() => {
+      sync();
+      requestAnimationFrame(focusInput);
+    }).observe(dialog, { attributes: true, attributeFilter: ['open'] });
+    ask.addEventListener('click', () => {
+      const q = query();
+      dialog.close();
+      askOpen()?.click();
+      const box = document.querySelector<HTMLTextAreaElement>('#askai-q');
+      if (box && q) {
+        box.value = q;
+        box.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+      box?.focus();
+    });
+  }
+</script>
+
+<style is:global>
+  .search-topics__title {
+    margin: 0 0 0.5rem;
+    font-size: var(--sl-text-xs);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--sl-color-gray-3);
+  }
+  .search-topics ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .search-topics li {
+    margin: 0;
+  }
+  .search-topics a {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 999px;
+    background: var(--sl-color-black);
+    color: var(--sl-color-gray-1);
+    font-size: var(--sl-text-sm);
+    text-decoration: none;
+    transition:
+      border-color 150ms ease,
+      color 150ms ease,
+      transform 150ms ease;
+  }
+  .search-topics a:hover,
+  .search-topics a:focus-visible {
+    border-color: var(--sl-color-accent);
+    color: var(--sl-color-text-accent);
+  }
+  /* Popular topics only while nothing is typed. */
+  .dialog-frame:has(.pagefind-ui__search-input:not(:placeholder-shown)) .search-topics {
+    display: none;
+  }
+  .search-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: space-between;
+    margin: auto -1.5rem -1.5rem;
+    padding: 0.75rem 1.5rem;
+    /* Stays in view while the results scroll. */
+    position: sticky;
+    bottom: -1.5rem;
+    z-index: 1;
+    border-top: 1px solid var(--sl-color-gray-5);
+    background: var(--sl-color-gray-7, var(--sl-color-gray-6));
+    font-size: var(--sl-text-xs);
+    color: var(--sl-color-gray-3);
+  }
+  .search-footer__keys {
+    display: flex;
+    gap: 1rem;
+  }
+  .search-footer kbd {
+    margin-inline-end: 0.25rem;
+    padding: 0.0625rem 0.375rem;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.25rem;
+    background: var(--sl-color-black);
+    font-family: var(--__sl-font);
+    font-size: var(--sl-text-2xs);
+    color: var(--sl-color-gray-2);
+  }
+  .search-footer__ask {
+    padding: 0.25rem 0.625rem;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--sl-color-gray-2);
+    font: inherit;
+    cursor: pointer;
+  }
+  .search-footer__ask strong {
+    color: var(--sl-color-text-accent);
+  }
+  .search-footer__ask:hover {
+    background: var(--sl-color-accent-low);
+  }
+  /* The phone layout is full screen and has its own Cancel button; the footer keys mean nothing there. */
+  @media (max-width: 49.99rem) {
+    .search-footer {
+      margin: auto -1rem -1rem;
+      padding-inline: 1rem;
+      bottom: -1rem;
+    }
+    .search-footer__keys {
+      display: none;
+    }
+  }
+</style>

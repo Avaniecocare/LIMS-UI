@@ -747,6 +747,7 @@ const MASTERS: MasterConfig[] = [
       { name: 'methodId', label: 'Test method', type: 'select', source: sourceOf('test-methods', (r) => `${r.code} — ${r.name}`) },
       { name: 'defaultTatDays', label: 'Default TAT (working days)', type: 'number', default: 5 },
       { name: 'urgentTatDays', label: 'Urgent TAT (working days)', type: 'number', default: 2 },
+      { name: 'printAttachments', label: 'Print result images and instrument reports on the report by default', type: 'checkbox', default: true },
       ...ACCREDITATION,
     ],
     extra: (p) => <StagesEditor {...p} />,

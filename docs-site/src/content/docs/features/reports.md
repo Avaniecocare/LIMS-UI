@@ -57,16 +57,27 @@ The PDF uses the lab's letterhead, with its logo as a faint watermark.
 - Only parameters marked **Show on report** in Masters are printed. Working values such as dimensions, loads and individual readings stay on the test record.
 - **Remarks**: each test's observations and remarks.
 - **Report remarks**, if any were added on the draft.
-- **Sample photographs**, then result images from the tests, each with its caption.
+- **Sample photographs**, then **Figures**: the result images and graphs from the tests, numbered "Figure 1", "Figure 2" and so on, each with its caption, sample, test, instrument and date.
+- **Annexures**, when tests have instrument reports on the report: a list of each annexure's letter, test, title, instrument and page count.
 - **Reviewed by**, and the signatory's name, signature image (when the user has one) and "Authorised Signatory".
 - "Electronically approved by … on …" with the report hash (SHA-256).
 
 **Last pages**
 
 - **General Terms & Conditions**, when the lab has set report terms.
-- "End of Report".
+- "End of Report", or "Annexure A follows" when there are annexures.
+- The annexure pages: each page of the instrument's PDF, in order, under a header with the annexure letter, test, title and report number. "End of Report" is on the last annexure page.
 
 <!-- screenshot: reports-pdf-page-one -->
+
+## Graphs and instrument reports
+
+Graphs and instrument PDFs added on a test (see [Attach graphs, instrument reports and raw data](/help/features/testing/#attach-graphs-instrument-reports-and-raw-data)) print only when **Print on report** is ticked for them.
+
+- Images print as numbered figures in the report body.
+- PDFs print as **annexures** A, B, C after the body. The annexures are part of the report: every page carries the report number and the report's own "Page x of y", where y counts the annexure pages too, so a missing page is noticed.
+- The files are fingerprinted (SHA-256) when the report is approved. If a file were changed afterwards, the report would not be produced from it; contact your administrator.
+- Raw data files and worksheets never print.
 
 ## Sample photographs
 
