@@ -1,4 +1,6 @@
-FROM node:24-alpine AS build
+# Both Node stages produce only static files, so they run on the build machine's own platform (fast, and no
+# emulation when building for another architecture). Only the final nginx image is the target platform.
+FROM --platform=$BUILDPLATFORM node:24-alpine AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
@@ -6,7 +8,7 @@ COPY . .
 RUN npm run build
 
 # The help site, built into /help. DOCS_* build arguments brand it; the API reference comes from openapi/openapi.json.
-FROM node:24-alpine AS docs
+FROM --platform=$BUILDPLATFORM node:24-alpine AS docs
 ARG DOCS_PRODUCT_NAME=LIMS
 ARG DOCS_PRIMARY_COLOR=#1f4e79
 ARG DOCS_SITE_URL=https://lims.example.com
