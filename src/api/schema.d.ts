@@ -3870,6 +3870,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/invoices/{id}/einvoice": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Registers the invoice at the GST portal (IRN), or tries again after a failure. */
+        post: operations["InvoicesController_registerIrn"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/credit-notes/{id}/einvoice": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Registers a credit note at the GST portal, or tries again after a failure. Answers with its invoice. */
+        post: operations["InvoicesController_registerCreditNoteIrn"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/invoices/{id}/remind": {
         parameters: {
             query?: never;
@@ -3944,6 +3978,39 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["InvoicesController_reverse"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/lab/einvoice": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["EInvoiceAdminController_get"];
+        put: operations["EInvoiceAdminController_save"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/lab/einvoice/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Signs in to the IRP with the server's credentials, to prove they work. */
+        post: operations["EInvoiceAdminController_check"];
         delete?: never;
         options?: never;
         head?: never;
@@ -5028,7 +5095,7 @@ export interface components {
             code: string;
             name: string;
             /** @enum {string} */
-            category: "CHEMICAL" | "MECHANICAL" | "PHYSICAL" | "OTHER";
+            category: "OTHER" | "CHEMICAL" | "MECHANICAL" | "PHYSICAL";
             departmentId: string | null;
             departmentName: string | null;
             methodId: string | null;
@@ -5052,7 +5119,7 @@ export interface components {
             code: string;
             name: string;
             /** @enum {string} */
-            category?: "CHEMICAL" | "MECHANICAL" | "PHYSICAL" | "OTHER";
+            category?: "OTHER" | "CHEMICAL" | "MECHANICAL" | "PHYSICAL";
             /** Format: uuid */
             departmentId?: string | null;
             /** Format: uuid */
@@ -5716,7 +5783,7 @@ export interface components {
             customerName: string | null;
             crn: string | null;
             /** @enum {string} */
-            status: "COMPLETED" | "PLANNED" | "ON_HOLD" | "CANCELLED" | "RECEIVED" | "IN_TESTING" | "REPORTING";
+            status: "COMPLETED" | "CANCELLED" | "PLANNED" | "ON_HOLD" | "RECEIVED" | "IN_TESTING" | "REPORTING";
             urgent: boolean;
             /** Format: date-time */
             receivedAt: string;
@@ -5737,7 +5804,7 @@ export interface components {
             jobNo: string;
             description: string;
             /** @enum {string} */
-            status: "COMPLETED" | "PLANNED" | "CANCELLED" | "RECEIVED" | "IN_TESTING" | "REPORTING";
+            status: "COMPLETED" | "CANCELLED" | "PLANNED" | "RECEIVED" | "IN_TESTING" | "REPORTING";
             returnable: boolean;
             urgent: boolean;
             /** Format: date-time */
@@ -5771,7 +5838,7 @@ export interface components {
             size: string | null;
             returnable: boolean;
             /** @enum {string} */
-            status: "COMPLETED" | "PLANNED" | "CANCELLED" | "RECEIVED" | "IN_TESTING" | "REPORTING";
+            status: "COMPLETED" | "CANCELLED" | "PLANNED" | "RECEIVED" | "IN_TESTING" | "REPORTING";
             cancelReason: string | null;
             /** Format: date-time */
             retentionUntil: string | null;
@@ -5806,7 +5873,7 @@ export interface components {
             customerName: string | null;
             crn: string | null;
             /** @enum {string} */
-            status: "COMPLETED" | "PLANNED" | "ON_HOLD" | "CANCELLED" | "RECEIVED" | "IN_TESTING" | "REPORTING";
+            status: "COMPLETED" | "CANCELLED" | "PLANNED" | "ON_HOLD" | "RECEIVED" | "IN_TESTING" | "REPORTING";
             urgent: boolean;
             /** Format: date-time */
             receivedAt: string;
@@ -5831,7 +5898,7 @@ export interface components {
             contactPhone: string | null;
             sampleDrawnByLab: boolean;
             /** @enum {string|null} */
-            statusBeforeHold: "COMPLETED" | "PLANNED" | "ON_HOLD" | "CANCELLED" | "RECEIVED" | "IN_TESTING" | "REPORTING" | null;
+            statusBeforeHold: "COMPLETED" | "CANCELLED" | "PLANNED" | "ON_HOLD" | "RECEIVED" | "IN_TESTING" | "REPORTING" | null;
             samples: components["schemas"]["SampleDto"][];
             deviations: components["schemas"]["DeviationDto"][];
         };
@@ -6150,7 +6217,7 @@ export interface components {
             revisionId: string;
             revisionNo: number;
             /** @enum {string} */
-            status: "APPROVED" | "DRAFT" | "ISSUED" | "IN_REVIEW" | "PENDING_APPROVAL" | "SUPERSEDED";
+            status: "DRAFT" | "ISSUED" | "APPROVED" | "IN_REVIEW" | "PENDING_APPROVAL" | "SUPERSEDED";
             sampleId: string;
             sampleNo: string;
             jobId: string;
@@ -6201,7 +6268,7 @@ export interface components {
             id: string;
             revisionNo: number;
             /** @enum {string} */
-            status: "APPROVED" | "DRAFT" | "ISSUED" | "IN_REVIEW" | "PENDING_APPROVAL" | "SUPERSEDED";
+            status: "DRAFT" | "ISSUED" | "APPROVED" | "IN_REVIEW" | "PENDING_APPROVAL" | "SUPERSEDED";
             revisionReason: string | null;
             ulrNumber: string | null;
             reviewedByName: string | null;
@@ -6771,7 +6838,7 @@ export interface components {
         AddressDto: {
             id: string;
             /** @enum {string} */
-            kind: "REPORT" | "OTHER" | "BILLING";
+            kind: "REPORT" | "BILLING" | "OTHER";
             line1: string;
             line2: string | null;
             city: string;
@@ -6813,7 +6880,7 @@ export interface components {
             /** Format: uuid */
             id?: string;
             /** @enum {string} */
-            kind: "REPORT" | "OTHER" | "BILLING";
+            kind: "REPORT" | "BILLING" | "OTHER";
             line1: string;
             line2?: string | null;
             city: string;
@@ -7066,6 +7133,30 @@ export interface components {
             reference: string | null;
             amount: string;
         };
+        EInvoiceDto: {
+            /** @enum {string} */
+            status: "PENDING" | "GENERATED" | "FAILED" | "CANCELLED";
+            provider: string;
+            environment: string;
+            /** @description a test IRN (mock provider or sandbox): not valid for GST */
+            test: boolean;
+            irn: string | null;
+            ackNo: string | null;
+            /** Format: date-time */
+            ackDate: string | null;
+            lastError: string | null;
+            attempts: number;
+            /** Format: date-time */
+            cancelledAt: string | null;
+            cancelReason: string | null;
+            /**
+             * Format: date-time
+             * @description until when the IRN can still be cancelled at the IRP; null once it cannot
+             */
+            cancellableUntil: string | null;
+            /** @description the signed QR code as a PNG data URI */
+            qrDataUri: string | null;
+        };
         CreditNoteDto: {
             id: string;
             creditNoteNo: string;
@@ -7079,6 +7170,7 @@ export interface components {
             roundOff: string;
             total: string;
             amountInWords: string;
+            einvoice: components["schemas"]["EInvoiceDto"] | null;
         };
         ReminderDto: {
             id: string;
@@ -7127,6 +7219,9 @@ export interface components {
             allocations: components["schemas"]["AllocationDto"][];
             creditNotes: components["schemas"]["CreditNoteDto"][];
             reminders: components["schemas"]["ReminderDto"][];
+            /** @description e-invoicing is on and the customer has a GSTIN, so the invoice must carry an IRN */
+            einvoiceRequired: boolean;
+            einvoice: components["schemas"]["EInvoiceDto"] | null;
         };
         CreateInvoiceDto: {
             /** Format: uuid */
@@ -7160,6 +7255,11 @@ export interface components {
         CancelInvoiceDto: {
             version: number;
             reason: string;
+            /**
+             * @description When the invoice has an IRN: the IRP's reason code (1 duplicate, 2 data entry mistake, 3 order cancelled, 4 other).
+             * @enum {string}
+             */
+            irnCancelReason?: "1" | "2" | "3" | "4";
         };
         EmailInvoiceDto: {
             /** Format: email */
@@ -7226,6 +7326,38 @@ export interface components {
         };
         ReversePaymentDto: {
             reason: string;
+        };
+        EInvoiceSellerDto: {
+            line1: string;
+            line2: string;
+            city: string;
+            /** @description 6 digits, or empty while not set */
+            pincode: string;
+        };
+        EInvoiceProblemDto: {
+            field: string;
+            message: string;
+        };
+        EInvoiceSettingsDto: {
+            /** @description EINVOICE_PROVIDER is set on the server */
+            configured: boolean;
+            /** @description configured and the module is on */
+            enabled: boolean;
+            provider: string | null;
+            environment: string | null;
+            gstin: string | null;
+            autoOnIssue: boolean;
+            seller: components["schemas"]["EInvoiceSellerDto"];
+            /** @description what would stop every registration; empty means ready */
+            problems: components["schemas"]["EInvoiceProblemDto"][];
+            sellerVersion: number;
+            autoOnIssueVersion: number;
+        };
+        SaveEInvoiceSettingsDto: {
+            seller: components["schemas"]["EInvoiceSellerDto"];
+            autoOnIssue: boolean;
+            sellerVersion: number;
+            autoOnIssueVersion: number;
         };
         DispatchItemDto: {
             kind: string;
@@ -12564,7 +12696,7 @@ export interface operations {
     JobsController_list: {
         parameters: {
             query?: {
-                status?: "COMPLETED" | "PLANNED" | "ON_HOLD" | "CANCELLED" | "RECEIVED" | "IN_TESTING" | "REPORTING";
+                status?: "COMPLETED" | "CANCELLED" | "PLANNED" | "ON_HOLD" | "RECEIVED" | "IN_TESTING" | "REPORTING";
                 customerId?: string;
                 urgent?: string;
                 from?: string;
@@ -12617,7 +12749,7 @@ export interface operations {
     JobsController_samples: {
         parameters: {
             query?: {
-                status?: "COMPLETED" | "PLANNED" | "CANCELLED" | "RECEIVED" | "IN_TESTING" | "REPORTING";
+                status?: "COMPLETED" | "CANCELLED" | "PLANNED" | "RECEIVED" | "IN_TESTING" | "REPORTING";
                 returnable?: string;
                 urgent?: string;
                 from?: string;
@@ -13208,7 +13340,7 @@ export interface operations {
     ReportsController_list: {
         parameters: {
             query?: {
-                status?: "APPROVED" | "DRAFT" | "ISSUED" | "IN_REVIEW" | "PENDING_APPROVAL" | "SUPERSEDED";
+                status?: "DRAFT" | "ISSUED" | "APPROVED" | "IN_REVIEW" | "PENDING_APPROVAL" | "SUPERSEDED";
                 jobId?: string;
                 /** @description needs permission to see customers */
                 customerId?: string;
@@ -14534,7 +14666,7 @@ export interface operations {
     CustomersController_tests: {
         parameters: {
             query?: {
-                status?: "PLANNED" | "ASSIGNED" | "IN_PROGRESS" | "RESULTS_SUBMITTED" | "APPROVED" | "ON_HOLD" | "CANCELLED";
+                status?: "CANCELLED" | "PLANNED" | "ASSIGNED" | "IN_PROGRESS" | "RESULTS_SUBMITTED" | "APPROVED" | "ON_HOLD";
                 page?: number;
                 pageSize?: number;
                 sort?: string;
@@ -15077,6 +15209,48 @@ export interface operations {
             };
         };
     };
+    InvoicesController_registerIrn: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceDto"];
+                };
+            };
+        };
+    };
+    InvoicesController_registerCreditNoteIrn: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceDto"];
+                };
+            };
+        };
+    };
     InvoicesController_remind: {
         parameters: {
             query?: never;
@@ -15221,6 +15395,67 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaymentDto"];
+                };
+            };
+        };
+    };
+    EInvoiceAdminController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EInvoiceSettingsDto"];
+                };
+            };
+        };
+    };
+    EInvoiceAdminController_save: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveEInvoiceSettingsDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EInvoiceSettingsDto"];
+                };
+            };
+        };
+    };
+    EInvoiceAdminController_check: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
                 };
             };
         };

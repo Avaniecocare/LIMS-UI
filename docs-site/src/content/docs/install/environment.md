@@ -107,6 +107,20 @@ See [Authentication](/help/developers/authentication/) for how sessions work.
 
 Without `WHATSAPP_APP_SECRET` and `WHATSAPP_VERIFY_TOKEN`, messages still send but stay at "sent". See [WhatsApp](/help/integrations/whatsapp/) and [Webhooks](/help/developers/webhooks/).
 
+## GST e-invoicing
+
+| Name | Required | Default | What it does |
+| --- | --- | --- | --- |
+| `EINVOICE_PROVIDER` | No | None | `nic` registers at the government IRP's direct API. `mock` makes test IRNs on this server, for training (printed as TEST). Unset means e-invoicing is not set up. |
+| `EINVOICE_ENV` | No | `sandbox` | `sandbox` or `production`. `mock` is refused with `production`. |
+| `EINVOICE_BASE_URL` | In the sandbox | `https://api.einvoice1.gst.gov.in` in production | The IRP address. The sandbox address is shown after signing in to einv-apisandbox.nic.in. |
+| `EINVOICE_CLIENT_ID`, `EINVOICE_CLIENT_SECRET` | With `nic` | None | From the e-invoice portal's API registration. |
+| `EINVOICE_USERNAME`, `EINVOICE_PASSWORD` | With `nic` | None | The API user created on the e-invoice portal. |
+| `EINVOICE_GSTIN` | With `nic` | None | The lab's GSTIN the API user belongs to. Must match the Lab profile. |
+| `EINVOICE_PUBLIC_KEY` | With `nic` | None | The IRP's public key in PEM form. Line breaks may be written as `\n`. |
+
+With `nic`, a missing setting stops the server at start, naming it. The credentials are never shown in Admin or sent to a browser. See [GST e-invoicing](/help/integrations/e-invoicing/).
+
 ## AI help assistant
 
 The help site's **Ask AI** assistant answers questions from the published documentation, through the API. It is off unless you turn it on.

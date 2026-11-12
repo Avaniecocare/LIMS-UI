@@ -8613,9 +8613,9 @@
               "type": "string",
               "enum": [
                 "COMPLETED",
+                "CANCELLED",
                 "PLANNED",
                 "ON_HOLD",
-                "CANCELLED",
                 "RECEIVED",
                 "IN_TESTING",
                 "REPORTING"
@@ -8766,8 +8766,8 @@
               "type": "string",
               "enum": [
                 "COMPLETED",
-                "PLANNED",
                 "CANCELLED",
+                "PLANNED",
                 "RECEIVED",
                 "IN_TESTING",
                 "REPORTING"
@@ -9827,9 +9827,9 @@
             "schema": {
               "type": "string",
               "enum": [
-                "APPROVED",
                 "DRAFT",
                 "ISSUED",
+                "APPROVED",
                 "IN_REVIEW",
                 "PENDING_APPROVAL",
                 "SUPERSEDED"
@@ -12062,13 +12062,13 @@
             "schema": {
               "type": "string",
               "enum": [
+                "CANCELLED",
                 "PLANNED",
                 "ASSIGNED",
                 "IN_PROGRESS",
                 "RESULTS_SUBMITTED",
                 "APPROVED",
-                "ON_HOLD",
-                "CANCELLED"
+                "ON_HOLD"
               ]
             }
           },
@@ -13192,6 +13192,68 @@
         ]
       }
     },
+    "/api/v1/invoices/{id}/einvoice": {
+      "post": {
+        "operationId": "InvoicesController_registerIrn",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Registers the invoice at the GST portal (IRN), or tries again after a failure.",
+        "tags": [
+          "invoices"
+        ]
+      }
+    },
+    "/api/v1/credit-notes/{id}/einvoice": {
+      "post": {
+        "operationId": "InvoicesController_registerCreditNoteIrn",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Registers a credit note at the GST portal, or tries again after a failure. Answers with its invoice.",
+        "tags": [
+          "invoices"
+        ]
+      }
+    },
     "/api/v1/invoices/{id}/remind": {
       "post": {
         "operationId": "InvoicesController_remind",
@@ -13477,6 +13539,78 @@
         },
         "tags": [
           "invoices"
+        ]
+      }
+    },
+    "/api/v1/admin/lab/einvoice": {
+      "get": {
+        "operationId": "EInvoiceAdminController_get",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EInvoiceSettingsDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin"
+        ]
+      },
+      "put": {
+        "operationId": "EInvoiceAdminController_save",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveEInvoiceSettingsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EInvoiceSettingsDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/lab/einvoice/check": {
+      "post": {
+        "operationId": "EInvoiceAdminController_check",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Signs in to the IRP with the server's credentials, to prove they work.",
+        "tags": [
+          "admin"
         ]
       }
     },
@@ -17352,10 +17486,10 @@
           },
           "category": {
             "enum": [
+              "OTHER",
               "CHEMICAL",
               "MECHANICAL",
-              "PHYSICAL",
-              "OTHER"
+              "PHYSICAL"
             ],
             "type": "string"
           },
@@ -17461,10 +17595,10 @@
           },
           "category": {
             "enum": [
+              "OTHER",
               "CHEMICAL",
               "MECHANICAL",
-              "PHYSICAL",
-              "OTHER"
+              "PHYSICAL"
             ],
             "type": "string"
           },
@@ -19976,9 +20110,9 @@
             "type": "string",
             "enum": [
               "COMPLETED",
+              "CANCELLED",
               "PLANNED",
               "ON_HOLD",
-              "CANCELLED",
               "RECEIVED",
               "IN_TESTING",
               "REPORTING"
@@ -20066,8 +20200,8 @@
             "type": "string",
             "enum": [
               "COMPLETED",
-              "PLANNED",
               "CANCELLED",
+              "PLANNED",
               "RECEIVED",
               "IN_TESTING",
               "REPORTING"
@@ -20200,8 +20334,8 @@
             "type": "string",
             "enum": [
               "COMPLETED",
-              "PLANNED",
               "CANCELLED",
+              "PLANNED",
               "RECEIVED",
               "IN_TESTING",
               "REPORTING"
@@ -20350,9 +20484,9 @@
           "status": {
             "enum": [
               "COMPLETED",
+              "CANCELLED",
               "PLANNED",
               "ON_HOLD",
-              "CANCELLED",
               "RECEIVED",
               "IN_TESTING",
               "REPORTING"
@@ -20441,9 +20575,9 @@
             "nullable": true,
             "enum": [
               "COMPLETED",
+              "CANCELLED",
               "PLANNED",
               "ON_HOLD",
-              "CANCELLED",
               "RECEIVED",
               "IN_TESTING",
               "REPORTING"
@@ -21736,9 +21870,9 @@
           "status": {
             "type": "string",
             "enum": [
-              "APPROVED",
               "DRAFT",
               "ISSUED",
+              "APPROVED",
               "IN_REVIEW",
               "PENDING_APPROVAL",
               "SUPERSEDED"
@@ -21944,9 +22078,9 @@
           "status": {
             "type": "string",
             "enum": [
-              "APPROVED",
               "DRAFT",
               "ISSUED",
+              "APPROVED",
               "IN_REVIEW",
               "PENDING_APPROVAL",
               "SUPERSEDED"
@@ -24205,8 +24339,8 @@
             "type": "string",
             "enum": [
               "REPORT",
-              "OTHER",
-              "BILLING"
+              "BILLING",
+              "OTHER"
             ]
           },
           "line1": {
@@ -24378,8 +24512,8 @@
             "type": "string",
             "enum": [
               "REPORT",
-              "OTHER",
-              "BILLING"
+              "BILLING",
+              "OTHER"
             ]
           },
           "line1": {
@@ -25430,6 +25564,85 @@
           "amount"
         ]
       },
+      "EInvoiceDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "enum": [
+              "PENDING",
+              "GENERATED",
+              "FAILED",
+              "CANCELLED"
+            ],
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "environment": {
+            "type": "string"
+          },
+          "test": {
+            "type": "boolean",
+            "description": "a test IRN (mock provider or sandbox): not valid for GST"
+          },
+          "irn": {
+            "type": "string",
+            "nullable": true
+          },
+          "ackNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "ackDate": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "lastError": {
+            "type": "string",
+            "nullable": true
+          },
+          "attempts": {
+            "type": "number"
+          },
+          "cancelledAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "cancelReason": {
+            "type": "string",
+            "nullable": true
+          },
+          "cancellableUntil": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true,
+            "description": "until when the IRN can still be cancelled at the IRP; null once it cannot"
+          },
+          "qrDataUri": {
+            "type": "string",
+            "nullable": true,
+            "description": "the signed QR code as a PNG data URI"
+          }
+        },
+        "required": [
+          "status",
+          "provider",
+          "environment",
+          "test",
+          "irn",
+          "ackNo",
+          "ackDate",
+          "lastError",
+          "attempts",
+          "cancelledAt",
+          "cancelReason",
+          "cancellableUntil",
+          "qrDataUri"
+        ]
+      },
       "CreditNoteDto": {
         "type": "object",
         "properties": {
@@ -25466,6 +25679,15 @@
           },
           "amountInWords": {
             "type": "string"
+          },
+          "einvoice": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EInvoiceDto"
+              }
+            ]
           }
         },
         "required": [
@@ -25479,7 +25701,8 @@
           "igst",
           "roundOff",
           "total",
-          "amountInWords"
+          "amountInWords",
+          "einvoice"
         ]
       },
       "ReminderDto": {
@@ -25643,6 +25866,19 @@
             "items": {
               "$ref": "#/components/schemas/ReminderDto"
             }
+          },
+          "einvoiceRequired": {
+            "type": "boolean",
+            "description": "e-invoicing is on and the customer has a GSTIN, so the invoice must carry an IRN"
+          },
+          "einvoice": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EInvoiceDto"
+              }
+            ]
           }
         },
         "required": [
@@ -25680,7 +25916,9 @@
           "lines",
           "allocations",
           "creditNotes",
-          "reminders"
+          "reminders",
+          "einvoiceRequired",
+          "einvoice"
         ]
       },
       "CreateInvoiceDto": {
@@ -25801,6 +26039,16 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 1000
+          },
+          "irnCancelReason": {
+            "type": "string",
+            "description": "When the invoice has an IRN: the IRP's reason code (1 duplicate, 2 data entry mistake, 3 order cancelled, 4 other).",
+            "enum": [
+              "1",
+              "2",
+              "3",
+              "4"
+            ]
           }
         },
         "required": [
@@ -26060,6 +26308,130 @@
         },
         "required": [
           "reason"
+        ]
+      },
+      "EInvoiceSellerDto": {
+        "type": "object",
+        "properties": {
+          "line1": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "line2": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "city": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "pincode": {
+            "type": "string",
+            "description": "6 digits, or empty while not set",
+            "pattern": "^([1-9][0-9]{5})?$"
+          }
+        },
+        "required": [
+          "line1",
+          "line2",
+          "city",
+          "pincode"
+        ]
+      },
+      "EInvoiceProblemDto": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "field",
+          "message"
+        ]
+      },
+      "EInvoiceSettingsDto": {
+        "type": "object",
+        "properties": {
+          "configured": {
+            "type": "boolean",
+            "description": "EINVOICE_PROVIDER is set on the server"
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "configured and the module is on"
+          },
+          "provider": {
+            "type": "string",
+            "nullable": true
+          },
+          "environment": {
+            "type": "string",
+            "nullable": true
+          },
+          "gstin": {
+            "type": "string",
+            "nullable": true
+          },
+          "autoOnIssue": {
+            "type": "boolean"
+          },
+          "seller": {
+            "$ref": "#/components/schemas/EInvoiceSellerDto"
+          },
+          "problems": {
+            "description": "what would stop every registration; empty means ready",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EInvoiceProblemDto"
+            }
+          },
+          "sellerVersion": {
+            "type": "number"
+          },
+          "autoOnIssueVersion": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "configured",
+          "enabled",
+          "provider",
+          "environment",
+          "gstin",
+          "autoOnIssue",
+          "seller",
+          "problems",
+          "sellerVersion",
+          "autoOnIssueVersion"
+        ]
+      },
+      "SaveEInvoiceSettingsDto": {
+        "type": "object",
+        "properties": {
+          "seller": {
+            "$ref": "#/components/schemas/EInvoiceSellerDto"
+          },
+          "autoOnIssue": {
+            "type": "boolean"
+          },
+          "sellerVersion": {
+            "type": "number",
+            "minimum": 0
+          },
+          "autoOnIssueVersion": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "seller",
+          "autoOnIssue",
+          "sellerVersion",
+          "autoOnIssueVersion"
         ]
       },
       "DispatchItemDto": {

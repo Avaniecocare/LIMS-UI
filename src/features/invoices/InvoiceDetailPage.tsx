@@ -9,11 +9,30 @@ import { z } from 'zod';
 import type { components } from '@/api/schema';
 import { useSession } from '@/app/providers';
 import { DocumentButton, EmailLogTable, HistoryList, ReasonDialog, StatusBadge } from '@/components/shared';
-import { Badge, Button, Card, CardHeader, Dialog, EmptyState, ErrorState, Field, Input, PageHeader, Spinner, Tabs, TabsContent, TabsList, TabsTrigger, Textarea } from '@/components/ui/primitives';
+import {
+  Badge,
+  Button,
+  Card,
+  CardHeader,
+  Dialog,
+  EmptyState,
+  ErrorState,
+  Field,
+  Input,
+  PageHeader,
+  Select,
+  Spinner,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Textarea,
+} from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
 import { formatDate, formatDateTime, humanize } from '@/lib/format';
-import { applyServerErrors, writeError } from '@/lib/forms';
+import { applyServerErrors, toastError, writeError } from '@/lib/forms';
 import { AMOUNT, Money, RecordPaymentDialog, refreshBilling, ReminderDialog } from './billing';
+import { EInvoiceBadge, EInvoicePanel, IRN_CANCEL_REASONS } from './EInvoicePanel';
 
 type Invoice = components['schemas']['InvoiceDto'];
 type Line = Invoice['lines'][number];
@@ -391,6 +410,27 @@ function PlainTable({ label, heads, children }: { label: string; heads: string[]
 
 const td = 'border-t border-gray-100 px-3 py-2';
 
+/** A credit note's e-invoice state, with a retry when the GST portal has not registered it. */
+function CreditNoteIrn({ note, canRetry, onSaved }: { note: Invoice['creditNotes'][number]; canRetry: boolean; onSaved: (i: Invoice) => void }) {
+  const retry = useMutation({
+    mutationFn: async () => unwrap(await api.POST('/api/v1/credit-notes/{id}/einvoice', { params: { path: { id: note.id } } })),
+    onSuccess: onSaved,
+    onError: toastError,
+  });
+  const e = note.einvoice;
+  return (
+    <span className="flex flex-col items-start gap-1">
+      <EInvoiceBadge e={e} />
+      {e?.status === 'FAILED' && <span className="max-w-60 text-xs text-red-800">{e.lastError}</span>}
+      {canRetry && (!e || e.status === 'FAILED') && (
+        <Button size="sm" variant="secondary" loading={retry.isPending} onClick={() => retry.mutate()} aria-label={`Register ${note.creditNoteNo} at the GST portal`}>
+          {e ? 'Try again' : 'Register'}
+        </Button>
+      )}
+    </span>
+  );
+}
+
 export default function InvoiceDetailPage() {
   const { id } = useParams();
   const { can } = useSession();
@@ -400,6 +440,7 @@ export default function InvoiceDetailPage() {
   const [tab, setTab] = useState('details');
   const [dialog, setDialog] = useState<'issue' | 'cancel' | 'email' | 'credit' | 'pay' | 'remind' | null>(null);
   const [rating, setRating] = useState<Line | null>(null);
+  const [irnReason, setIrnReason] = useState('');
   const emails = useQuery({
     queryKey: ['invoice-emails', id],
     enabled: tab === 'delivery',
@@ -416,7 +457,12 @@ export default function InvoiceDetailPage() {
   };
   const cancel = useMutation({
     mutationFn: async ({ version, reason }: { version: number; reason: string }) =>
-      unwrap(await api.POST('/api/v1/invoices/{id}/cancel', { params: { path: { id: id! } }, body: { version, reason } })),
+      unwrap(
+        await api.POST('/api/v1/invoices/{id}/cancel', {
+          params: { path: { id: id! } },
+          body: { version, reason, ...(irnReason ? { irnCancelReason: irnReason as '1' | '2' | '3' | '4' } : {}) },
+        }),
+      ),
     onSuccess: (i) => {
       toast.success('Invoice cancelled');
       setDialog(null);
@@ -437,6 +483,11 @@ export default function InvoiceDetailPage() {
   const canEdit = can('invoices.edit');
   const canPay = can('payments.edit');
   const canRemind = can('reminders.send');
+  // A registered IRN can be cancelled with the invoice only within 24 hours; after that, a credit note.
+  const irnActive = i.einvoice?.status === 'GENERATED';
+  const irnLocked = irnActive && !i.einvoice?.cancellableUntil;
+  // A B2B invoice goes to the customer only once it has its IRN.
+  const sendable = !i.einvoiceRequired || irnActive;
 
   return (
     <>
@@ -470,12 +521,12 @@ export default function InvoiceDetailPage() {
             <DocumentButton kind="invoice-pdf" params={{ invoiceId: i.id }}>
               PDF
             </DocumentButton>
-            {issued && canEdit && (
+            {issued && canEdit && sendable && (
               <Button variant="secondary" onClick={() => setDialog('email')}>
                 Email
               </Button>
             )}
-            {issued && <WhatsappButton kind="invoice" entityId={i.id} title={i.invoiceNo ?? 'invoice'} />}
+            {issued && sendable && <WhatsappButton kind="invoice" entityId={i.id} title={i.invoiceNo ?? 'invoice'} />}
             {open && canRemind && (
               <Button variant="secondary" onClick={() => setDialog('remind')}>
                 Send reminder
@@ -487,8 +538,14 @@ export default function InvoiceDetailPage() {
                 Credit note
               </Button>
             )}
-            {(draft || issued) && canEdit && i.status !== 'PAID' && (
-              <Button variant="secondary" onClick={() => setDialog('cancel')}>
+            {(draft || issued) && canEdit && i.status !== 'PAID' && !irnLocked && (
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setIrnReason('');
+                  setDialog('cancel');
+                }}
+              >
                 Cancel invoice
               </Button>
             )}
@@ -502,6 +559,7 @@ export default function InvoiceDetailPage() {
           Cancelled: {i.cancelReason}
         </p>
       )}
+      <EInvoicePanel invoice={i} canEdit={canEdit} onSaved={saved} />
       <Card className="mb-3 p-4">
         <dl className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-7">
           <Fact label="Invoice date">{formatDate(i.invoiceDate)}</Fact>
@@ -578,7 +636,23 @@ export default function InvoiceDetailPage() {
         <TabsContent value="credit">
           <Card>
             {i.creditNotes.length ? (
-              <PlainTable label="Credit notes" heads={['Credit note', 'Date', 'Reason', 'Taxable', 'CGST', 'SGST', 'IGST', 'Round-off', 'Total', 'In words', 'PDF']}>
+              <PlainTable
+                label="Credit notes"
+                heads={[
+                  'Credit note',
+                  'Date',
+                  'Reason',
+                  'Taxable',
+                  'CGST',
+                  'SGST',
+                  'IGST',
+                  'Round-off',
+                  'Total',
+                  'In words',
+                  ...(i.einvoiceRequired || i.creditNotes.some((c) => c.einvoice) ? ['E-invoice'] : []),
+                  'PDF',
+                ]}
+              >
                 {i.creditNotes.map((c) => (
                   <tr key={c.id}>
                     <td className={td}>{c.creditNoteNo}</td>
@@ -590,6 +664,11 @@ export default function InvoiceDetailPage() {
                       </td>
                     ))}
                     <td className={td}>{c.amountInWords}</td>
+                    {(i.einvoiceRequired || i.creditNotes.some((x) => x.einvoice)) && (
+                      <td className={td}>
+                        <CreditNoteIrn note={c} canRetry={canEdit || canPay} onSaved={saved} />
+                      </td>
+                    )}
                     <td className={td}>
                       <DocumentButton size="sm" kind="credit-note-pdf" params={{ creditNoteId: c.id }} aria-label={`PDF of ${c.creditNoteNo}`}>
                         PDF
@@ -646,8 +725,24 @@ export default function InvoiceDetailPage() {
         confirmLabel="Cancel invoice"
         danger
         loading={cancel.isPending}
-        onConfirm={(reason) => cancel.mutate({ version: i.version, reason })}
-      />
+        onConfirm={(reason) => {
+          if (irnActive && !irnReason) return toast.error('Choose why the IRN is being cancelled');
+          cancel.mutate({ version: i.version, reason });
+        }}
+      >
+        {irnActive && (
+          <Field label="Reason for the GST portal" htmlFor="irn-reason" hint="The IRN is cancelled at the GST portal first. The invoice number cannot be used again.">
+            <Select id="irn-reason" required value={irnReason} onChange={(e) => setIrnReason(e.target.value)}>
+              <option value="">Choose…</option>
+              {IRN_CANCEL_REASONS.map((r) => (
+                <option key={r.value} value={r.value}>
+                  {r.label}
+                </option>
+              ))}
+            </Select>
+          </Field>
+        )}
+      </ReasonDialog>
     </>
   );
 }

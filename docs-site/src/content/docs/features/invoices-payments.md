@@ -170,6 +170,8 @@ The place of supply is the customer's state and GST state code as recorded on th
 
 **Result:** "Invoice *number* issued" appears. The invoice gets its number from the `INVOICE` series, its **Due date** (invoice date plus the customer's credit days), and copies of the lab profile, the customer's details and the current invoice terms, so later changes do not alter it. If you gave an email address, the invoice PDF is emailed using the "Tax invoice" template.
 
+When GST e-invoicing is on and the customer has a GSTIN, the invoice is also registered at the GST portal straight away (see [GST e-invoice (IRN)](#gst-e-invoice-irn)). It is emailed only once it has its IRN.
+
 | Field | What it means | Required |
 | --- | --- | --- |
 | **Invoice date (optional)** | Date printed on the invoice; empty means today | No |
@@ -181,6 +183,28 @@ An issued invoice cannot be edited. To change it, raise a credit note or cancel 
 :::
 
 <!-- screenshot: invoices-payments-issue-dialog -->
+
+## GST e-invoice (IRN)
+
+**Goal:** register a B2B invoice at the GST Invoice Registration Portal, so it carries its IRN and signed QR code.
+
+**Who can do it:** happens by itself when the invoice is issued. Anyone with `invoices.edit` can register or retry by hand.
+
+**Before you start:** an Admin has set up [GST e-invoicing](/help/integrations/e-invoicing/) and turned the module on. The customer has a GSTIN and a billing address with a 6-digit PIN code.
+
+When the invoice must carry an IRN, the invoice page shows a **GST e-invoice** card above the totals:
+
+| What you see | What it means | What to do |
+| --- | --- | --- |
+| **IRN registered**, with the QR code, **IRN**, **Ack no.** and **Ack date** | Registered. The PDF prints all of them | Nothing. Email or send the invoice |
+| **Test IRN** | A test registration (the server's test mode or the sandbox), not valid for GST | Nothing for training. Real invoices need the production set-up |
+| **Not registered**, with the GST portal's reason | Registration failed. The invoice is still issued | Fix what the reason names, for example the customer's address in Customers, then select **Try again** |
+| **Not registered**, no reason | Not tried yet (automatic registration is off) | Select **Register at the GST portal** |
+| **IRN cancelled** | The IRN was cancelled with the invoice | Nothing. The number cannot be registered again |
+
+**Email** and **WhatsApp** appear only once a B2B invoice has its IRN. The card also says until when the IRN can still be cancelled (24 hours after registration).
+
+<!-- screenshot: invoices-payments-einvoice-card -->
 
 ## Download, email or WhatsApp an invoice
 
@@ -199,7 +223,7 @@ An issued invoice cannot be edited. To change it, raise a credit note or cancel 
 
 **WhatsApp** appears only when the WhatsApp module is on. See [WhatsApp](/help/features/whatsapp/) and [Email](/help/features/email/).
 
-The invoice PDF shows the letterhead, invoice number, date and due date, place of supply, "Reverse charge: No", the bill-to customer, the services table (S.No, Description, SAC, Qty, Rate, Taxable value), the tax totals, the amount in words, notes, the lab's bank details, a signature block and the invoice terms.
+The invoice PDF shows the letterhead, invoice number, date and due date, place of supply, "Reverse charge: No", the IRN with its acknowledgement and QR code (registered B2B invoices), the bill-to customer, the services table (S.No, Description, SAC, Qty, Rate, Taxable value), the tax totals, the amount in words, notes, the lab's bank details, a signature block and the invoice terms.
 
 ## The invoice page
 
@@ -209,7 +233,7 @@ The header shows the invoice number and status, the customer and CRN (linked for
 | --- | --- |
 | **Details** | The draft box (drafts only), the lines with **#**, **Description**, **SAC**, **Qty**, **Rate**, **Rate source**, **Amount**, and the totals |
 | **Payments** | Payments allocated to this invoice: **Receipt**, **Date**, **Mode**, **Reference**, **Amount** |
-| **Credit notes** | Credit notes against it, with GST split, total, amount in words and a **PDF** button |
+| **Credit notes** | Credit notes against it, with GST split, total, amount in words, their **E-invoice** state (with **Try again** when registration failed) and a **PDF** button |
 | **Reminders** | Reminders sent, with when and whether **Manual** or **Automatic** |
 | **Delivery** | Emails sent for this invoice and their status |
 | **History** | Every change, who made it, and any reason |
@@ -336,13 +360,16 @@ The total with GST cannot be more than the invoice's balance.
 1. Open the invoice.
 2. Select **Cancel invoice**.
 3. Enter the reason.
-4. Select **Cancel invoice** to confirm.
+4. If the invoice has an IRN, choose the **Reason for the GST portal**: **Duplicate**, **Data entry mistake**, **Order cancelled** or **Other**.
+5. Select **Cancel invoice** to confirm.
 
 **Result:** "Invoice cancelled" appears, the status becomes **Cancelled**, and the page shows "Cancelled: *reason*". Its tests return to **Ready to invoice**, so they can be billed again. A paid invoice cannot be cancelled.
 
 :::caution
 Cancelling cannot be undone. An issued invoice keeps its number when cancelled.
 :::
+
+An invoice with an IRN is cancelled at the GST portal first. If the portal refuses, the invoice stays issued. The portal allows this only within 24 hours of registration. After that, **Cancel invoice** is not offered: correct the invoice with a credit note instead.
 
 ## When work is cancelled
 
@@ -374,6 +401,7 @@ Invoices work on a phone in a simplified layout. Lists become cards showing the 
 - One invoice is for one customer. Up to 100 jobs can go on one invoice.
 - Only the overall discount, notes and line rates can change on a draft. Lines cannot be added or removed by hand.
 - An issued invoice cannot be edited.
+- A B2B invoice with an IRN can be cancelled only within 24 hours of registration. See [GST e-invoicing](/help/integrations/e-invoicing/).
 - The browser never adds up money: totals and the amount left as an advance come from the server after you save.
 
 ## Related

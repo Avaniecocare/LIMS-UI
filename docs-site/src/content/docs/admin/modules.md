@@ -23,8 +23,9 @@ The core lab workflow is always on: customers, booking, planning, testing, appro
 | **Analytics and MIS reports** | Charts across the lab, and MIS reports with Excel and PDF export. |
 | **Quality management** | Equipment calibration and maintenance, staff authorisations and training, and non-conformance and CAPA. |
 | **WhatsApp** | Send reports, invoices, sample-received letters and payment reminders to customers on WhatsApp. |
+| **GST e-invoicing** | Register B2B tax invoices and credit notes at the GST Invoice Registration Portal (IRN and signed QR code). |
 
-Every module is on by default, except one that is **Not set up**.
+Every module is on by default, except one that is **Not set up** and **GST e-invoicing**, which stays off until an Admin turns it on (it changes what issuing an invoice does).
 
 ## Turn modules on or off
 
@@ -51,10 +52,11 @@ Every module is on by default, except one that is **Not set up**.
 
 A module marked **Not set up** needs the server configured first, and cannot be ticked until it is. The reason is shown under its name.
 
-Today this applies to **WhatsApp**, which needs `WHATSAPP_TOKEN` and `WHATSAPP_PHONE_NUMBER_ID` in the server settings. See [WhatsApp](/help/integrations/whatsapp/).
+Today this applies to **WhatsApp**, which needs `WHATSAPP_TOKEN` and `WHATSAPP_PHONE_NUMBER_ID` in the server settings, and **GST e-invoicing**, which needs `EINVOICE_PROVIDER` and the e-invoice API credentials. See [WhatsApp](/help/integrations/whatsapp/) and [GST e-invoicing](/help/integrations/e-invoicing/).
 
 ## Related
 
 - [WhatsApp](/help/integrations/whatsapp/)
+- [GST e-invoicing](/help/integrations/e-invoicing/)
 - [Permissions](/help/admin/permissions/): a module that is on still needs the right permissions.
 - [Administration](/help/admin/)
