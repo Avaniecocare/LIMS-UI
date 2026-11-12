@@ -34,7 +34,7 @@ test.beforeAll(async () => {
   const settings = (await admin.get('/admin/settings')) as { key: string; value: Record<string, string>; version: number }[];
   const formats = settings.find((s) => s.key === 'numbering.formats')!;
   const saved = await admin.put('/admin/settings/numbering.formats', {
-    value: { ...formats.value, INVOICE: '{PREFIX}/{FY}/{SEQ:5}', CREDIT_NOTE: '{PREFIX}/CN{FY}/{SEQ:4}' },
+    value: { ...formats.value, INVOICE: '{PREFIX}/{FY}/{SEQ:5}', CREDIT_NOTE: '{PREFIX}/CN/{FY}/{SEQ:4}' },
     version: formats.version,
   });
   const ei = await admin.get('/admin/lab/einvoice');
