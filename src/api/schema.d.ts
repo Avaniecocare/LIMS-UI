@@ -4209,6 +4209,90 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/help/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["HelpController_status"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/help/ask": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Streams the answer as server-sent events: `meta` (answer id and source pages), `delta` (text), `done`.
+         *     Refusals (limits, captcha, invalid input, assistant off) are ordinary JSON errors before the stream starts.
+         */
+        post: operations["HelpController_ask"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/help/feedback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["HelpController_feedback"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/help/page-feedback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["HelpController_pageFeedback"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/help/analytics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["HelpAdminController_analytics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -7452,6 +7536,80 @@ export interface components {
         };
         WhatsappTestDto: {
             to: string;
+        };
+        HelpStatusDto: {
+            turnstileSiteKey: string | null;
+            supportEmail: string | null;
+            enabled: boolean;
+            signedIn: boolean;
+            requireLogin: boolean;
+            maxQuestionLength: number;
+        };
+        HelpAskDto: {
+            /** @description earlier turns of this conversation; only the last few are used */
+            history?: {
+                /** @enum {string} */
+                role?: "user" | "assistant";
+                content?: string;
+            }[];
+            /** @description Cloudflare Turnstile token, for visitors who are not signed in when the check is on */
+            turnstileToken?: string | null;
+            /** @description the visitor's question; the server's own limit (MAX_QUESTION_LENGTH) applies as well */
+            question: string;
+        };
+        HelpFeedbackDto: {
+            /** Format: uuid */
+            id: string;
+            helpful: boolean;
+        };
+        HelpPageFeedbackDto: {
+            path: string;
+            helpful: boolean;
+        };
+        HelpDayDto: {
+            day: string;
+            questions: number;
+            /** @description US dollars */
+            cost: number;
+        };
+        HelpQuestionCountDto: {
+            question: string;
+            count: number;
+        };
+        HelpUnansweredDto: {
+            question: string;
+            /** Format: date-time */
+            at: string;
+        };
+        HelpSourceRefDto: {
+            url: string;
+        };
+        HelpNotHelpfulDto: {
+            question: string | null;
+            sources: components["schemas"]["HelpSourceRefDto"][];
+            /** Format: date-time */
+            at: string;
+        };
+        HelpPageScoreDto: {
+            path: string;
+            helpful: number;
+            notHelpful: number;
+        };
+        HelpAnalyticsDto: {
+            /** @description count per outcome: ANSWERED, CACHED, NOT_FOUND, OFF_TOPIC, BLOCKED, RATE_LIMITED, CAPTCHA_FAILED, BUDGET_REACHED, ERROR */
+            outcomes: {
+                [key: string]: number;
+            };
+            daily: components["schemas"]["HelpDayDto"][];
+            topQuestions: components["schemas"]["HelpQuestionCountDto"][];
+            unanswered: components["schemas"]["HelpUnansweredDto"][];
+            notHelpful: components["schemas"]["HelpNotHelpfulDto"][];
+            pages: components["schemas"]["HelpPageScoreDto"][];
+            days: number;
+            enabled: boolean;
+            model: string;
+            dailyBudget: number;
+            monthlyBudget: number;
         };
     };
     responses: never;
@@ -15436,6 +15594,115 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    HelpController_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HelpStatusDto"];
+                };
+            };
+        };
+    };
+    HelpController_ask: {
+        parameters: {
+            query?: never;
+            header: {
+                "content-length": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HelpAskDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HelpController_feedback: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HelpFeedbackDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    HelpController_pageFeedback: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HelpPageFeedbackDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    HelpAdminController_analytics: {
+        parameters: {
+            query?: {
+                days?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HelpAnalyticsDto"];
                 };
             };
         };

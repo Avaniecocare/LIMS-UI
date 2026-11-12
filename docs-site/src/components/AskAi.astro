@@ -1,0 +1,41 @@
+---
+// "Ask AI": answers questions from this documentation only, through the LIMS API. Nothing here holds a key:
+// the browser talks to the lab's own server, which talks to the AI provider.
+---
+
+<button type="button" class="askai-open" data-askai-open aria-haspopup="dialog" aria-controls="askai-panel">
+  <span aria-hidden="true">✦</span> Ask AI
+</button>
+
+<div id="askai-panel" class="askai-panel" role="dialog" aria-modal="false" aria-labelledby="askai-title" hidden>
+  <header class="askai-header">
+    <h2 id="askai-title">Ask the help assistant</h2>
+    <button type="button" class="askai-close" data-askai-close aria-label="Close">✕</button>
+  </header>
+  <p class="askai-notice">
+    AI answers are generated from this documentation and may be imperfect. Check the linked pages. Do not type personal or customer details.
+  </p>
+  <div class="askai-log" data-askai-log aria-live="polite"></div>
+  <div class="askai-starters" data-askai-starters>
+    <p>Try asking:</p>
+    <button type="button" data-starter>How do I book samples without a quotation?</button>
+    <button type="button" data-starter>How do I issue a report and email it to the customer?</button>
+    <button type="button" data-starter>How do I record a payment against an invoice?</button>
+    <button type="button" data-starter>How do I add a user and give them a role?</button>
+  </div>
+  <form class="askai-form" data-askai-form>
+    <label for="askai-q" class="sr-only">Your question</label>
+    <textarea id="askai-q" name="question" rows="2" maxlength="500" required placeholder="Ask how to do something in the LIMS…"></textarea>
+    <div class="askai-actions">
+      <span class="askai-count" data-askai-count aria-live="off"></span>
+      <button type="submit" data-askai-send>Ask</button>
+    </div>
+    <div data-askai-captcha></div>
+  </form>
+  <p class="askai-support" data-askai-support hidden></p>
+</div>
+
+<script>
+  import { mountAskAi } from '../lib/ask';
+  mountAskAi();
+</script>

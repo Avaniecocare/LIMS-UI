@@ -1,0 +1,20 @@
+---
+import Default from '@astrojs/starlight/components/Footer.astro';
+import AskAi from './AskAi.astro';
+import PageFeedback from './PageFeedback.astro';
+---
+
+<PageFeedback />
+<Default />
+<AskAi />
+
+<script>
+  // Diagrams are drawn only on pages that have one, so most pages never download the diagram library.
+  const diagrams = document.querySelectorAll<HTMLElement>('pre.mermaid');
+  if (diagrams.length) {
+    const { default: mermaid } = await import('mermaid');
+    const dark = document.documentElement.dataset.theme === 'dark';
+    mermaid.initialize({ startOnLoad: false, theme: dark ? 'dark' : 'neutral', securityLevel: 'strict' });
+    await mermaid.run({ nodes: [...diagrams] });
+  }
+</script>

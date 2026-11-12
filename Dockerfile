@@ -5,11 +5,26 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
+# The help site, built into /help. DOCS_* build arguments brand it; the API reference comes from openapi/openapi.json.
+FROM node:24-alpine AS docs
+ARG DOCS_PRODUCT_NAME=LIMS
+ARG DOCS_PRIMARY_COLOR=#1f4e79
+ARG DOCS_SITE_URL=https://lims.example.com
+ARG DOCS_INDEXABLE=false
+ENV DOCS_PRODUCT_NAME=$DOCS_PRODUCT_NAME DOCS_PRIMARY_COLOR=$DOCS_PRIMARY_COLOR DOCS_SITE_URL=$DOCS_SITE_URL DOCS_INDEXABLE=$DOCS_INDEXABLE DOCS_LAST_UPDATED=false
+WORKDIR /app
+COPY openapi ./openapi
+COPY docs-site/package*.json ./docs-site/
+RUN cd docs-site && npm ci
+COPY docs-site ./docs-site
+RUN cd docs-site && npm run build && npm run check:links
+
 FROM nginxinc/nginx-unprivileged:1.29-alpine
 USER root
 RUN apk add --no-cache gettext && mkdir -p /etc/nginx/templates && rm -f /etc/nginx/conf.d/default.conf \
   && chown -R nginx:nginx /usr/share/nginx/html /etc/nginx/conf.d
 COPY --from=build --chown=nginx:nginx /app/dist /usr/share/nginx/html
+COPY --from=docs --chown=nginx:nginx /app/docs-site/dist /usr/share/nginx/html/help
 COPY docker/nginx.conf.template /etc/nginx/templates/default.conf.template
 COPY docker/security-headers.conf /etc/nginx/snippets/security-headers.conf
 COPY docker/entrypoint.sh /entrypoint.sh

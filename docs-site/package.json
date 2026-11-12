@@ -1,0 +1,25 @@
+{
+  "name": "lims-docs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "node scripts/gen-api-reference.mjs && astro dev",
+    "build": "node scripts/gen-api-reference.mjs && astro build && node scripts/postbuild.mjs",
+    "preview": "astro preview --port 4321",
+    "check:links": "node scripts/check-links.mjs",
+    "index": "node scripts/build-index.mjs",
+    "api-reference": "node scripts/gen-api-reference.mjs",
+    "test": "node --test test/"
+  },
+  "dependencies": {
+    "@astrojs/markdown-remark": "^7.3.8",
+    "@astrojs/starlight": "^0.42.11",
+    "astro": "^7.4.11",
+    "mermaid": "^11.17.2",
+    "unist-util-visit": "^5.2.0"
+  }
+}

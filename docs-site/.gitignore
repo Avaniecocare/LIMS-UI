@@ -1,0 +1,5 @@
+/src/styles/brand.generated.css
+node_modules/
+dist/
+.astro/
+src/content/docs/developers/api/

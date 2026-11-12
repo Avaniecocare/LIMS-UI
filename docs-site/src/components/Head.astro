@@ -1,0 +1,8 @@
+---
+import Default from '@astrojs/starlight/components/Head.astro';
+// Pages for signed-in staff are never offered to search engines.
+const staff = (Astro.locals.starlightRoute.entry.data as { access?: string }).access === 'staff';
+---
+
+<Default />
+{staff && <meta name="robots" content="noindex, nofollow" />}

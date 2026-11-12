@@ -6,7 +6,9 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
-  server: { port: 5173 },
+  // In development the help site runs separately (`npm run preview` in docs-site, port 4321) and appears at /help,
+  // on the same address as the app, as it does in production.
+  server: { port: 5173, proxy: { '/help': { target: 'http://localhost:4321', changeOrigin: false } } },
   test: {
     environment: 'jsdom',
     globals: true,

@@ -1,0 +1,31 @@
+---
+// "Was this page helpful?" One answer per page per visit; it goes to the API with the page path only.
+---
+
+<section class="page-feedback" aria-labelledby="page-feedback-q" data-page-feedback>
+  <p id="page-feedback-q">Was this page helpful?</p>
+  <div class="page-feedback-buttons">
+    <button type="button" data-helpful="true">👍 Yes</button>
+    <button type="button" data-helpful="false">👎 No</button>
+  </div>
+  <p class="page-feedback-thanks" role="status" hidden>Thank you. Your answer helps us improve this page.</p>
+</section>
+
+<script>
+  import { apiUrl } from '../lib/api';
+  for (const box of document.querySelectorAll<HTMLElement>('[data-page-feedback]')) {
+    const thanks = box.querySelector<HTMLElement>('.page-feedback-thanks')!;
+    box.querySelectorAll<HTMLButtonElement>('button[data-helpful]').forEach((b) =>
+      b.addEventListener('click', () => {
+        box.querySelectorAll('button').forEach((x) => (x.disabled = true));
+        thanks.hidden = false;
+        void fetch(apiUrl('/help/page-feedback'), {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'lims-help' },
+          body: JSON.stringify({ path: location.pathname, helpful: b.dataset.helpful === 'true' }),
+        }).catch(() => undefined);
+      }),
+    );
+  }
+</script>

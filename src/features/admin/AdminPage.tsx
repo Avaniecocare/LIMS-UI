@@ -34,6 +34,7 @@ import { applyServerErrors, toastError } from '@/lib/forms';
 import { EmailTemplatesTab, ModulesTab } from './LabExtras';
 import { PrivacyTab } from './PrivacyTab';
 import { WhatsappTab } from './WhatsappTab';
+import { HelpAssistantTab } from './HelpAssistantTab';
 import { BrandingTab, LabProfileTab } from './LabSettings';
 import { AccessRequestsTab, AccessReviewTab, PreviewRoleButton } from './SecurityTabs';
 import { useListState } from '@/lib/use-list-state';
@@ -691,6 +692,7 @@ const TABS = [
   { id: 'emails', label: 'Email templates', perm: 'admin.company.view', body: EmailTemplatesTab },
   { id: 'modules', label: 'Modules', perm: 'admin.company.view', body: ModulesTab },
   { id: 'whatsapp', label: 'WhatsApp', perm: 'admin.company.view', body: WhatsappTab },
+  { id: 'help', label: 'Help assistant', perm: 'admin.settings', body: HelpAssistantTab },
   { id: 'privacy', label: 'Privacy', perm: 'privacy.manage', body: PrivacyTab },
 ];
 

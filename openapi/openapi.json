@@ -14294,6 +14294,155 @@
           "admin"
         ]
       }
+    },
+    "/api/v1/help/status": {
+      "get": {
+        "operationId": "HelpController_status",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HelpStatusDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "help"
+        ]
+      }
+    },
+    "/api/v1/help/ask": {
+      "post": {
+        "operationId": "HelpController_ask",
+        "parameters": [
+          {
+            "name": "content-length",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HelpAskDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Streams the answer as server-sent events: `meta` (answer id and source pages), `delta` (text), `done`.\nRefusals (limits, captcha, invalid input, assistant off) are ordinary JSON errors before the stream starts.",
+        "tags": [
+          "help"
+        ]
+      }
+    },
+    "/api/v1/help/feedback": {
+      "post": {
+        "operationId": "HelpController_feedback",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HelpFeedbackDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "help"
+        ]
+      }
+    },
+    "/api/v1/help/page-feedback": {
+      "post": {
+        "operationId": "HelpController_pageFeedback",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HelpPageFeedbackDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "help"
+        ]
+      }
+    },
+    "/api/v1/admin/help/analytics": {
+      "get": {
+        "operationId": "HelpAdminController_analytics",
+        "parameters": [
+          {
+            "name": "days",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 365,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HelpAnalyticsDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin"
+        ]
+      }
     }
   },
   "info": {
@@ -27164,6 +27313,285 @@
         },
         "required": [
           "to"
+        ]
+      },
+      "HelpStatusDto": {
+        "type": "object",
+        "properties": {
+          "turnstileSiteKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "supportEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "signedIn": {
+            "type": "boolean"
+          },
+          "requireLogin": {
+            "type": "boolean"
+          },
+          "maxQuestionLength": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "turnstileSiteKey",
+          "supportEmail",
+          "enabled",
+          "signedIn",
+          "requireLogin",
+          "maxQuestionLength"
+        ]
+      },
+      "HelpAskDto": {
+        "type": "object",
+        "properties": {
+          "history": {
+            "type": "array",
+            "description": "earlier turns of this conversation; only the last few are used",
+            "maxItems": 20,
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "user",
+                    "assistant"
+                  ]
+                },
+                "content": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "turnstileToken": {
+            "type": "string",
+            "nullable": true,
+            "description": "Cloudflare Turnstile token, for visitors who are not signed in when the check is on",
+            "maxLength": 4096
+          },
+          "question": {
+            "type": "string",
+            "description": "the visitor's question; the server's own limit (MAX_QUESTION_LENGTH) applies as well",
+            "maxLength": 4000
+          }
+        },
+        "required": [
+          "question"
+        ]
+      },
+      "HelpFeedbackDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "helpful": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "helpful"
+        ]
+      },
+      "HelpPageFeedbackDto": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "helpful": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "path",
+          "helpful"
+        ]
+      },
+      "HelpDayDto": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "string"
+          },
+          "questions": {
+            "type": "number"
+          },
+          "cost": {
+            "type": "number",
+            "description": "US dollars"
+          }
+        },
+        "required": [
+          "day",
+          "questions",
+          "cost"
+        ]
+      },
+      "HelpQuestionCountDto": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "count": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "question",
+          "count"
+        ]
+      },
+      "HelpUnansweredDto": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "at": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "question",
+          "at"
+        ]
+      },
+      "HelpSourceRefDto": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ]
+      },
+      "HelpNotHelpfulDto": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string",
+            "nullable": true
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HelpSourceRefDto"
+            }
+          },
+          "at": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "question",
+          "sources",
+          "at"
+        ]
+      },
+      "HelpPageScoreDto": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "helpful": {
+            "type": "number"
+          },
+          "notHelpful": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "path",
+          "helpful",
+          "notHelpful"
+        ]
+      },
+      "HelpAnalyticsDto": {
+        "type": "object",
+        "properties": {
+          "outcomes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            },
+            "description": "count per outcome: ANSWERED, CACHED, NOT_FOUND, OFF_TOPIC, BLOCKED, RATE_LIMITED, CAPTCHA_FAILED, BUDGET_REACHED, ERROR"
+          },
+          "daily": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HelpDayDto"
+            }
+          },
+          "topQuestions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HelpQuestionCountDto"
+            }
+          },
+          "unanswered": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HelpUnansweredDto"
+            }
+          },
+          "notHelpful": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HelpNotHelpfulDto"
+            }
+          },
+          "pages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HelpPageScoreDto"
+            }
+          },
+          "days": {
+            "type": "number"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "model": {
+            "type": "string"
+          },
+          "dailyBudget": {
+            "type": "number"
+          },
+          "monthlyBudget": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "outcomes",
+          "daily",
+          "topQuestions",
+          "unanswered",
+          "notHelpful",
+          "pages",
+          "days",
+          "enabled",
+          "model",
+          "dailyBudget",
+          "monthlyBudget"
         ]
       }
     }

@@ -178,6 +178,8 @@ export function Layout() {
                   {user?.roles.join(', ')}
                 </div>
                 <DropdownItem onSelect={() => navigate('/account')}>My account</DropdownItem>
+                {/* The help site is a separate set of pages on this address; it opens beside the app. */}
+                <DropdownItem onSelect={() => window.open('/help/', '_blank', 'noopener')}>Help and documentation</DropdownItem>
                 <DropdownSeparator />
                 <DropdownLabel>Appearance</DropdownLabel>
                 <DropdownRadioGroup value={preference} onValueChange={(v) => setPreference(v as ThemePreference)}>

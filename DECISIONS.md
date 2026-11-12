@@ -36,3 +36,6 @@
 - **A phone is below 768 px; what it shows is decided in `app/device.ts`.** Tablets get the full app. Desktop-only screens show "Best on a larger screen" with Continue anyway, never a dead end.
 - **Phone tables are cards from the same column definitions,** so no screen needs a second layout. The first four named columns show; the rest are under More details.
 - **The service worker only serves an offline page.** Caching pages or API responses would keep lab data on phones and delay releases; neither is worth it for an app that needs the server anyway.
+- **The help site is Astro Starlight in `docs-site/`, served at `/help/` by the UI container.** Same origin as the app, so the signed-in session counts for the assistant without any cross-site set-up. Built-in Pagefind search works offline; the generated API reference comes from the pinned `openapi/openapi.json`.
+- **The docs keep the app's strict CSP.** A post-build step moves Starlight's inline scripts into same-origin files; `/help/` adds only Cloudflare Turnstile to the policy.
+- **Assistant answers are untrusted text.** They are escaped and rendered with a small Markdown subset; links survive only if they point into `/help/`. Source links are checked the same way.
