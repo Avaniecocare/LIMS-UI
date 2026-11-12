@@ -6,7 +6,11 @@ const nav = (page: Page) => page.getByRole('navigation', { name: 'Main' });
 /** Makes a draft invoice for a job through the Ready to invoice tab and opens it. */
 async function draftFromReady(page: Page, jobNo: string) {
   await page.goto(`/invoices?tab=ready&q=${encodeURIComponent(jobNo)}`);
-  await page.getByRole('table', { name: 'Jobs ready to invoice' }).getByRole('row', { name: new RegExp(jobNo) }).getByRole('checkbox').click();
+  await page
+    .getByRole('table', { name: 'Jobs ready to invoice' })
+    .getByRole('row', { name: new RegExp(jobNo) })
+    .getByRole('checkbox')
+    .click();
   await page.getByRole('button', { name: 'Create draft invoice' }).click();
   await page.getByRole('alertdialog').getByRole('button', { name: 'Create draft' }).click();
   await expect(page).toHaveURL(/\/invoices\/[0-9a-f-]{36}/);
@@ -21,7 +25,24 @@ async function issueOpen(page: Page) {
 
 test('the navigation follows permissions, in the product order', async ({ page }) => {
   const expected: Record<string, string[]> = {
-    admin: ['Dashboard', 'Orders', 'Quotations', 'Samples', 'Planning', 'Approvals', 'Reports', 'Dispatch', 'Invoices', 'Due Invoices', 'Analytics', 'Customers', 'Quality', 'Files', 'Masters', 'Admin'],
+    admin: [
+      'Dashboard',
+      'Orders',
+      'Quotations',
+      'Samples',
+      'Planning',
+      'Approvals',
+      'Reports',
+      'Dispatch',
+      'Invoices',
+      'Due Invoices',
+      'Analytics',
+      'Customers',
+      'Quality',
+      'Files',
+      'Masters',
+      'Admin',
+    ],
     accounts: ['Dashboard', 'Samples', 'Approvals', 'Reports', 'Invoices', 'Due Invoices', 'Analytics', 'Customers', 'Masters'],
     dispatch: ['Dashboard', 'Samples', 'Approvals', 'Dispatch', 'Customers', 'Masters'],
     tech: ['Dashboard', 'My Tests'],
@@ -62,7 +83,15 @@ test('dispatch: choosing what goes, by-hand fields, withheld reports, and return
   const withheld = await issuedJob({ customerId: customer.id });
   const sales = await apiAs('sales');
   const record = await sales.get(`/customers/${customer.id}`);
-  await sales.patch(`/customers/${customer.id}`, { version: record.version, isActive: true, name: record.name, stateName: record.stateName, stateCode: record.stateCode, creditDays: record.creditDays, withholdReportUntilPaid: true });
+  await sales.patch(`/customers/${customer.id}`, {
+    version: record.version,
+    isActive: true,
+    name: record.name,
+    stateName: record.stateName,
+    stateCode: record.stateCode,
+    creditDays: record.creditDays,
+    withholdReportUntilPaid: true,
+  });
   const open = await issuedJob();
 
   await signIn(page, 'dispatch');
@@ -97,7 +126,10 @@ test('dispatch: choosing what goes, by-hand fields, withheld reports, and return
   await expect(dispatches).toContainText('Ravi Runner');
   const tab = page.context().waitForEvent('page');
   const made = page.waitForResponse((r) => r.url().endsWith('/documents') && r.request().method() === 'POST');
-  await dispatches.getByRole('row', { name: new RegExp(open.job.jobNo) }).getByRole('button', { name: /^Challan for/ }).click();
+  await dispatches
+    .getByRole('row', { name: new RegExp(open.job.jobNo) })
+    .getByRole('button', { name: /^Challan for/ })
+    .click();
   expect((await (await made).request().postDataJSON()).kind).toBe('dispatch-challan');
   await (await tab).close();
 
@@ -141,9 +173,15 @@ test('invoices: one customer per draft, discount, rate override, cancel, credit 
   // Jobs of another customer cannot join the selection
   await page.goto('/invoices?tab=ready&pageSize=200');
   const ready = page.getByRole('table', { name: 'Jobs ready to invoice' });
-  await ready.getByRole('row', { name: new RegExp(a.job.jobNo) }).getByRole('checkbox').click();
+  await ready
+    .getByRole('row', { name: new RegExp(a.job.jobNo) })
+    .getByRole('checkbox')
+    .click();
   await expect(ready.getByRole('row', { name: new RegExp(c.job.jobNo) }).getByRole('checkbox')).toBeDisabled();
-  await ready.getByRole('row', { name: new RegExp(b.job.jobNo) }).getByRole('checkbox').click();
+  await ready
+    .getByRole('row', { name: new RegExp(b.job.jobNo) })
+    .getByRole('checkbox')
+    .click();
   await page.getByRole('button', { name: 'Create draft invoice' }).click();
   await page.getByRole('alertdialog').getByRole('button', { name: 'Create draft' }).click();
   await expect(page).toHaveURL(/\/invoices\/[0-9a-f-]{36}/);
@@ -245,7 +283,10 @@ test('payments: an advance held on account, applied, then a payment reversed', a
   await page.getByRole('button', { name: 'Record payment' }).click();
   let dialog = page.getByRole('dialog');
   await dialog.getByRole('combobox', { name: /Customer/ }).fill(customer.name);
-  await dialog.getByRole('option', { name: new RegExp(customer.name) }).first().click();
+  await dialog
+    .getByRole('option', { name: new RegExp(customer.name) })
+    .first()
+    .click();
   await expect(dialog.getByRole('table', { name: 'Allocate to open invoices' })).toContainText(invoiceNo);
   await dialog.getByLabel(/^Amount/).fill('200');
   await dialog.getByRole('button', { name: 'Record payment' }).click();
@@ -354,7 +395,10 @@ test('reports: catalog by permission, default month, filters from the URL, forma
   await expect(page.getByLabel('Date from')).toHaveCount(0);
 
   await page.goto('/reports/sample-status?status=PLANNED');
-  for (const [name, format] of [['Excel', 'excel'], ['PDF', 'pdf']]) {
+  for (const [name, format] of [
+    ['Excel', 'excel'],
+    ['PDF', 'pdf'],
+  ]) {
     const made = page.waitForResponse((r) => r.url().endsWith('/documents') && r.request().method() === 'POST');
     const tab = page.context().waitForEvent('page');
     await page.getByRole('button', { name, exact: true }).click();
@@ -422,8 +466,17 @@ test('dashboard: what each role gets, working links, and charts only where they 
   await page.goto('/analytics');
   await expect(page.getByRole('img', { name: /^Samples by status\./ })).toBeVisible();
   expect(charts.length).toBeGreaterThan(0);
-  await expect(page.getByRole('img', { name: /^Samples by status\./ }).locator('.recharts-bar-rectangle').first()).toBeVisible();
-  await page.getByRole('img', { name: /^Samples by status\./ }).locator('.recharts-bar-rectangle path').first().click();
+  await expect(
+    page
+      .getByRole('img', { name: /^Samples by status\./ })
+      .locator('.recharts-bar-rectangle')
+      .first(),
+  ).toBeVisible();
+  await page
+    .getByRole('img', { name: /^Samples by status\./ })
+    .locator('.recharts-bar-rectangle path')
+    .first()
+    .click();
   await expect(page).toHaveURL(/\/reports\/sample-status\?status=/);
 
   await page.goto('/analytics');
@@ -446,7 +499,9 @@ test('dashboard: what each role gets, working links, and charts only where they 
 test('a crash in a page shows a friendly message with a reload button', async ({ page }) => {
   await signIn(page, 'tech');
   // Answer the dashboard with something it cannot draw.
-  await page.route('**/api/v1/dashboard*', (route) => route.fulfill({ json: { from: '2026-01-01', to: '2026-01-02', myWork: 'not a list', operations: null, quality: null, people: null, commercial: null } }));
+  await page.route('**/api/v1/dashboard*', (route) =>
+    route.fulfill({ json: { from: '2026-01-01', to: '2026-01-02', myWork: 'not a list', operations: null, quality: null, people: null, commercial: null } }),
+  );
   await page.reload();
   await expect(page.getByRole('alert')).toContainText('Something went wrong on this page');
   // The crash stays inside the page: the menu still works.

@@ -1,5 +1,23 @@
 import type { LucideIcon } from 'lucide-react';
-import { ShieldCheck, AlarmClock, BadgeCheck, BarChart3, Building2, ClipboardList, Database, FileSpreadsheet, FileText, FlaskConical, FolderOpen, Inbox, LayoutDashboard, Microscope, ReceiptText, Send, Settings } from 'lucide-react';
+import {
+  ShieldCheck,
+  AlarmClock,
+  BadgeCheck,
+  BarChart3,
+  Building2,
+  ClipboardList,
+  Database,
+  FileSpreadsheet,
+  FileText,
+  FlaskConical,
+  FolderOpen,
+  Inbox,
+  LayoutDashboard,
+  Microscope,
+  ReceiptText,
+  Send,
+  Settings,
+} from 'lucide-react';
 
 export interface NavItem {
   label: string;

@@ -21,7 +21,17 @@ const MESSAGE: Partial<Record<CameraState, string>> = {
  * The camera starts from the button press, because browsers want a user gesture, and every track
  * stops as soon as the dialog closes.
  */
-export function WebcamCapture({ title, buttonLabel = 'Use camera', accept = 'image/png,image/jpeg', onSave }: { title: string; buttonLabel?: string; accept?: string; onSave: (files: File[]) => Promise<void> }) {
+export function WebcamCapture({
+  title,
+  buttonLabel = 'Use camera',
+  accept = 'image/png,image/jpeg',
+  onSave,
+}: {
+  title: string;
+  buttonLabel?: string;
+  accept?: string;
+  onSave: (files: File[]) => Promise<void>;
+}) {
   const [open, setOpen] = useState(false);
   const [state, setState] = useState<CameraState>('off');
   const [shots, setShots] = useState<Shot[]>([]);

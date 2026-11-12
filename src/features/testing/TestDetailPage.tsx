@@ -33,9 +33,10 @@ function serverValues(t: Test): Record<string, string> {
 
 /** Fields holding what cannot be saved: not a number yet, or refused by the server with a message. */
 function invalidKeys(t: Test | undefined, drafts: Record<string, string>, refused: Record<string, string> = {}) {
-  return (t?.results ?? []).filter((r) => r.parameterId in refused || r.kind === 'NUMERIC' && (drafts[r.parameterId] ?? '').trim() !== '' && !isResultText(drafts[r.parameterId])).map((r) => r.parameterId);
+  return (t?.results ?? [])
+    .filter((r) => r.parameterId in refused || (r.kind === 'NUMERIC' && (drafts[r.parameterId] ?? '').trim() !== '' && !isResultText(drafts[r.parameterId])))
+    .map((r) => r.parameterId);
 }
-
 
 function SaveIndicator({ status, canRetry, onRetry }: { status: SaveStatus; canRetry: boolean; onRetry: () => void }) {
   const failed = status === 'failed';
@@ -109,7 +110,23 @@ function Stages({ test, busy, onComplete }: { test: Test; busy: boolean; onCompl
   );
 }
 
-function RemarkField({ test, field, label, value, onChange, onFocus, onBlur }: { test: Test; field: TextField; label: string; value: string; onChange: (text: string) => void; onFocus: () => void; onBlur: () => void }) {
+function RemarkField({
+  test,
+  field,
+  label,
+  value,
+  onChange,
+  onFocus,
+  onBlur,
+}: {
+  test: Test;
+  field: TextField;
+  label: string;
+  value: string;
+  onChange: (text: string) => void;
+  onFocus: () => void;
+  onBlur: () => void;
+}) {
   const id = `entry-${field}`;
   if (!test.canEdit) {
     return (
@@ -262,15 +279,12 @@ export default function TestDetailPage() {
   const refetch = q.refetch;
 
   /** Fields to leave alone when the server answers: being typed in, not sent yet, or not valid to send. */
-  const keepKeys = useCallback(
-    (t: Test | undefined) => {
-      const keep = new Set<string>(patchKeys(queueRef.current?.unsent ?? null));
-      if (focused.current) keep.add(focused.current);
-      for (const k of invalidKeys(t, draftsRef.current, refusedRef.current)) keep.add(k);
-      return keep;
-    },
-    [],
-  );
+  const keepKeys = useCallback((t: Test | undefined) => {
+    const keep = new Set<string>(patchKeys(queueRef.current?.unsent ?? null));
+    if (focused.current) keep.add(focused.current);
+    for (const k of invalidKeys(t, draftsRef.current, refusedRef.current)) keep.add(k);
+    return keep;
+  }, []);
 
   queueRef.current ??= new AutosaveQueue<EntryPatch, Test>({
     version: 0,
@@ -537,7 +551,12 @@ export default function TestDetailPage() {
                 <CardHeader title="Instrument and analyst" />
                 <div className="space-y-2 p-4 text-[13px]">
                   {entering ? (
-                    <Field label="Instrument" htmlFor="entry-instrument" error={instrumentError ?? undefined} hint={test.blockOverdueInstruments ? 'Instruments overdue for calibration cannot be used.' : undefined}>
+                    <Field
+                      label="Instrument"
+                      htmlFor="entry-instrument"
+                      error={instrumentError ?? undefined}
+                      hint={test.blockOverdueInstruments ? 'Instruments overdue for calibration cannot be used.' : undefined}
+                    >
                       <Select
                         id="entry-instrument"
                         className="h-11"
@@ -589,7 +608,9 @@ export default function TestDetailPage() {
             <Card>
               <CardHeader
                 title="Results"
-                description={entering ? 'Saved as you type. Enter moves to the next reading. For a result below or above what the method can measure, type < or > before it, for example <0.005.' : undefined}
+                description={
+                  entering ? 'Saved as you type. Enter moves to the next reading. For a result below or above what the method can measure, type < or > before it, for example <0.005.' : undefined
+                }
                 actions={
                   <span className="text-[13px] text-gray-700">
                     Overall: <Outcome outcome={test.outcome} />
@@ -632,7 +653,9 @@ export default function TestDetailPage() {
                   canEdit={test.canEdit}
                   withPrintSize
                   accept="image/png,image/jpeg"
-                  extraActions={<PhoneUploadButton purpose="result-image" entityId={test.id} onReceived={() => void client.invalidateQueries({ queryKey: ['files', 'SampleTest', test.id, 'result-image'] })} />}
+                  extraActions={
+                    <PhoneUploadButton purpose="result-image" entityId={test.id} onReceived={() => void client.invalidateQueries({ queryKey: ['files', 'SampleTest', test.id, 'result-image'] })} />
+                  }
                 />
               </div>
             </Card>
@@ -657,9 +680,33 @@ export default function TestDetailPage() {
           </Button>
         </div>
       )}
-      <ConfirmDialog open={dialog === 'submit'} onOpenChange={(o) => !o && setDialog(null)} title="Submit these results?" description="They go for approval and can no longer be changed unless they are sent back." confirmLabel="Submit results" loading={submit.isPending} onConfirm={() => submit.mutate()} />
-      <ReasonDialog open={dialog === 'hold'} onOpenChange={(o) => !o && setDialog(null)} title="Put this test on hold" description="Work stops until the hold is released." confirmLabel="Put on hold" loading={action.isPending} onConfirm={hold} />
-      <ConfirmDialog open={dialog === 'release'} onOpenChange={(o) => !o && setDialog(null)} title="Release the hold?" description="The test returns to the status it had before." confirmLabel="Release hold" loading={action.isPending} onConfirm={release} />
+      <ConfirmDialog
+        open={dialog === 'submit'}
+        onOpenChange={(o) => !o && setDialog(null)}
+        title="Submit these results?"
+        description="They go for approval and can no longer be changed unless they are sent back."
+        confirmLabel="Submit results"
+        loading={submit.isPending}
+        onConfirm={() => submit.mutate()}
+      />
+      <ReasonDialog
+        open={dialog === 'hold'}
+        onOpenChange={(o) => !o && setDialog(null)}
+        title="Put this test on hold"
+        description="Work stops until the hold is released."
+        confirmLabel="Put on hold"
+        loading={action.isPending}
+        onConfirm={hold}
+      />
+      <ConfirmDialog
+        open={dialog === 'release'}
+        onOpenChange={(o) => !o && setDialog(null)}
+        title="Release the hold?"
+        description="The test returns to the status it had before."
+        confirmLabel="Release hold"
+        loading={action.isPending}
+        onConfirm={release}
+      />
       <ConfirmDialog
         open={leaving}
         onOpenChange={(o) => {

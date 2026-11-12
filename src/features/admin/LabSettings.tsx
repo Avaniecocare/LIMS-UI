@@ -39,7 +39,10 @@ const profileSchema = z.object({
   sacDescription: opt.max(200),
   bank: z.object({ accountName: opt.max(200), accountNumber: opt.max(40), bankName: opt.max(120), branch: opt.max(120), ifsc: opt.toUpperCase().max(11), swift: opt.toUpperCase().max(11) }),
   accreditation: z.object({ certificationText: opt.max(300), nablMode: z.boolean(), nablCertificateNo: opt.max(60), ulrFormat: opt.max(80) }),
-  documentPrefix: z.string().trim().regex(/^[A-Za-z0-9-]{1,10}$/, '1-10 letters, digits or hyphens'),
+  documentPrefix: z
+    .string()
+    .trim()
+    .regex(/^[A-Za-z0-9-]{1,10}$/, '1-10 letters, digits or hyphens'),
   supportEmail: opt.max(254),
   supportPhone: opt.max(40),
   termsUrl: opt.max(300),
@@ -54,7 +57,12 @@ const toForm = (p: Profile): ProfileValues => ({
   cin: p.cin ?? '',
   website: p.website ?? '',
   bank: { ...p.bank, swift: p.bank.swift ?? '' },
-  accreditation: { ...p.accreditation, certificationText: p.accreditation.certificationText ?? '', nablCertificateNo: p.accreditation.nablCertificateNo ?? '', ulrFormat: p.accreditation.ulrFormat ?? '' },
+  accreditation: {
+    ...p.accreditation,
+    certificationText: p.accreditation.certificationText ?? '',
+    nablCertificateNo: p.accreditation.nablCertificateNo ?? '',
+    ulrFormat: p.accreditation.ulrFormat ?? '',
+  },
   supportEmail: p.supportEmail ?? '',
   supportPhone: p.supportPhone ?? '',
   termsUrl: p.termsUrl ?? '',
@@ -68,7 +76,12 @@ const toBody = (v: ProfileValues): Profile => ({
   cin: orNull(v.cin),
   website: orNull(v.website),
   bank: { ...v.bank, swift: orNull(v.bank.swift) },
-  accreditation: { nablMode: v.accreditation.nablMode, certificationText: orNull(v.accreditation.certificationText), nablCertificateNo: orNull(v.accreditation.nablCertificateNo), ulrFormat: orNull(v.accreditation.ulrFormat) },
+  accreditation: {
+    nablMode: v.accreditation.nablMode,
+    certificationText: orNull(v.accreditation.certificationText),
+    nablCertificateNo: orNull(v.accreditation.nablCertificateNo),
+    ulrFormat: orNull(v.accreditation.ulrFormat),
+  },
   supportEmail: orNull(v.supportEmail),
   supportPhone: orNull(v.supportPhone),
   termsUrl: orNull(v.termsUrl),
@@ -127,7 +140,11 @@ export function LabProfileForm({ lab, onSaved, submitLabel = 'Save lab profile' 
     setGstinNote(`State ${info.stateName ?? ''} (${info.stateCode}) and PAN filled from the GSTIN.`);
   };
   const nabl = form.watch('accreditation.nablMode');
-  const text = (name: keyof ProfileValues | `bank.${string}` | `accreditation.${string}`, label: string, opts: { hint?: string; required?: boolean; type?: string; upper?: boolean; full?: boolean } = {}) => {
+  const text = (
+    name: keyof ProfileValues | `bank.${string}` | `accreditation.${string}`,
+    label: string,
+    opts: { hint?: string; required?: boolean; type?: string; upper?: boolean; full?: boolean } = {},
+  ) => {
     const err = name.split('.').reduce<unknown>((o, k) => (o as Record<string, unknown> | undefined)?.[k], e) as { message?: string } | undefined;
     const id = `lab-${name.replace('.', '-')}`;
     return (
@@ -190,7 +207,11 @@ export function LabProfileForm({ lab, onSaved, submitLabel = 'Save lab profile' 
         <Section title="Accreditation" description="NABL mode prints the NABL details and a ULR number on reports of accredited tests.">
           {text('accreditation.certificationText', 'Certification line on reports', { full: true, hint: 'e.g. ISO/IEC 17025:2017 accredited laboratory' })}
           <div className="md:col-span-2">
-            <Controller control={form.control} name="accreditation.nablMode" render={({ field }) => <Checkbox id="lab-nabl" label="NABL mode" checked={field.value} onCheckedChange={(v) => field.onChange(v === true)} />} />
+            <Controller
+              control={form.control}
+              name="accreditation.nablMode"
+              render={({ field }) => <Checkbox id="lab-nabl" label="NABL mode" checked={field.value} onCheckedChange={(v) => field.onChange(v === true)} />}
+            />
           </div>
           {nabl && text('accreditation.nablCertificateNo', 'NABL certificate number', { required: true })}
           {nabl && text('accreditation.ulrFormat', 'ULR format', { required: true, hint: 'e.g. TC1234{YY}{SEQ:8}F' })}
@@ -275,7 +296,13 @@ function ColorField({ id, label, hint, value, onChange, error }: { id: string; l
   return (
     <Field label={label} htmlFor={id} hint={hint} error={error}>
       <div className="flex items-center gap-2">
-        <input type="color" aria-label={`${label} picker`} className="h-9 w-12 cursor-pointer rounded border border-gray-300 bg-surface p-0.5" value={COLOR.test(value) ? value : '#000000'} onChange={(e) => onChange(e.target.value)} />
+        <input
+          type="color"
+          aria-label={`${label} picker`}
+          className="h-9 w-12 cursor-pointer rounded border border-gray-300 bg-surface p-0.5"
+          value={COLOR.test(value) ? value : '#000000'}
+          onChange={(e) => onChange(e.target.value)}
+        />
         <Input id={id} className="font-mono uppercase" maxLength={7} value={value} onChange={(e) => onChange(e.target.value)} />
       </div>
     </Field>
@@ -328,7 +355,11 @@ function BrandImages({ lab }: { lab: Lab }) {
             <div key={img.kind} className="space-y-2">
               <p className="text-[13px] font-medium text-gray-900">{img.label}</p>
               <div className="flex h-28 items-center justify-center rounded-md border border-dashed border-gray-300 bg-gray-50 p-2">
-                {src[img.kind] ? <img src={src[img.kind]!} alt={`Current ${img.label.toLowerCase()}`} className="max-h-24 max-w-full object-contain" /> : <span className="text-xs text-gray-600">None</span>}
+                {src[img.kind] ? (
+                  <img src={src[img.kind]!} alt={`Current ${img.label.toLowerCase()}`} className="max-h-24 max-w-full object-contain" />
+                ) : (
+                  <span className="text-xs text-gray-600">None</span>
+                )}
               </div>
               <p className="text-xs text-gray-600">{img.hint}</p>
               <input
@@ -351,7 +382,13 @@ function BrandImages({ lab }: { lab: Lab }) {
                   {saved ? 'Replace' : 'Upload'}
                 </Button>
                 {saved && (
-                  <Button variant="ghost" size="sm" aria-label={`Remove ${img.label.toLowerCase()}`} loading={remove.isPending && remove.variables === img.kind} onClick={() => remove.mutate(img.kind)}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    aria-label={`Remove ${img.label.toLowerCase()}`}
+                    loading={remove.isPending && remove.variables === img.kind}
+                    onClick={() => remove.mutate(img.kind)}
+                  >
                     <Trash2 aria-hidden />
                     Remove
                   </Button>
@@ -374,7 +411,15 @@ export function BrandingForm({ lab, onSaved, submitLabel = 'Save branding' }: { 
   const current = useBranding();
   const { can } = useSession();
   const canEdit = can('admin.company.edit');
-  const start = (l: Lab): BrandingValues => ({ appName: l.branding.appName ?? '', primaryColor: l.branding.primaryColor, accentColor: l.branding.accentColor, surfaceColor: l.branding.surfaceColor, navColor: l.branding.navColor, loginTagline: l.branding.loginTagline ?? '', poweredBy: l.branding.poweredBy });
+  const start = (l: Lab): BrandingValues => ({
+    appName: l.branding.appName ?? '',
+    primaryColor: l.branding.primaryColor,
+    accentColor: l.branding.accentColor,
+    surfaceColor: l.branding.surfaceColor,
+    navColor: l.branding.navColor,
+    loginTagline: l.branding.loginTagline ?? '',
+    poweredBy: l.branding.poweredBy,
+  });
   const form = useForm<BrandingValues>({ resolver: zodResolver(brandingSchema), defaultValues: start(lab) });
   useEffect(() => form.reset(start(lab)), [lab, form]);
   const guard = useLeaveGuard(form.formState.isDirty && canEdit);
@@ -385,12 +430,19 @@ export function BrandingForm({ lab, onSaved, submitLabel = 'Save branding' }: { 
   useEffect(() => {
     if (current && valid) applyBranding({ ...current, primaryColor: v.primaryColor, accentColor: v.accentColor, surfaceColor: v.surfaceColor, navColor: v.navColor });
   }, [current, valid, v.primaryColor, v.accentColor, v.surfaceColor, v.navColor]);
-  useEffect(() => () => {
-    if (current) applyBranding(current);
-  }, [current]);
+  useEffect(
+    () => () => {
+      if (current) applyBranding(current);
+    },
+    [current],
+  );
   const save = useMutation({
     mutationFn: async (values: BrandingValues) =>
-      unwrap(await api.PUT('/api/v1/admin/lab/branding', { body: { version: lab.brandingVersion, branding: { ...values, appName: values.appName.trim() || null, loginTagline: values.loginTagline.trim() || null } } })),
+      unwrap(
+        await api.PUT('/api/v1/admin/lab/branding', {
+          body: { version: lab.brandingVersion, branding: { ...values, appName: values.appName.trim() || null, loginTagline: values.loginTagline.trim() || null } },
+        }),
+      ),
     onSuccess: async (next) => {
       client.setQueryData(LAB_KEY, next);
       await client.invalidateQueries({ queryKey: ['branding'] });
@@ -432,15 +484,47 @@ export function BrandingForm({ lab, onSaved, submitLabel = 'Save branding' }: { 
                     ))}
                   </div>
                 </div>
-                <ColorField id="br-primary" label="Primary colour" hint="Buttons, links and headings on documents" value={v.primaryColor} error={e.primaryColor?.message} onChange={(c) => setColor('primaryColor', c)} />
-                <ColorField id="br-accent" label="Accent colour" hint="Rules and highlights on documents" value={v.accentColor} error={e.accentColor?.message} onChange={(c) => setColor('accentColor', c)} />
-                <ColorField id="br-nav" label="Menu colour" hint="The side menu; its text colour adjusts itself" value={v.navColor} error={e.navColor?.message} onChange={(c) => setColor('navColor', c)} />
-                <ColorField id="br-surface" label="Background colour" hint="Behind the pages; keep it light" value={v.surfaceColor} error={e.surfaceColor?.message} onChange={(c) => setColor('surfaceColor', c)} />
+                <ColorField
+                  id="br-primary"
+                  label="Primary colour"
+                  hint="Buttons, links and headings on documents"
+                  value={v.primaryColor}
+                  error={e.primaryColor?.message}
+                  onChange={(c) => setColor('primaryColor', c)}
+                />
+                <ColorField
+                  id="br-accent"
+                  label="Accent colour"
+                  hint="Rules and highlights on documents"
+                  value={v.accentColor}
+                  error={e.accentColor?.message}
+                  onChange={(c) => setColor('accentColor', c)}
+                />
+                <ColorField
+                  id="br-nav"
+                  label="Menu colour"
+                  hint="The side menu; its text colour adjusts itself"
+                  value={v.navColor}
+                  error={e.navColor?.message}
+                  onChange={(c) => setColor('navColor', c)}
+                />
+                <ColorField
+                  id="br-surface"
+                  label="Background colour"
+                  hint="Behind the pages; keep it light"
+                  value={v.surfaceColor}
+                  error={e.surfaceColor?.message}
+                  onChange={(c) => setColor('surfaceColor', c)}
+                />
                 <Field label="Sign-in page line" htmlFor="br-tagline" hint="A short line under the name on the sign-in page. Optional." error={e.loginTagline?.message} className="md:col-span-2">
                   <Input id="br-tagline" maxLength={160} placeholder="e.g. Accurate results, on time" {...form.register('loginTagline')} />
                 </Field>
                 <div className="md:col-span-2">
-                  <Controller control={form.control} name="poweredBy" render={({ field }) => <Checkbox id="br-powered" label={`Show "Powered by" on the sign-in page`} checked={field.value} onCheckedChange={(x) => field.onChange(x === true)} />} />
+                  <Controller
+                    control={form.control}
+                    name="poweredBy"
+                    render={({ field }) => <Checkbox id="br-powered" label={`Show "Powered by" on the sign-in page`} checked={field.value} onCheckedChange={(x) => field.onChange(x === true)} />}
+                  />
                 </div>
               </div>
               <BrandPreview values={v} lab={lab} logoUrl={current?.logoUrl} />

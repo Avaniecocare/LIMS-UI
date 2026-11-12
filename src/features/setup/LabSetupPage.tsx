@@ -21,7 +21,6 @@ const STEPS = [
 ] as const;
 type StepId = (typeof STEPS)[number]['id'];
 
-
 /**
  * The guided setup an administrator sees after the first sign-in: the lab's details, its look, a starting test
  * catalogue, the team, email, then a review. Every step can be revisited later in Admin, and none needs a restart.
@@ -52,9 +51,19 @@ export default function LabSetupPage() {
                 type="button"
                 aria-current={s.id === step ? 'step' : undefined}
                 onClick={() => setStep(s.id)}
-                className={cn('flex items-center gap-1.5 rounded-full border px-3 py-1 text-[13px]', s.id === step ? 'border-brand bg-brand text-brand-fg' : 'border-gray-300 bg-surface text-gray-800 hover:border-gray-500')}
+                className={cn(
+                  'flex items-center gap-1.5 rounded-full border px-3 py-1 text-[13px]',
+                  s.id === step ? 'border-brand bg-brand text-brand-fg' : 'border-gray-300 bg-surface text-gray-800 hover:border-gray-500',
+                )}
               >
-                <span className={cn('flex size-5 items-center justify-center rounded-full text-[11px] font-semibold', s.id === step ? 'bg-white/20' : complete ? 'bg-green-100 text-green-800' : 'bg-gray-100')}>{complete ? <Check className="size-3" aria-label="done" /> : i + 1}</span>
+                <span
+                  className={cn(
+                    'flex size-5 items-center justify-center rounded-full text-[11px] font-semibold',
+                    s.id === step ? 'bg-white/20' : complete ? 'bg-green-100 text-green-800' : 'bg-gray-100',
+                  )}
+                >
+                  {complete ? <Check className="size-3" aria-label="done" /> : i + 1}
+                </span>
                 {s.label}
               </button>
             </li>
@@ -104,7 +113,10 @@ function TemplatesStep({ onDone }: { onDone: () => void }) {
   if (templates.error) return <ErrorState error={templates.error} onRetry={templates.refetch} />;
   return (
     <Card>
-      <CardHeader title="What does your laboratory test?" description="Pick one or more to start with a ready test catalogue: tests, parameters, methods, regulatory limits and packages, built from public standards. Prices and accreditation are not set; you add those. Nothing you already have is changed." />
+      <CardHeader
+        title="What does your laboratory test?"
+        description="Pick one or more to start with a ready test catalogue: tests, parameters, methods, regulatory limits and packages, built from public standards. Prices and accreditation are not set; you add those. Nothing you already have is changed."
+      />
       <div className="grid grid-cols-[minmax(0,1fr)] gap-3 p-4 md:grid-cols-2">
         {templates.data?.map((t) => {
           const on = chosen.includes(t.id);
@@ -140,7 +152,10 @@ function TemplatesStep({ onDone }: { onDone: () => void }) {
 function TeamStep({ onDone }: { onDone: () => void }) {
   return (
     <Card>
-      <CardHeader title="Bring in your team" description="Give each person their own sign-in and a role: reception, planner, analyst, reviewer, signatory, accounts and so on. Each role sees only what its work needs." />
+      <CardHeader
+        title="Bring in your team"
+        description="Give each person their own sign-in and a role: reception, planner, analyst, reviewer, signatory, accounts and so on. Each role sees only what its work needs."
+      />
       <div className="space-y-3 p-4 text-[13px] text-gray-800">
         <p className="flex items-start gap-2">
           <Users className="mt-0.5 size-4 shrink-0 text-gray-500" aria-hidden />
@@ -172,7 +187,10 @@ function EmailStep({ onDone }: { onDone: () => void }) {
   });
   return (
     <Card>
-      <CardHeader title="Check that emails go out" description="Acknowledgements, reports, invoices and reminders are emailed from the server's mail account with your lab's name. Send yourself a test." />
+      <CardHeader
+        title="Check that emails go out"
+        description="Acknowledgements, reports, invoices and reminders are emailed from the server's mail account with your lab's name. Send yourself a test."
+      />
       <div className="space-y-3 p-4">
         <div className="flex flex-wrap items-end gap-2">
           <Field label="Send a test email to" htmlFor="setup-email" className="min-w-64 flex-1">

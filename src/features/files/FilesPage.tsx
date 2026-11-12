@@ -147,7 +147,8 @@ function EditDialog({ file, onClose }: { file: FileRow; onClose: () => void }) {
   const [folder, setFolder] = useState(file.folderId ?? '');
   const [description, setDescription] = useState(file.description ?? '');
   const m = useMutation({
-    mutationFn: async () => unwrap(await api.PATCH('/api/v1/library/files/{id}', { params: { path: { id: file.id } }, body: { originalName: name, folderId: folder || null, description: description || null } })),
+    mutationFn: async () =>
+      unwrap(await api.PATCH('/api/v1/library/files/{id}', { params: { path: { id: file.id } }, body: { originalName: name, folderId: folder || null, description: description || null } })),
     onSuccess: () => {
       client.invalidateQueries({ queryKey: ['library-files'] });
       client.invalidateQueries({ queryKey: ['library-folders'] });
@@ -325,14 +326,26 @@ function FolderTree({ folders, selected, onSelect, actions }: { folders: FolderR
   const item = (id: string | null, label: string, icon: ReactNode, count?: number, depth = 0, f?: FolderRow) => (
     <li key={id ?? 'all'}>
       <div className={cn('group flex items-center gap-1 rounded-md pr-1', selected === id ? 'bg-brand/10 font-medium text-gray-900' : 'text-gray-700 hover:bg-gray-100')}>
-        <button type="button" aria-current={selected === id ? 'true' : undefined} className="flex min-w-0 flex-1 items-center gap-2 py-1.5 text-left text-sm" style={{ paddingLeft: 8 + depth * 14 }} onClick={() => onSelect(id)}>
+        <button
+          type="button"
+          aria-current={selected === id ? 'true' : undefined}
+          className="flex min-w-0 flex-1 items-center gap-2 py-1.5 text-left text-sm"
+          style={{ paddingLeft: 8 + depth * 14 }}
+          onClick={() => onSelect(id)}
+        >
           {icon}
           <span className="truncate">{label}</span>
           {count !== undefined && <span className="ml-auto text-xs text-gray-500">{count}</span>}
         </button>
         {f && actions(f)}
       </div>
-      {f && (children.get(f.id) ?? []).length > 0 && <ul>{(children.get(f.id) ?? []).map((c) => item(c.id, c.name, selected === c.id ? <FolderOpen className="size-4 shrink-0" aria-hidden /> : <Folder className="size-4 shrink-0" aria-hidden />, c.fileCount, depth + 1, c))}</ul>}
+      {f && (children.get(f.id) ?? []).length > 0 && (
+        <ul>
+          {(children.get(f.id) ?? []).map((c) =>
+            item(c.id, c.name, selected === c.id ? <FolderOpen className="size-4 shrink-0" aria-hidden /> : <Folder className="size-4 shrink-0" aria-hidden />, c.fileCount, depth + 1, c),
+          )}
+        </ul>
+      )}
     </li>
   );
   return (
@@ -340,7 +353,9 @@ function FolderTree({ folders, selected, onSelect, actions }: { folders: FolderR
       <ul className="space-y-0.5">
         {item(null, 'All files', <FileText className="size-4 shrink-0" aria-hidden />)}
         {item('none', 'Not in a folder', <File className="size-4 shrink-0" aria-hidden />)}
-        {(children.get(null) ?? []).map((f) => item(f.id, f.name, selected === f.id ? <FolderOpen className="size-4 shrink-0" aria-hidden /> : <Folder className="size-4 shrink-0" aria-hidden />, f.fileCount, 0, f))}
+        {(children.get(null) ?? []).map((f) =>
+          item(f.id, f.name, selected === f.id ? <FolderOpen className="size-4 shrink-0" aria-hidden /> : <Folder className="size-4 shrink-0" aria-hidden />, f.fileCount, 0, f),
+        )}
       </ul>
     </nav>
   );
@@ -350,7 +365,7 @@ function FolderDialog({ folder, parentId, onClose }: { folder: FolderRow | null;
   const client = useQueryClient();
   const folders = useFolders();
   const [name, setName] = useState(folder?.name ?? '');
-  const [parent, setParent] = useState(folder ? (folder.parentId ?? '') : (parentId && parentId !== 'none' ? parentId : ''));
+  const [parent, setParent] = useState(folder ? (folder.parentId ?? '') : parentId && parentId !== 'none' ? parentId : '');
   const m = useMutation({
     mutationFn: async () =>
       folder
@@ -422,7 +437,9 @@ export default function FilesPage() {
       </Tabs>
       {scope === 'system' ? (
         <Card className="p-4">
-          <p className="mb-3 text-[13px] text-gray-600">Reports, invoices, quotations and attachments made or uploaded on records. They are managed on their own record, so here they can only be found and downloaded.</p>
+          <p className="mb-3 text-[13px] text-gray-600">
+            Reports, invoices, quotations and attachments made or uploaded on records. They are managed on their own record, so here they can only be found and downloaded.
+          </p>
           <LibraryFiles scope="system" />
         </Card>
       ) : (

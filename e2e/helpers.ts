@@ -10,7 +10,10 @@ export async function signIn(page: Page, user: string) {
   await page.getByLabel('Email').fill(`${user}@demo.example`);
   await page.getByLabel('Password').fill(DEMO_PASSWORD);
   // The side menu on a computer, the bottom bar on a phone.
-  const main = page.getByRole('navigation', { name: 'Main' }).or(page.getByRole('navigation', { name: 'Quick' })).first();
+  const main = page
+    .getByRole('navigation', { name: 'Main' })
+    .or(page.getByRole('navigation', { name: 'Quick' }))
+    .first();
   const limited = page.getByRole('alert').filter({ hasText: 'Too many attempts' });
   await page.getByRole('button', { name: 'Sign in' }).click();
   // The API limits sign-ins per address per minute, successful ones included, and these tests sign in a lot.
@@ -56,7 +59,13 @@ async function openApiSession(user: string) {
     expect(res.ok(), `${method} ${path}: ${text}`).toBeTruthy();
     return text ? JSON.parse(text) : null;
   };
-  return { get: (path: string) => call('GET', path), post: (path: string, data?: unknown) => call('POST', path, data), put: (path: string, data?: unknown) => call('PUT', path, data), patch: (path: string, data?: unknown) => call('PATCH', path, data), dispose: () => undefined };
+  return {
+    get: (path: string) => call('GET', path),
+    post: (path: string, data?: unknown) => call('POST', path, data),
+    put: (path: string, data?: unknown) => call('PUT', path, data),
+    patch: (path: string, data?: unknown) => call('PATCH', path, data),
+    dispose: () => undefined,
+  };
 }
 
 /** Books one sample with the given tests, plans it against two grades and assigns it. */

@@ -29,7 +29,10 @@ test('a new order for a customer not in the system: Create new customer opens th
   await expect(page.getByLabel('City')).toHaveValue('Gautam Buddha Nagar');
   await expect(page.locator('#ad-0-state')).toHaveValue('Uttar Pradesh');
   await expect(page.locator('#ad-0-code')).toHaveValue('09');
-  await page.getByRole('group', { name: /Localities for PIN 201306/ }).getByRole('button', { name: 'Bisrakh' }).click();
+  await page
+    .getByRole('group', { name: /Localities for PIN 201306/ })
+    .getByRole('button', { name: 'Bisrakh' })
+    .click();
   await expect(page.getByLabel('Area / locality')).toHaveValue('Bisrakh');
   await page.locator('#ad-0-l1').fill('Plot 7, Ecotech III');
   // A newer PIN that India Post does not list yet is filled from the nearest one, and says so.

@@ -43,7 +43,11 @@ function QuickActions() {
       {actions.length > 0 && (
         <div className="grid grid-cols-2 gap-2">
           {actions.map((a) => (
-            <Link key={a.to} to={a.to} className="flex items-center gap-2 rounded-lg border border-gray-200 bg-surface px-3 py-3 text-sm font-medium text-gray-900 transition-colors duration-(--motion-fast) active:bg-gray-100">
+            <Link
+              key={a.to}
+              to={a.to}
+              className="flex items-center gap-2 rounded-lg border border-gray-200 bg-surface px-3 py-3 text-sm font-medium text-gray-900 transition-colors duration-(--motion-fast) active:bg-gray-100"
+            >
               <a.icon className="size-5 text-brand" aria-hidden />
               {a.label}
             </Link>

@@ -53,13 +53,30 @@ export function CustomerOverview({ customerId, onOpenTab }: { customerId: string
     <div className="space-y-4">
       <div className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {s.quotations && tile('quotations', <Stat icon={<ScrollText />} label="Quotations" value={s.quotations.total} hint={`${s.quotations.accepted} accepted · ${s.quotations.open} open`} />)}
-        {tile('jobs', <Stat icon={<FlaskConical />} label="Jobs" value={s.jobs.total} hint={`${s.jobs.open} open · ${s.jobs.completed} completed${s.jobs.cancelled ? ` · ${s.jobs.cancelled} cancelled` : ''}`} />)}
+        {tile(
+          'jobs',
+          <Stat icon={<FlaskConical />} label="Jobs" value={s.jobs.total} hint={`${s.jobs.open} open · ${s.jobs.completed} completed${s.jobs.cancelled ? ` · ${s.jobs.cancelled} cancelled` : ''}`} />,
+        )}
         {tile('tests', <Stat icon={<FlaskConical />} label="Tests booked" value={s.tests.booked} hint={`${s.samples} samples · ${s.tests.approved} approved`} />)}
         {tile('reports', <Stat icon={<FileText />} label="Reports issued" value={s.reportsIssued} />)}
         {s.money && tile('invoices', <Stat icon={<ReceiptText />} label="Invoiced" value={formatINR(s.money.invoiced)} hint={`Paid ${formatINR(s.money.paid)}`} />)}
-        {s.money && tile('invoices', <Stat icon={<IndianRupee />} label="Outstanding" value={formatINR(s.money.outstanding)} hint={Number(s.money.overdue) ? <span className="text-red-700">Overdue {formatINR(s.money.overdue)}</span> : 'Nothing overdue'} />)}
+        {s.money &&
+          tile(
+            'invoices',
+            <Stat
+              icon={<IndianRupee />}
+              label="Outstanding"
+              value={formatINR(s.money.outstanding)}
+              hint={Number(s.money.overdue) ? <span className="text-red-700">Overdue {formatINR(s.money.overdue)}</span> : 'Nothing overdue'}
+            />,
+          )}
         {s.quotations && Number(s.quotations.acceptedValue) > 0 && <Stat icon={<ScrollText />} label="Accepted quotation value" value={formatINR(s.quotations.acceptedValue)} />}
-        <Stat icon={<FileText />} label="Customer since" value={s.firstJobAt ? formatDate(s.firstJobAt) : '—'} hint={s.lastActivityAt ? `Last activity ${formatDate(s.lastActivityAt)}` : 'No jobs yet'} />
+        <Stat
+          icon={<FileText />}
+          label="Customer since"
+          value={s.firstJobAt ? formatDate(s.firstJobAt) : '—'}
+          hint={s.lastActivityAt ? `Last activity ${formatDate(s.lastActivityAt)}` : 'No jobs yet'}
+        />
       </div>
       <Card>
         <CardHeader title="Most booked tests" description="Across all of this customer's samples." />
@@ -85,7 +102,11 @@ export function CustomerOverview({ customerId, onOpenTab }: { customerId: string
 const PAGE = { page: 1, pageSize: 25 };
 
 /** A paged, searchable list that loads one tab's data. */
-function usePaged<T>(key: string, customerId: string, fetcher: (query: { page: number; pageSize: number; q?: string }) => Promise<{ data: T[]; meta: { page: number; pageSize: number; total: number; totalPages: number } }>) {
+function usePaged<T>(
+  key: string,
+  customerId: string,
+  fetcher: (query: { page: number; pageSize: number; q?: string }) => Promise<{ data: T[]; meta: { page: number; pageSize: number; total: number; totalPages: number } }>,
+) {
   const [paging, setPaging] = useState(PAGE);
   const [search, setSearch] = useState('');
   const query = { ...paging, ...(search ? { q: search } : {}) };
@@ -150,18 +171,26 @@ export function CustomerTests({ customerId }: { customerId: string }) {
   const navigate = useNavigate();
   const p = usePaged<TestRow>('customer-tests', customerId, async (query) => unwrap(await api.GET('/api/v1/customers/{id}/tests', { params: { path: { id: customerId }, query } })));
   const cols: Col<TestRow>[] = [
-    { id: 'test', header: 'Test', cell: ({ row }) => (
-      <div>
-        <span className="font-medium">{row.original.testName}</span>
-        <span className="block text-xs text-gray-600">{row.original.testCode}</span>
-      </div>
-    ) },
-    { id: 'sample', header: 'Sample', cell: ({ row }) => (
-      <div>
-        <span>{row.original.sampleNo}</span>
-        <span className="block text-xs text-gray-600">{row.original.sampleDescription}</span>
-      </div>
-    ) },
+    {
+      id: 'test',
+      header: 'Test',
+      cell: ({ row }) => (
+        <div>
+          <span className="font-medium">{row.original.testName}</span>
+          <span className="block text-xs text-gray-600">{row.original.testCode}</span>
+        </div>
+      ),
+    },
+    {
+      id: 'sample',
+      header: 'Sample',
+      cell: ({ row }) => (
+        <div>
+          <span>{row.original.sampleNo}</span>
+          <span className="block text-xs text-gray-600">{row.original.sampleDescription}</span>
+        </div>
+      ),
+    },
     { id: 'job', header: 'Job', cell: ({ row }) => row.original.jobNo },
     { id: 'booked', header: 'Booked', cell: ({ row }) => formatDate(row.original.bookedAt) },
     { id: 'status', header: 'Status', cell: ({ row }) => <StatusBadge status={row.original.status} /> },
@@ -169,7 +198,13 @@ export function CustomerTests({ customerId }: { customerId: string }) {
   ];
   return (
     <Section search={p.search} onSearch={p.setSearch} placeholder="Search test, sample or job">
-      <DataTable columns={cols} {...p.table} ariaLabel="Tests booked" emptyTitle="No tests booked for this customer yet" onRowClick={(r) => navigate(`/samples/jobs/${r.jobId}?sample=${r.sampleId}`)} />
+      <DataTable
+        columns={cols}
+        {...p.table}
+        ariaLabel="Tests booked"
+        emptyTitle="No tests booked for this customer yet"
+        onRowClick={(r) => navigate(`/samples/jobs/${r.jobId}?sample=${r.sampleId}`)}
+      />
     </Section>
   );
 }

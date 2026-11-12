@@ -34,7 +34,10 @@ function ReportProblemDialog({ reference, context, onClose }: { reference: strin
   const client = useQueryClient();
   const [v, setV] = useState({ title: '', description: '', severity: 'MINOR', source: 'Routine work', reference });
   const m = useMutation({
-    mutationFn: async () => unwrap(await api.POST('/api/v1/quality/nc', { body: { source: v.source as 'Other', title: v.title, description: v.description, severity: v.severity as 'MINOR', reference: v.reference || null } })),
+    mutationFn: async () =>
+      unwrap(
+        await api.POST('/api/v1/quality/nc', { body: { source: v.source as 'Other', title: v.title, description: v.description, severity: v.severity as 'MINOR', reference: v.reference || null } }),
+      ),
     onSuccess: (nc) => {
       void client.invalidateQueries({ queryKey: ['my-problems'] });
       toast.success(`Reported as ${nc.ncNo}. The quality team will take it from here.`);
@@ -43,7 +46,12 @@ function ReportProblemDialog({ reference, context, onClose }: { reference: strin
     onError: toastError,
   });
   return (
-    <Dialog open onOpenChange={(o) => !o && onClose()} title="Report a problem" description={`Something wrong with ${context}: equipment, a reagent, the sample, the method, or anything else. It goes to the quality team as a non-conformance.`}>
+    <Dialog
+      open
+      onOpenChange={(o) => !o && onClose()}
+      title="Report a problem"
+      description={`Something wrong with ${context}: equipment, a reagent, the sample, the method, or anything else. It goes to the quality team as a non-conformance.`}
+    >
       <div className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2">
         <Field label="In a few words" htmlFor="rp-title" className="sm:col-span-2">
           <Input id="rp-title" maxLength={200} value={v.title} onChange={(e) => setV({ ...v, title: e.target.value })} placeholder="e.g. Balance reading drifts during weighing" />

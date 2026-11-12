@@ -79,7 +79,11 @@ function OrderForm({ order, onSaved }: { order: Order | null; onSaved: (o: Order
         <CardHeader title="Order details" />
         <fieldset disabled={!canEdit} className="grid grid-cols-[minmax(0,1fr)] gap-3 p-4 md:grid-cols-3">
           <Field label="Customer" htmlFor="o-customer" required error={e.customerId?.message} className="md:col-span-2">
-            <Controller control={form.control} name="customerId" render={({ field }) => <CustomerPicker id="o-customer" value={field.value} onChange={field.onChange} disabled={!canEdit} invalid={!!e.customerId} />} />
+            <Controller
+              control={form.control}
+              name="customerId"
+              render={({ field }) => <CustomerPicker id="o-customer" value={field.value} onChange={field.onChange} disabled={!canEdit} invalid={!!e.customerId} />}
+            />
           </Field>
           <Field label="Received on" htmlFor="o-received" required error={e.receivedOn?.message}>
             <Input id="o-received" type="date" aria-invalid={!!e.receivedOn} {...form.register('receivedOn')} />
@@ -136,7 +140,10 @@ function OrderForm({ order, onSaved }: { order: Order | null; onSaved: (o: Order
 function OrderQuotations({ order }: { order: Order }) {
   const { can } = useSession();
   const navigate = useNavigate();
-  const q = useQuery({ queryKey: ['quotations', { orderId: order.id }], queryFn: async () => unwrap(await api.GET('/api/v1/quotations', { params: { query: { orderId: order.id, pageSize: 100 } } })) });
+  const q = useQuery({
+    queryKey: ['quotations', { orderId: order.id }],
+    queryFn: async () => unwrap(await api.GET('/api/v1/quotations', { params: { query: { orderId: order.id, pageSize: 100 } } })),
+  });
   const columns = useMemo<Col<components['schemas']['QuotationSummaryDto']>[]>(
     () => [
       { accessorKey: 'quotationNo', id: 'quotationNo', header: 'Quotation' },
@@ -163,7 +170,18 @@ function OrderQuotations({ order }: { order: Order }) {
         }
       />
       <div className="p-4">
-        <DataTable ariaLabel="Quotations for this order" columns={columns} rows={q.data?.data} loading={q.isLoading} error={q.error} onRetry={q.refetch} onRowClick={(r) => navigate(`/quotations/${r.id}`)} getRowId={(r) => r.id} emptyTitle="No quotations for this order yet" maxHeightClass="max-h-72" />
+        <DataTable
+          ariaLabel="Quotations for this order"
+          columns={columns}
+          rows={q.data?.data}
+          loading={q.isLoading}
+          error={q.error}
+          onRetry={q.refetch}
+          onRowClick={(r) => navigate(`/quotations/${r.id}`)}
+          getRowId={(r) => r.id}
+          emptyTitle="No quotations for this order yet"
+          maxHeightClass="max-h-72"
+        />
       </div>
     </Card>
   );
@@ -175,7 +193,11 @@ export function OrderDetailPage() {
   const navigate = useNavigate();
   const isNew = id === 'new';
   const q = useQuery({ queryKey: ['order', id], enabled: !isNew, queryFn: async () => unwrap(await api.GET('/api/v1/orders/{id}', { params: { path: { id: id! } } })) });
-  const breadcrumb = <Link to="/orders" className="underline">Orders</Link>;
+  const breadcrumb = (
+    <Link to="/orders" className="underline">
+      Orders
+    </Link>
+  );
   if (isNew) {
     if (!can('orders.edit')) return <ErrorState error={new Error('You do not have permission to create orders.')} />;
     return (
@@ -240,16 +262,33 @@ export default function OrdersPage() {
       <div className="space-y-3">
         <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Filter by stage">
           <StageChip label="All" pressed={!stage} onClick={() => list.setFilter('stage', null)} />
-          {pipeline.data?.map((p) => <StageChip key={p.stage} label={humanize(p.stage)} count={p.count} pressed={stage === p.stage} onClick={() => list.setFilter('stage', stage === p.stage ? null : p.stage)} />)}
+          {pipeline.data?.map((p) => (
+            <StageChip key={p.stage} label={humanize(p.stage)} count={p.count} pressed={stage === p.stage} onClick={() => list.setFilter('stage', stage === p.stage ? null : p.stage)} />
+          ))}
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search order, customer or reference" label="Search orders" />
           <MobileFilters filters={list.filters} onClear={list.clearFilters}>
-          <DateRangeFilter label="Received" from={list.filters.from ?? ''} to={list.filters.to ?? ''} onChange={list.setFilter} />
-          <SavedFilters screen="orders" current={list.allParams} onApply={list.applyFilters} />
+            <DateRangeFilter label="Received" from={list.filters.from ?? ''} to={list.filters.to ?? ''} onChange={list.setFilter} />
+            <SavedFilters screen="orders" current={list.allParams} onApply={list.applyFilters} />
           </MobileFilters>
         </div>
-        <DataTable ariaLabel="Orders" columns={columns} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} sort={list.sort} onSortChange={list.setSort} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} onRowClick={(o) => navigate(`/orders/${o.id}`)} getRowId={(o) => o.id} emptyTitle="No orders found" />
+        <DataTable
+          ariaLabel="Orders"
+          columns={columns}
+          rows={q.data?.data}
+          meta={q.data?.meta}
+          loading={q.isLoading}
+          error={q.error}
+          onRetry={q.refetch}
+          sort={list.sort}
+          onSortChange={list.setSort}
+          onPageChange={list.setPage}
+          onPageSizeChange={list.setPageSize}
+          onRowClick={(o) => navigate(`/orders/${o.id}`)}
+          getRowId={(o) => o.id}
+          emptyTitle="No orders found"
+        />
       </div>
     </>
   );
@@ -257,7 +296,15 @@ export default function OrdersPage() {
 
 function StageChip({ label, count, pressed, onClick }: { label: string; count?: number; pressed: boolean; onClick: () => void }) {
   return (
-    <button type="button" aria-pressed={pressed} onClick={onClick} className={cn('inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[13px] font-medium', pressed ? 'border-brand bg-brand text-brand-fg' : 'border-gray-300 bg-surface text-gray-800 hover:bg-gray-50')}>
+    <button
+      type="button"
+      aria-pressed={pressed}
+      onClick={onClick}
+      className={cn(
+        'inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[13px] font-medium',
+        pressed ? 'border-brand bg-brand text-brand-fg' : 'border-gray-300 bg-surface text-gray-800 hover:bg-gray-50',
+      )}
+    >
       {label}
       {count !== undefined && <span className="tabular-nums">{count}</span>}
     </button>

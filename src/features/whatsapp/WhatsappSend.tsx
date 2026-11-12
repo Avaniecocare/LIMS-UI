@@ -91,7 +91,8 @@ export function WhatsappDialog({ kind, entityId, title, photoIds, onClose }: { k
   }, [contacts.length]);
 
   const m = useMutation({
-    mutationFn: async () => unwrap(await api.POST('/api/v1/whatsapp/send', { body: { kind, entityId, to: to.trim(), contactName: contactName.trim() || null, consent: true, ...(photoIds?.length ? { photoIds } : {}) } })),
+    mutationFn: async () =>
+      unwrap(await api.POST('/api/v1/whatsapp/send', { body: { kind, entityId, to: to.trim(), contactName: contactName.trim() || null, consent: true, ...(photoIds?.length ? { photoIds } : {}) } })),
     onSuccess: () => {
       void client.invalidateQueries({ queryKey: ['whatsapp', entity, entityId] });
       toast.success(kind === 'reminder' ? 'Reminder queued for WhatsApp' : 'Queued for WhatsApp. The PDF is attached once it is ready.');

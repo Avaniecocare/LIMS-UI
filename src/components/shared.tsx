@@ -82,10 +82,35 @@ export function DocumentButton({ kind, params, children, ...props }: { kind: str
 }
 
 const STATUS_TONE: Record<string, 'gray' | 'blue' | 'amber' | 'green' | 'red' | 'purple'> = {
-  DRAFT: 'gray', SENT: 'blue', ACCEPTED: 'green', REJECTED: 'red', EXPIRED: 'gray', NEW: 'blue', QUOTED: 'purple', WON: 'green', LOST: 'gray',
-  RECEIVED: 'blue', PLANNED: 'purple', ASSIGNED: 'purple', IN_TESTING: 'amber', IN_PROGRESS: 'amber', RESULTS_SUBMITTED: 'blue', REPORTING: 'purple', COMPLETED: 'green', APPROVED: 'green',
-  ON_HOLD: 'amber', CANCELLED: 'gray', IN_REVIEW: 'blue', PENDING_APPROVAL: 'purple', ISSUED: 'green', SUPERSEDED: 'gray', PARTIALLY_PAID: 'amber', PAID: 'green', OVERDUE: 'red',
-  QUEUED: 'gray', FAILED: 'red',
+  DRAFT: 'gray',
+  SENT: 'blue',
+  ACCEPTED: 'green',
+  REJECTED: 'red',
+  EXPIRED: 'gray',
+  NEW: 'blue',
+  QUOTED: 'purple',
+  WON: 'green',
+  LOST: 'gray',
+  RECEIVED: 'blue',
+  PLANNED: 'purple',
+  ASSIGNED: 'purple',
+  IN_TESTING: 'amber',
+  IN_PROGRESS: 'amber',
+  RESULTS_SUBMITTED: 'blue',
+  REPORTING: 'purple',
+  COMPLETED: 'green',
+  APPROVED: 'green',
+  ON_HOLD: 'amber',
+  CANCELLED: 'gray',
+  IN_REVIEW: 'blue',
+  PENDING_APPROVAL: 'purple',
+  ISSUED: 'green',
+  SUPERSEDED: 'gray',
+  PARTIALLY_PAID: 'amber',
+  PAID: 'green',
+  OVERDUE: 'red',
+  QUEUED: 'gray',
+  FAILED: 'red',
 };
 
 export function StatusBadge({ status }: { status: string }) {
@@ -121,7 +146,27 @@ export function HistoryList({ entries }: { entries: History[] }) {
 }
 
 /** Asks for the mandatory reason before an irreversible or audited action. */
-export function ReasonDialog({ open, onOpenChange, title, description, confirmLabel, danger, loading, onConfirm, children }: { open: boolean; onOpenChange: (o: boolean) => void; title: string; description?: ReactNode; confirmLabel: string; danger?: boolean; loading?: boolean; onConfirm: (reason: string) => void; children?: ReactNode }) {
+export function ReasonDialog({
+  open,
+  onOpenChange,
+  title,
+  description,
+  confirmLabel,
+  danger,
+  loading,
+  onConfirm,
+  children,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  title: string;
+  description?: ReactNode;
+  confirmLabel: string;
+  danger?: boolean;
+  loading?: boolean;
+  onConfirm: (reason: string) => void;
+  children?: ReactNode;
+}) {
   const [reason, setReason] = useState('');
   useEffect(() => {
     if (open) setReason('');
@@ -166,7 +211,25 @@ export async function uploadEntityFile(entity: string, entityId: string, categor
 }
 
 /** Attachments on any record: private storage, opened through short-lived signed links. */
-export function Attachments({ entity, entityId, category, title = 'Attachments', canEdit, withPrintSize, accept = 'image/png,image/jpeg,image/webp,application/pdf', extraActions }: { entity: string; entityId: string; category: string; title?: string; canEdit: boolean; withPrintSize?: boolean; accept?: string; extraActions?: ReactNode }) {
+export function Attachments({
+  entity,
+  entityId,
+  category,
+  title = 'Attachments',
+  canEdit,
+  withPrintSize,
+  accept = 'image/png,image/jpeg,image/webp,application/pdf',
+  extraActions,
+}: {
+  entity: string;
+  entityId: string;
+  category: string;
+  title?: string;
+  canEdit: boolean;
+  withPrintSize?: boolean;
+  accept?: string;
+  extraActions?: ReactNode;
+}) {
   const client = useQueryClient();
   const key = ['files', entity, entityId, category];
   const q = useQuery({ queryKey: key, queryFn: async () => unwrap(await api.GET('/api/v1/files', { params: { query: { entity, entityId, category } } })) });
@@ -266,7 +329,16 @@ export function Attachments({ entity, entityId, category, title = 'Attachments',
           </li>
         ))}
       </ul>
-      <ConfirmDialog open={!!confirm} onOpenChange={(o) => !o && setConfirm(null)} title="Remove this file?" description="It stays in the audit history." confirmLabel="Remove" danger loading={remove.isPending} onConfirm={() => confirm && remove.mutate(confirm)} />
+      <ConfirmDialog
+        open={!!confirm}
+        onOpenChange={(o) => !o && setConfirm(null)}
+        title="Remove this file?"
+        description="It stays in the audit history."
+        confirmLabel="Remove"
+        danger
+        loading={remove.isPending}
+        onConfirm={() => confirm && remove.mutate(confirm)}
+      />
     </div>
   );
 }
@@ -283,12 +355,24 @@ export function EmailLogTable({ rows, loading, error, onRetry }: { rows: EmailRo
       <table className="w-full text-[13px]" aria-label="Email delivery log">
         <thead className="bg-gray-50 text-left text-xs text-gray-700">
           <tr>
-            <th scope="col" className="px-2 py-1.5 font-semibold">To</th>
-            <th scope="col" className="px-2 py-1.5 font-semibold">Cc</th>
-            <th scope="col" className="px-2 py-1.5 font-semibold">Subject</th>
-            <th scope="col" className="px-2 py-1.5 font-semibold">Status</th>
-            <th scope="col" className="px-2 py-1.5 font-semibold">Attempts</th>
-            <th scope="col" className="px-2 py-1.5 font-semibold">Sent or queued</th>
+            <th scope="col" className="px-2 py-1.5 font-semibold">
+              To
+            </th>
+            <th scope="col" className="px-2 py-1.5 font-semibold">
+              Cc
+            </th>
+            <th scope="col" className="px-2 py-1.5 font-semibold">
+              Subject
+            </th>
+            <th scope="col" className="px-2 py-1.5 font-semibold">
+              Status
+            </th>
+            <th scope="col" className="px-2 py-1.5 font-semibold">
+              Attempts
+            </th>
+            <th scope="col" className="px-2 py-1.5 font-semibold">
+              Sent or queued
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -339,7 +423,11 @@ export function SavedFilters({ screen, current, onApply }: { screen: string; cur
     },
     onError: toastError,
   });
-  const remove = useMutation({ mutationFn: (id: string) => api.DELETE('/api/v1/me/saved-filters/{id}', { params: { path: { id } } }), onSuccess: () => client.invalidateQueries({ queryKey: key }), onError: toastError });
+  const remove = useMutation({
+    mutationFn: (id: string) => api.DELETE('/api/v1/me/saved-filters/{id}', { params: { path: { id } } }),
+    onSuccess: () => client.invalidateQueries({ queryKey: key }),
+    onError: toastError,
+  });
   return (
     <div className="flex flex-wrap items-center gap-1.5">
       {q.data?.map((f) => (
@@ -387,7 +475,16 @@ export function SearchBox({ value, onChange, placeholder, label }: { value: stri
     return () => clearTimeout(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text]);
-  return <Input className="w-full max-w-xs max-md:max-w-none max-md:min-w-0 max-md:flex-1" type="search" placeholder={placeholder} aria-label={label} value={text} onChange={(e) => setText(e.target.value)} />;
+  return (
+    <Input
+      className="w-full max-w-xs max-md:max-w-none max-md:min-w-0 max-md:flex-1"
+      type="search"
+      placeholder={placeholder}
+      aria-label={label}
+      value={text}
+      onChange={(e) => setText(e.target.value)}
+    />
+  );
 }
 
 /** Address parameters that are not filters: paging, sorting, search and the page's tab. */

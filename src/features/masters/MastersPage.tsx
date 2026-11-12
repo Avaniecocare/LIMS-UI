@@ -28,7 +28,11 @@ import { useCloseGuard, useLeaveGuard } from '@/lib/use-leave-guard';
  *    validated by the server, as their shape depends on the configuration.
  */
 type MasterKey = { [P in keyof paths]: P extends `/api/v1/masters/${infer K}/{id}` ? K : never }[keyof paths];
-type ListResponse<K extends MasterKey> = `/api/v1/masters/${K}` extends infer P extends keyof paths ? (paths[P] extends { get: { responses: { 200: { content: { 'application/json': infer R } } } } } ? R : never) : never;
+type ListResponse<K extends MasterKey> = `/api/v1/masters/${K}` extends infer P extends keyof paths
+  ? paths[P] extends { get: { responses: { 200: { content: { 'application/json': infer R } } } } }
+    ? R
+    : never
+  : never;
 /** One record of master K as the list endpoint returns it. */
 type MasterRecord<K extends MasterKey> = ListResponse<K> extends { data: (infer T)[] } ? T : never;
 /** A record of any master, as the generic screen sees it. */
@@ -98,7 +102,12 @@ type MasterConfig = {
 };
 
 const col = <T,>(accessorKey: keyof T & string, header: string, sortable = false): Col<T> => ({ accessorKey, header, enableSorting: sortable, id: accessorKey }) as Col<T>;
-const dateCol = <T,>(key: { [F in keyof T]: T[F] extends string | null ? F : never }[keyof T] & string, header: string, sortable = false): Col<T> => ({ id: key, header, enableSorting: sortable, cell: ({ row }) => formatDate(row.original[key] as string | null) });
+const dateCol = <T,>(key: { [F in keyof T]: T[F] extends string | null ? F : never }[keyof T] & string, header: string, sortable = false): Col<T> => ({
+  id: key,
+  header,
+  enableSorting: sortable,
+  cell: ({ row }) => formatDate(row.original[key] as string | null),
+});
 const activeCol: Col<Row> = { id: 'isActive', header: 'Status', cell: ({ row }) => <Badge tone={row.original.isActive ? 'green' : 'gray'}>{row.original.isActive ? 'Active' : 'Inactive'}</Badge> };
 const CODE_NAME: FieldDef[] = [
   { name: 'code', label: 'Code', required: true },
@@ -221,7 +230,12 @@ function MasterForm({ cfg, record, onDone, onDirtyChange }: { cfg: MasterConfig;
       onDirtyChange(false);
       onDone();
     },
-    onError: (e) => applyServerErrors(e, form.setError, cfg.fields.map((f) => f.name)),
+    onError: (e) =>
+      applyServerErrors(
+        e,
+        form.setError,
+        cfg.fields.map((f) => f.name),
+      ),
   });
   return (
     <form className="space-y-4" onSubmit={form.handleSubmit((v) => m.mutate(v))} noValidate>
@@ -406,7 +420,21 @@ function MasterScreen({ cfg }: { cfg: MasterConfig }) {
           )}
         </div>
       </div>
-      <DataTable ariaLabel={cfg.label} columns={columns} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} sort={list.sort} onSortChange={list.setSort} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} onRowClick={setEditing} getRowId={(r) => r.id} />
+      <DataTable
+        ariaLabel={cfg.label}
+        columns={columns}
+        rows={q.data?.data}
+        meta={q.data?.meta}
+        loading={q.isLoading}
+        error={q.error}
+        onRetry={q.refetch}
+        sort={list.sort}
+        onSortChange={list.setSort}
+        onPageChange={list.setPage}
+        onPageSizeChange={list.setPageSize}
+        onRowClick={setEditing}
+        getRowId={(r) => r.id}
+      />
       <Dialog
         wide
         open={!!editing}
@@ -419,7 +447,16 @@ function MasterScreen({ cfg }: { cfg: MasterConfig }) {
       </Dialog>
       {closeGuard.dialog}
       {guard.dialog}
-      <ConfirmDialog open={!!deleting} onOpenChange={(o) => !o && setDeleting(null)} title="Delete this record?" description="Records already in use can only be deactivated." confirmLabel="Delete" danger loading={del.isPending} onConfirm={() => deleting && del.mutate(deleting.id)} />
+      <ConfirmDialog
+        open={!!deleting}
+        onOpenChange={(o) => !o && setDeleting(null)}
+        title="Delete this record?"
+        description="Records already in use can only be deactivated."
+        confirmLabel="Delete"
+        danger
+        loading={del.isPending}
+        onConfirm={() => deleting && del.mutate(deleting.id)}
+      />
     </div>
   );
 }
@@ -428,7 +465,9 @@ function MasterScreen({ cfg }: { cfg: MasterConfig }) {
 type LimitDraft = { parameterId: string; parameterName: string; minValue: string; maxValue: string; textLimit: string };
 
 function LimitsEditor({ value, onChange }: ExtraProps<'specifications'>) {
-  const [limits, setLimits] = useState<LimitDraft[]>(() => (value.limits ?? []).map((l) => ({ parameterId: l.parameterId, parameterName: l.parameterName, minValue: l.minValue ?? '', maxValue: l.maxValue ?? '', textLimit: l.textLimit ?? '' })));
+  const [limits, setLimits] = useState<LimitDraft[]>(() =>
+    (value.limits ?? []).map((l) => ({ parameterId: l.parameterId, parameterName: l.parameterName, minValue: l.minValue ?? '', maxValue: l.maxValue ?? '', textLimit: l.textLimit ?? '' })),
+  );
   const [testId, setTestId] = useState('');
   const tests = useMasterRecords('tests');
   const params = useMasterRecords(testId ? 'test-parameters' : null, { testId });
@@ -564,7 +603,12 @@ function ResultOptionsEditor({ value, onChange }: ExtraProps<'result-sets'>) {
       {options.map((o, i) => (
         <div key={i} className="flex items-center gap-2">
           <Input aria-label={`Result ${i + 1}`} className="max-w-xs" value={o.value} onChange={(e) => push(options.map((x, n) => (n === i ? { ...x, value: e.target.value } : x)))} />
-          <Select aria-label={`Outcome of result ${i + 1}`} className="w-36" value={o.isPass === true ? 'pass' : o.isPass === false ? 'fail' : ''} onChange={(e) => push(options.map((x, n) => (n === i ? { ...x, isPass: e.target.value === '' ? null : e.target.value === 'pass' } : x)))}>
+          <Select
+            aria-label={`Outcome of result ${i + 1}`}
+            className="w-36"
+            value={o.isPass === true ? 'pass' : o.isPass === false ? 'fail' : ''}
+            onChange={(e) => push(options.map((x, n) => (n === i ? { ...x, isPass: e.target.value === '' ? null : e.target.value === 'pass' } : x)))}
+          >
             <option value="">No outcome</option>
             <option value="pass">Counts as pass</option>
             <option value="fail">Counts as fail</option>
@@ -591,7 +635,12 @@ function StagesEditor({ value, onChange }: ExtraProps<'tests'>) {
         value={text}
         onChange={(e) => {
           setText(e.target.value);
-          onChange({ stages: e.target.value.split('\n').map((s) => s.trim()).filter(Boolean) });
+          onChange({
+            stages: e.target.value
+              .split('\n')
+              .map((s) => s.trim())
+              .filter(Boolean),
+          });
         }}
       />
     </Field>
@@ -637,7 +686,13 @@ function FormulaConsole({ value }: { value: Partial<MasterRecord<'formulas'>> })
 }
 
 function BindingsEditor({ value, onChange }: ExtraProps<'test-parameters'>) {
-  const [text, setText] = useState<string>(value.formulaBindings ? Object.entries(value.formulaBindings).map(([k, v]) => `${k}=${v}`).join('\n') : '');
+  const [text, setText] = useState<string>(
+    value.formulaBindings
+      ? Object.entries(value.formulaBindings)
+          .map(([k, v]) => `${k}=${v}`)
+          .join('\n')
+      : '',
+  );
   return (
     <Field label="Formula inputs (variable=PARAMETER_CODE, one per line)" htmlFor="bindings" hint="Used when the kind is Calculated." className="border-t border-gray-200 pt-3">
       <Textarea
@@ -666,11 +721,28 @@ const ACCREDITATION: FieldDef[] = [
 
 const MASTERS: MasterConfig[] = [
   defineMaster<'tests'>({
-    key: 'tests', label: 'Tests', view: 'masters.view', edit: 'masters.edit',
-    columns: [col('code', 'Code', true), col('name', 'Name', true), col('category', 'Category'), col('departmentName', 'Department'), col('methodName', 'Method'), col('defaultTatDays', 'TAT (days)', true), col('parameterCount', 'Parameters')],
+    key: 'tests',
+    label: 'Tests',
+    view: 'masters.view',
+    edit: 'masters.edit',
+    columns: [
+      col('code', 'Code', true),
+      col('name', 'Name', true),
+      col('category', 'Category'),
+      col('departmentName', 'Department'),
+      col('methodName', 'Method'),
+      col('defaultTatDays', 'TAT (days)', true),
+      col('parameterCount', 'Parameters'),
+    ],
     fields: [
       ...CODE_NAME,
-      { name: 'category', label: 'Category', type: 'select', options: ['CHEMICAL', 'MECHANICAL', 'PHYSICAL', 'OTHER'].map((v) => ({ value: v, label: v[0] + v.slice(1).toLowerCase() })), default: 'OTHER' },
+      {
+        name: 'category',
+        label: 'Category',
+        type: 'select',
+        options: ['CHEMICAL', 'MECHANICAL', 'PHYSICAL', 'OTHER'].map((v) => ({ value: v, label: v[0] + v.slice(1).toLowerCase() })),
+        default: 'OTHER',
+      },
       { name: 'departmentId', label: 'Department', type: 'select', source: deptSource },
       { name: 'methodId', label: 'Test method', type: 'select', source: sourceOf('test-methods', (r) => `${r.code} — ${r.name}`) },
       { name: 'defaultTatDays', label: 'Default TAT (working days)', type: 'number', default: 5 },
@@ -680,12 +752,36 @@ const MASTERS: MasterConfig[] = [
     extra: (p) => <StagesEditor {...p} />,
   }),
   defineMaster<'test-parameters'>({
-    key: 'test-parameters', label: 'Test parameters', view: 'masters.view', edit: 'masters.edit',
-    columns: [col('testCode', 'Test'), col('code', 'Code', true), col('name', 'Name', true), col('kind', 'Kind'), col('unitSymbol', 'Unit'), col('decimals', 'Decimals'), col('sortOrder', 'Order', true), col('showOnReport', 'On report')],
+    key: 'test-parameters',
+    label: 'Test parameters',
+    view: 'masters.view',
+    edit: 'masters.edit',
+    columns: [
+      col('testCode', 'Test'),
+      col('code', 'Code', true),
+      col('name', 'Name', true),
+      col('kind', 'Kind'),
+      col('unitSymbol', 'Unit'),
+      col('decimals', 'Decimals'),
+      col('sortOrder', 'Order', true),
+      col('showOnReport', 'On report'),
+    ],
     fields: [
       { name: 'testId', label: 'Test', type: 'select', required: true, source: testSource },
       ...CODE_NAME,
-      { name: 'kind', label: 'Kind', type: 'select', required: true, options: [['NUMERIC', 'Numeric'], ['TEXT', 'Text'], ['RESULT_SET', 'Result set'], ['CALCULATED', 'Calculated']].map(([value, label]) => ({ value, label })), default: 'NUMERIC' },
+      {
+        name: 'kind',
+        label: 'Kind',
+        type: 'select',
+        required: true,
+        options: [
+          ['NUMERIC', 'Numeric'],
+          ['TEXT', 'Text'],
+          ['RESULT_SET', 'Result set'],
+          ['CALCULATED', 'Calculated'],
+        ].map(([value, label]) => ({ value, label })),
+        default: 'NUMERIC',
+      },
       { name: 'unitId', label: 'Unit', type: 'select', source: unitSource },
       { name: 'decimals', label: 'Decimal places', type: 'number', default: 2 },
       { name: 'sortOrder', label: 'Order', type: 'number', default: 0 },
@@ -697,73 +793,218 @@ const MASTERS: MasterConfig[] = [
     extra: (p) => <BindingsEditor {...p} />,
   }),
   defineMaster<'test-methods'>({
-    key: 'test-methods', label: 'Test methods', view: 'masters.view', edit: 'masters.edit',
+    key: 'test-methods',
+    label: 'Test methods',
+    view: 'masters.view',
+    edit: 'masters.edit',
     columns: [col('code', 'Code', true), col('name', 'Name', true), col('standardRef', 'Standard')],
     fields: [...CODE_NAME, { name: 'standardRef', label: 'Standard reference' }, ...ACCREDITATION],
   }),
   defineMaster<'specifications'>({
-    key: 'specifications', label: 'Specifications and grades', view: 'masters.view', edit: 'masters.edit', importable: false,
-    columns: [col('code', 'Code', true), col('name', 'Name', true), { id: 'scope', header: 'Scope', cell: ({ row }) => (row.original.customerId ? 'Customer-specific' : 'General') }, { id: 'limitCount', header: 'Limits', cell: ({ row }) => row.original.limits.length }],
+    key: 'specifications',
+    label: 'Specifications and grades',
+    view: 'masters.view',
+    edit: 'masters.edit',
+    importable: false,
+    columns: [
+      col('code', 'Code', true),
+      col('name', 'Name', true),
+      { id: 'scope', header: 'Scope', cell: ({ row }) => (row.original.customerId ? 'Customer-specific' : 'General') },
+      { id: 'limitCount', header: 'Limits', cell: ({ row }) => row.original.limits.length },
+    ],
     fields: [...CODE_NAME, { name: 'customerId', label: 'Customer (for a customer-wise specification)', type: 'select', hint: 'Leave empty for a general specification.', source: undefined }],
     extra: (p) => <LimitsEditor {...p} />,
   }),
   defineMaster<'test-groups'>({
-    key: 'test-groups', label: 'Test and chemical groups', view: 'masters.view', edit: 'masters.edit', importable: false,
+    key: 'test-groups',
+    label: 'Test and chemical groups',
+    view: 'masters.view',
+    edit: 'masters.edit',
+    importable: false,
     columns: [col('code', 'Code', true), col('name', 'Name', true), col('kind', 'Kind'), { id: 'n', header: 'Tests', cell: ({ row }) => row.original.items.length }],
-    fields: [...CODE_NAME, { name: 'kind', label: 'Kind', type: 'select', required: true, default: 'TEST', options: [{ value: 'TEST', label: 'Test group' }, { value: 'CHEMICAL', label: 'Chemical group' }] }],
+    fields: [
+      ...CODE_NAME,
+      {
+        name: 'kind',
+        label: 'Kind',
+        type: 'select',
+        required: true,
+        default: 'TEST',
+        options: [
+          { value: 'TEST', label: 'Test group' },
+          { value: 'CHEMICAL', label: 'Chemical group' },
+        ],
+      },
+    ],
     extra: (p) => <GroupItemsEditor {...p} />,
   }),
   defineMaster<'result-sets'>({
-    key: 'result-sets', label: 'Result sets', view: 'masters.view', edit: 'masters.edit', importable: false,
+    key: 'result-sets',
+    label: 'Result sets',
+    view: 'masters.view',
+    edit: 'masters.edit',
+    importable: false,
     columns: [col('code', 'Code', true), col('name', 'Name', true), { id: 'o', header: 'Results', cell: ({ row }) => row.original.options.map((o) => o.value).join(', ') }],
     fields: CODE_NAME,
     extra: (p) => <ResultOptionsEditor {...p} />,
   }),
   defineMaster<'formulas'>({
-    key: 'formulas', label: 'Formulas', view: 'masters.view', edit: 'masters.edit',
-    columns: [col('code', 'Code', true), col('name', 'Name', true), { id: 'expr', header: 'Expression', cell: ({ row }) => <code className="text-xs">{row.original.expression}</code> }, col('currentVersion', 'Version')],
-    fields: [...CODE_NAME, { name: 'expression', label: 'Expression', required: true, type: 'textarea', hint: 'Saving a changed expression creates a new version. Existing results keep the version they used.' }, { name: 'decimals', label: 'Decimal places', type: 'number', default: 2 }, { name: 'description', label: 'Description' }],
+    key: 'formulas',
+    label: 'Formulas',
+    view: 'masters.view',
+    edit: 'masters.edit',
+    columns: [
+      col('code', 'Code', true),
+      col('name', 'Name', true),
+      { id: 'expr', header: 'Expression', cell: ({ row }) => <code className="text-xs">{row.original.expression}</code> },
+      col('currentVersion', 'Version'),
+    ],
+    fields: [
+      ...CODE_NAME,
+      { name: 'expression', label: 'Expression', required: true, type: 'textarea', hint: 'Saving a changed expression creates a new version. Existing results keep the version they used.' },
+      { name: 'decimals', label: 'Decimal places', type: 'number', default: 2 },
+      { name: 'description', label: 'Description' },
+    ],
     extra: (p) => <FormulaConsole value={p.value} />,
   }),
   defineMaster<'instruments'>({
-    key: 'instruments', label: 'Instruments', view: 'masters.view', edit: 'masters.edit',
-    columns: [col('code', 'Code', true), col('name', 'Name', true), col('departmentName', 'Department'), dateCol('lastCalibratedAt', 'Last calibrated'), { id: 'calibrationDueAt', header: 'Calibration due', enableSorting: true, cell: ({ row }) => (row.original.calibrationOverdue ? <Badge tone="red">{formatDate(row.original.calibrationDueAt)} overdue</Badge> : formatDate(row.original.calibrationDueAt)) }],
-    fields: [...CODE_NAME, { name: 'serialNo', label: 'Serial no.' }, { name: 'departmentId', label: 'Department', type: 'select', source: deptSource }, { name: 'lastCalibratedAt', label: 'Last calibrated', type: 'date' }, { name: 'calibrationDueAt', label: 'Calibration due', type: 'date' }],
+    key: 'instruments',
+    label: 'Instruments',
+    view: 'masters.view',
+    edit: 'masters.edit',
+    columns: [
+      col('code', 'Code', true),
+      col('name', 'Name', true),
+      col('departmentName', 'Department'),
+      dateCol('lastCalibratedAt', 'Last calibrated'),
+      {
+        id: 'calibrationDueAt',
+        header: 'Calibration due',
+        enableSorting: true,
+        cell: ({ row }) => (row.original.calibrationOverdue ? <Badge tone="red">{formatDate(row.original.calibrationDueAt)} overdue</Badge> : formatDate(row.original.calibrationDueAt)),
+      },
+    ],
+    fields: [
+      ...CODE_NAME,
+      { name: 'serialNo', label: 'Serial no.' },
+      { name: 'departmentId', label: 'Department', type: 'select', source: deptSource },
+      { name: 'lastCalibratedAt', label: 'Last calibrated', type: 'date' },
+      { name: 'calibrationDueAt', label: 'Calibration due', type: 'date' },
+    ],
   }),
   defineMaster<'departments'>({
-    key: 'departments', label: 'Departments', view: 'masters.view', edit: 'masters.edit',
+    key: 'departments',
+    label: 'Departments',
+    view: 'masters.view',
+    edit: 'masters.edit',
     columns: [col('code', 'Code', true), col('name', 'Name', true)],
     fields: CODE_NAME,
   }),
   defineMaster<'units'>({
-    key: 'units', label: 'Units', view: 'masters.view', edit: 'masters.edit',
+    key: 'units',
+    label: 'Units',
+    view: 'masters.view',
+    edit: 'masters.edit',
     columns: [col('code', 'Code', true), col('name', 'Name', true), col('symbol', 'Symbol')],
     fields: [...CODE_NAME, { name: 'symbol', label: 'Symbol', required: true }],
   }),
   defineMaster<'unit-conversions'>({
-    key: 'unit-conversions', label: 'Unit conversions', view: 'masters.view', edit: 'masters.edit', searchable: false,
+    key: 'unit-conversions',
+    label: 'Unit conversions',
+    view: 'masters.view',
+    edit: 'masters.edit',
+    searchable: false,
     columns: [col('fromUnitCode', 'From'), col('toUnitCode', 'To'), col('factor', 'Multiply by')],
-    fields: [{ name: 'fromUnitId', label: 'From unit', type: 'select', required: true, source: unitSource }, { name: 'toUnitId', label: 'To unit', type: 'select', required: true, source: unitSource }, { name: 'factor', label: 'Multiply by', required: true }],
+    fields: [
+      { name: 'fromUnitId', label: 'From unit', type: 'select', required: true, source: unitSource },
+      { name: 'toUnitId', label: 'To unit', type: 'select', required: true, source: unitSource },
+      { name: 'factor', label: 'Multiply by', required: true },
+    ],
   }),
   defineMaster<'standard-rates'>({
-    key: 'standard-rates', label: 'Standard rates', view: 'rates.view', edit: 'rates.edit',
-    columns: [col('testCode', 'Code'), col('testName', 'Test'), { id: 'rate', header: 'Rate (₹)', enableSorting: true, cell: ({ row }) => formatINR(row.original.rate) }, dateCol('effectiveFrom', 'From', true), dateCol('effectiveTo', 'To')],
-    fields: [{ name: 'testId', label: 'Test', type: 'select', required: true, source: testSource }, { name: 'rate', label: 'Rate (₹)', required: true }, { name: 'effectiveFrom', label: 'Effective from', type: 'date', required: true }, { name: 'effectiveTo', label: 'Effective to', type: 'date' }],
+    key: 'standard-rates',
+    label: 'Standard rates',
+    view: 'rates.view',
+    edit: 'rates.edit',
+    columns: [
+      col('testCode', 'Code'),
+      col('testName', 'Test'),
+      { id: 'rate', header: 'Rate (₹)', enableSorting: true, cell: ({ row }) => formatINR(row.original.rate) },
+      dateCol('effectiveFrom', 'From', true),
+      dateCol('effectiveTo', 'To'),
+    ],
+    fields: [
+      { name: 'testId', label: 'Test', type: 'select', required: true, source: testSource },
+      { name: 'rate', label: 'Rate (₹)', required: true },
+      { name: 'effectiveFrom', label: 'Effective from', type: 'date', required: true },
+      { name: 'effectiveTo', label: 'Effective to', type: 'date' },
+    ],
   }),
   defineMaster<'customer-rates'>({
-    key: 'customer-rates', label: 'Customer rates', view: 'rates.view', edit: 'rates.edit',
-    columns: [col('customerName', 'Customer'), col('testName', 'Test'), { id: 'rate', header: 'Rate (₹)', enableSorting: true, cell: ({ row }) => formatINR(row.original.rate) }, dateCol('effectiveFrom', 'From', true), dateCol('effectiveTo', 'To')],
-    fields: [{ name: 'customerId', label: 'Customer', type: 'select', required: true, source: undefined }, { name: 'testId', label: 'Test', type: 'select', required: true, source: testSource }, { name: 'rate', label: 'Rate (₹)', required: true }, { name: 'effectiveFrom', label: 'Effective from', type: 'date', required: true }, { name: 'effectiveTo', label: 'Effective to', type: 'date' }],
+    key: 'customer-rates',
+    label: 'Customer rates',
+    view: 'rates.view',
+    edit: 'rates.edit',
+    columns: [
+      col('customerName', 'Customer'),
+      col('testName', 'Test'),
+      { id: 'rate', header: 'Rate (₹)', enableSorting: true, cell: ({ row }) => formatINR(row.original.rate) },
+      dateCol('effectiveFrom', 'From', true),
+      dateCol('effectiveTo', 'To'),
+    ],
+    fields: [
+      { name: 'customerId', label: 'Customer', type: 'select', required: true, source: undefined },
+      { name: 'testId', label: 'Test', type: 'select', required: true, source: testSource },
+      { name: 'rate', label: 'Rate (₹)', required: true },
+      { name: 'effectiveFrom', label: 'Effective from', type: 'date', required: true },
+      { name: 'effectiveTo', label: 'Effective to', type: 'date' },
+    ],
   }),
   defineMaster<'remark-templates'>({
-    key: 'remark-templates', label: 'Remark templates', view: 'masters.view', edit: 'masters.edit',
+    key: 'remark-templates',
+    label: 'Remark templates',
+    view: 'masters.view',
+    edit: 'masters.edit',
     columns: [col('code', 'Code', true), col('outcome', 'Suggest when'), col('text', 'Text')],
-    fields: [{ name: 'code', label: 'Code', required: true }, { name: 'outcome', label: 'Suggest when', type: 'select', required: true, default: 'ANY', options: [{ value: 'ANY', label: 'Any result' }, { value: 'PASS', label: 'Result passes' }, { value: 'FAIL', label: 'Result fails' }] }, { name: 'testId', label: 'Only for test', type: 'select', source: testSource }, { name: 'text', label: 'Text', type: 'textarea', required: true }],
+    fields: [
+      { name: 'code', label: 'Code', required: true },
+      {
+        name: 'outcome',
+        label: 'Suggest when',
+        type: 'select',
+        required: true,
+        default: 'ANY',
+        options: [
+          { value: 'ANY', label: 'Any result' },
+          { value: 'PASS', label: 'Result passes' },
+          { value: 'FAIL', label: 'Result fails' },
+        ],
+      },
+      { name: 'testId', label: 'Only for test', type: 'select', source: testSource },
+      { name: 'text', label: 'Text', type: 'textarea', required: true },
+    ],
   }),
   defineMaster<'lookups'>({
-    key: 'lookups', label: 'Deviation types and modes', view: 'masters.view', edit: 'masters.edit',
+    key: 'lookups',
+    label: 'Deviation types and modes',
+    view: 'masters.view',
+    edit: 'masters.edit',
     columns: [col('kind', 'Kind', true), col('code', 'Code', true), col('label', 'Label', true)],
-    fields: [{ name: 'kind', label: 'Kind', type: 'select', required: true, options: [{ value: 'DEVIATION_TYPE', label: 'Deviation type' }, { value: 'RECEIPT_MODE', label: 'Receipt mode' }, { value: 'DISPATCH_MODE', label: 'Dispatch mode' }] }, { name: 'code', label: 'Code', required: true }, { name: 'label', label: 'Label', required: true }],
+    fields: [
+      {
+        name: 'kind',
+        label: 'Kind',
+        type: 'select',
+        required: true,
+        options: [
+          { value: 'DEVIATION_TYPE', label: 'Deviation type' },
+          { value: 'RECEIPT_MODE', label: 'Receipt mode' },
+          { value: 'DISPATCH_MODE', label: 'Dispatch mode' },
+        ],
+      },
+      { name: 'code', label: 'Code', required: true },
+      { name: 'label', label: 'Label', required: true },
+    ],
   }),
 ];
 
@@ -800,7 +1041,11 @@ export default function MastersPage() {
       <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[13rem_1fr]">
         <nav aria-label="Masters" className="hidden flex-col gap-0.5 lg:flex">
           {available.map((m) => (
-            <NavLink key={m.key} to={`/masters/${m.key}`} className={() => cn('rounded-md px-2.5 py-1.5 text-[13px]', m.key === cfg.key ? 'bg-gray-200 font-medium text-gray-900' : 'text-gray-700 hover:bg-gray-100')}>
+            <NavLink
+              key={m.key}
+              to={`/masters/${m.key}`}
+              className={() => cn('rounded-md px-2.5 py-1.5 text-[13px]', m.key === cfg.key ? 'bg-gray-200 font-medium text-gray-900' : 'text-gray-700 hover:bg-gray-100')}
+            >
               {m.label}
             </NavLink>
           ))}

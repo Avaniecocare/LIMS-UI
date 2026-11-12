@@ -87,44 +87,83 @@ export default function SamplesPage() {
           <TabsTrigger value="jobs">Jobs</TabsTrigger>
           <TabsTrigger value="samples">Samples</TabsTrigger>
         </TabsList>
-      <TabsContent value={tab} className="space-y-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <SearchBox value={list.q} onChange={list.setSearch} placeholder={tab === 'jobs' ? 'Search job or customer' : 'Search sample, description or job'} label={tab === 'jobs' ? 'Search jobs' : 'Search samples'} />
-          <MobileFilters filters={list.filters} onClear={list.clearFilters}>
+        <TabsContent value={tab} className="space-y-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <SearchBox
+              value={list.q}
+              onChange={list.setSearch}
+              placeholder={tab === 'jobs' ? 'Search job or customer' : 'Search sample, description or job'}
+              label={tab === 'jobs' ? 'Search jobs' : 'Search samples'}
+            />
+            <MobileFilters filters={list.filters} onClear={list.clearFilters}>
+              {tab === 'jobs' ? (
+                <>
+                  <StatusFilter
+                    value={list.filters.status ?? ''}
+                    onChange={(v) => list.setFilter('status', v)}
+                    options={['RECEIVED', 'PLANNED', 'IN_TESTING', 'REPORTING', 'COMPLETED', 'ON_HOLD', 'CANCELLED']}
+                  />
+                  <Select aria-label="Urgent filter" className="w-32" value={list.filters.urgent ?? ''} onChange={(e) => list.setFilter('urgent', e.target.value || null)}>
+                    <option value="">Any priority</option>
+                    <option value="true">Urgent only</option>
+                    <option value="false">Not urgent</option>
+                  </Select>
+                </>
+              ) : (
+                <>
+                  <StatusFilter value={list.filters.status ?? ''} onChange={(v) => list.setFilter('status', v)} options={SAMPLE_STATUSES} />
+                  <Select aria-label="Returnable filter" className="w-36" value={list.filters.returnable ?? ''} onChange={(e) => list.setFilter('returnable', e.target.value || null)}>
+                    <option value="">Returnable or not</option>
+                    <option value="true">Returnable only</option>
+                    <option value="false">Not returnable</option>
+                  </Select>
+                  <Select aria-label="Urgent filter" className="w-32" value={list.filters.urgent ?? ''} onChange={(e) => list.setFilter('urgent', e.target.value || null)}>
+                    <option value="">Any priority</option>
+                    <option value="true">Urgent only</option>
+                    <option value="false">Not urgent</option>
+                  </Select>
+                </>
+              )}
+              <DateRangeFilter label="Received" from={list.filters.from ?? ''} to={list.filters.to ?? ''} onChange={list.setFilter} />
+              <SavedFilters screen={tab === 'jobs' ? 'jobs' : 'samples'} current={list.allParams} onApply={list.applyFilters} />
+            </MobileFilters>
+          </div>
           {tab === 'jobs' ? (
-            <>
-              <StatusFilter value={list.filters.status ?? ''} onChange={(v) => list.setFilter('status', v)} options={['RECEIVED', 'PLANNED', 'IN_TESTING', 'REPORTING', 'COMPLETED', 'ON_HOLD', 'CANCELLED']} />
-              <Select aria-label="Urgent filter" className="w-32" value={list.filters.urgent ?? ''} onChange={(e) => list.setFilter('urgent', e.target.value || null)}>
-                <option value="">Any priority</option>
-                <option value="true">Urgent only</option>
-                <option value="false">Not urgent</option>
-              </Select>
-            </>
+            <DataTable
+              ariaLabel="Jobs"
+              columns={jobColumns}
+              rows={jobs.data?.data}
+              meta={jobs.data?.meta}
+              loading={jobs.isLoading}
+              error={jobs.error}
+              onRetry={jobs.refetch}
+              sort={list.sort}
+              onSortChange={list.setSort}
+              onPageChange={list.setPage}
+              onPageSizeChange={list.setPageSize}
+              onRowClick={(j) => navigate(`/samples/jobs/${j.id}`)}
+              getRowId={(j) => j.id}
+              emptyTitle="No jobs found"
+            />
           ) : (
-            <>
-              <StatusFilter value={list.filters.status ?? ''} onChange={(v) => list.setFilter('status', v)} options={SAMPLE_STATUSES} />
-              <Select aria-label="Returnable filter" className="w-36" value={list.filters.returnable ?? ''} onChange={(e) => list.setFilter('returnable', e.target.value || null)}>
-                <option value="">Returnable or not</option>
-                <option value="true">Returnable only</option>
-                <option value="false">Not returnable</option>
-              </Select>
-              <Select aria-label="Urgent filter" className="w-32" value={list.filters.urgent ?? ''} onChange={(e) => list.setFilter('urgent', e.target.value || null)}>
-                <option value="">Any priority</option>
-                <option value="true">Urgent only</option>
-                <option value="false">Not urgent</option>
-              </Select>
-            </>
+            <DataTable
+              ariaLabel="Samples"
+              columns={sampleColumns}
+              rows={samples.data?.data}
+              meta={samples.data?.meta}
+              loading={samples.isLoading}
+              error={samples.error}
+              onRetry={samples.refetch}
+              sort={list.sort}
+              onSortChange={list.setSort}
+              onPageChange={list.setPage}
+              onPageSizeChange={list.setPageSize}
+              onRowClick={(s) => navigate(`/samples/jobs/${s.jobId}?sample=${s.id}`)}
+              getRowId={(s) => s.id}
+              emptyTitle="No samples found"
+            />
           )}
-          <DateRangeFilter label="Received" from={list.filters.from ?? ''} to={list.filters.to ?? ''} onChange={list.setFilter} />
-          <SavedFilters screen={tab === 'jobs' ? 'jobs' : 'samples'} current={list.allParams} onApply={list.applyFilters} />
-          </MobileFilters>
-        </div>
-        {tab === 'jobs' ? (
-          <DataTable ariaLabel="Jobs" columns={jobColumns} rows={jobs.data?.data} meta={jobs.data?.meta} loading={jobs.isLoading} error={jobs.error} onRetry={jobs.refetch} sort={list.sort} onSortChange={list.setSort} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} onRowClick={(j) => navigate(`/samples/jobs/${j.id}`)} getRowId={(j) => j.id} emptyTitle="No jobs found" />
-        ) : (
-          <DataTable ariaLabel="Samples" columns={sampleColumns} rows={samples.data?.data} meta={samples.data?.meta} loading={samples.isLoading} error={samples.error} onRetry={samples.refetch} sort={list.sort} onSortChange={list.setSort} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} onRowClick={(s) => navigate(`/samples/jobs/${s.jobId}?sample=${s.id}`)} getRowId={(s) => s.id} emptyTitle="No samples found" />
-        )}
-      </TabsContent>
+        </TabsContent>
       </Tabs>
     </>
   );

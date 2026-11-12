@@ -12,11 +12,27 @@ async function check(page: Page, name: string, include?: string) {
   await page.locator('[data-sonner-toast]').evaluateAll((els) => Promise.all(els.flatMap((e) => [...e.getAnimations({ subtree: true })].map((a) => a.finished.catch(() => undefined)))));
   // Elements fading in measure as low contrast: let entrance animations (page, dialog, menus) finish first.
   // At most two seconds: an animation cancelled mid-way (a page replaced while it fades in) never reports finishing.
-  await page.evaluate(() => Promise.race([Promise.all(document.getAnimations().filter((a) => a.effect?.getTiming().iterations !== Infinity).map((a) => a.finished.catch(() => undefined))), new Promise((r) => setTimeout(r, 2000))]));
+  await page.evaluate(() =>
+    Promise.race([
+      Promise.all(
+        document
+          .getAnimations()
+          .filter((a) => a.effect?.getTiming().iterations !== Infinity)
+          .map((a) => a.finished.catch(() => undefined)),
+      ),
+      new Promise((r) => setTimeout(r, 2000)),
+    ]),
+  );
   let axe = new AxeBuilder({ page }).setLegacyMode(true).exclude('iframe[title^="Preview of"]').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']);
   if (include) axe = axe.include(include);
   const { violations } = await axe.analyze();
-  const summary = violations.map((v) => `${v.id} (${v.impact}): ${v.nodes.map((n) => `${n.target.join(' ')} ${n.any[0]?.message ?? ''}`).slice(0, 5).join(' | ')}`);
+  const summary = violations.map(
+    (v) =>
+      `${v.id} (${v.impact}): ${v.nodes
+        .map((n) => `${n.target.join(' ')} ${n.any[0]?.message ?? ''}`)
+        .slice(0, 5)
+        .join(' | ')}`,
+  );
   expect(summary, `axe on ${name}`).toEqual([]);
 }
 
@@ -88,7 +104,10 @@ test('report, dispatch, invoice and payment dialogs', async ({ page }) => {
 
   await signIn(page, 'accounts');
   await page.goto(`/invoices?tab=ready&q=${encodeURIComponent(job.jobNo)}`);
-  await page.getByRole('row', { name: new RegExp(job.jobNo) }).getByRole('checkbox').click();
+  await page
+    .getByRole('row', { name: new RegExp(job.jobNo) })
+    .getByRole('checkbox')
+    .click();
   await check(page, 'ready to invoice with a selection');
   await page.getByRole('button', { name: 'Create draft invoice' }).click();
   await page.getByRole('alertdialog').getByRole('button', { name: 'Create draft' }).click();
@@ -99,7 +118,12 @@ test('report, dispatch, invoice and payment dialogs', async ({ page }) => {
   await page.getByRole('dialog').getByRole('button', { name: 'Issue invoice' }).click();
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Issued');
   await check(page, 'issued invoice');
-  for (const [button, name] of [['Record payment', 'record payment'], ['Credit note', 'credit note'], ['Email', 'email invoice'], ['Cancel invoice', 'cancel invoice']]) {
+  for (const [button, name] of [
+    ['Record payment', 'record payment'],
+    ['Credit note', 'credit note'],
+    ['Email', 'email invoice'],
+    ['Cancel invoice', 'cancel invoice'],
+  ]) {
     await page.getByRole('button', { name: button, exact: true }).click();
     await check(page, name, '[role="dialog"]');
     await page.keyboard.press('Escape');

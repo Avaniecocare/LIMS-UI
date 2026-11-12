@@ -10,7 +10,10 @@ test('booking with photos emails the acknowledgement, photos included, straight 
   const form = page.getByRole('region', { name: 'Book without a quotation' });
   await expect(async () => {
     await form.getByRole('combobox', { name: /^Customer/ }).fill(customer.name);
-    await page.getByRole('option', { name: new RegExp(customer.name) }).first().click({ timeout: 3_000 });
+    await page
+      .getByRole('option', { name: new RegExp(customer.name) })
+      .first()
+      .click({ timeout: 3_000 });
   }).toPass({ timeout: 20_000 });
   await expect(form.getByLabel('Contact email')).toHaveValue('receiving@customer.example');
   await form.getByLabel('Reason for no quotation').fill('Walk-in customer');

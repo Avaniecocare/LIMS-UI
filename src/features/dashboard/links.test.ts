@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { canOpenLink } from './links';
 
-const holding = (...held: string[]) => (...wanted: string[]) => wanted.some((w) => held.includes(w));
+const holding =
+  (...held: string[]) =>
+  (...wanted: string[]) =>
+    wanted.some((w) => held.includes(w));
 
 describe('canOpenLink', () => {
   it('needs the permission for the page linked to', () => {

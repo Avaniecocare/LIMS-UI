@@ -100,13 +100,37 @@ export default function PhoneUploadPage() {
             </Message>
           ) : (
             <div className="grid gap-3">
-              <input ref={camera} type="file" accept="image/*" capture="environment" className="sr-only" aria-label="Take a photo" onChange={(e) => void add(e.target.files).finally(() => (e.target.value = ''))} />
-              <input ref={gallery} type="file" accept="image/*" multiple className="sr-only" aria-label="Choose photos from the gallery" onChange={(e) => void add(e.target.files).finally(() => (e.target.value = ''))} />
-              <button type="button" onClick={() => camera.current?.click()} className="flex h-16 items-center justify-center gap-3 rounded-xl bg-brand text-lg font-semibold text-brand-fg shadow-sm active:opacity-90">
+              <input
+                ref={camera}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="sr-only"
+                aria-label="Take a photo"
+                onChange={(e) => void add(e.target.files).finally(() => (e.target.value = ''))}
+              />
+              <input
+                ref={gallery}
+                type="file"
+                accept="image/*"
+                multiple
+                className="sr-only"
+                aria-label="Choose photos from the gallery"
+                onChange={(e) => void add(e.target.files).finally(() => (e.target.value = ''))}
+              />
+              <button
+                type="button"
+                onClick={() => camera.current?.click()}
+                className="flex h-16 items-center justify-center gap-3 rounded-xl bg-brand text-lg font-semibold text-brand-fg shadow-sm active:opacity-90"
+              >
                 <Camera className="size-6" aria-hidden />
                 Take photo
               </button>
-              <button type="button" onClick={() => gallery.current?.click()} className="flex h-14 items-center justify-center gap-3 rounded-xl border border-gray-300 bg-surface text-base font-medium text-gray-900 active:bg-gray-100">
+              <button
+                type="button"
+                onClick={() => gallery.current?.click()}
+                className="flex h-14 items-center justify-center gap-3 rounded-xl border border-gray-300 bg-surface text-base font-medium text-gray-900 active:bg-gray-100"
+              >
                 <Images className="size-5" aria-hidden />
                 Choose from gallery
               </button>

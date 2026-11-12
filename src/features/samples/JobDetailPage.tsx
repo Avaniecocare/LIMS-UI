@@ -12,7 +12,26 @@ import { useSession } from '@/app/providers';
 import { CancelDialog, type CancelTarget } from '@/components/CancelDialog';
 import { useLookups } from '@/components/pickers';
 import { Attachments, DocumentButton, EmailLogTable, HistoryList, pollDocumentJob, ReasonDialog, reserveTab, StatusBadge, toastDocumentError, uploadEntityFile } from '@/components/shared';
-import { Badge, Button, Card, CardHeader, ConfirmDialog, Dialog, EmptyState, ErrorState, Field, Input, PageHeader, Select, Spinner, Tabs, TabsContent, TabsList, TabsTrigger, Textarea } from '@/components/ui/primitives';
+import {
+  Badge,
+  Button,
+  Card,
+  CardHeader,
+  ConfirmDialog,
+  Dialog,
+  EmptyState,
+  ErrorState,
+  Field,
+  Input,
+  PageHeader,
+  Select,
+  Spinner,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Textarea,
+} from '@/components/ui/primitives';
 import { PhoneUploadButton } from '@/components/PhoneUpload';
 import { ReportProblemButton } from '@/features/quality/ReportProblem';
 import { AckPhotoPicker } from './AckPhotoPicker';
@@ -102,14 +121,35 @@ function JobHeaderForm({ job }: { job: Job }) {
 
 function EditSampleDialog({ sample, open, onOpenChange }: { sample: Sample; open: boolean; onOpenChange: (o: boolean) => void }) {
   const updated = useJobUpdated();
-  const values = (): SampleValues => ({ description: sample.description, condition: sample.condition ?? '', quantity: sample.quantity ?? '', size: sample.size ?? '', returnable: sample.returnable, attributes: sample.attributes.map((a) => ({ label: a.label, value: a.value })) });
+  const values = (): SampleValues => ({
+    description: sample.description,
+    condition: sample.condition ?? '',
+    quantity: sample.quantity ?? '',
+    size: sample.size ?? '',
+    returnable: sample.returnable,
+    attributes: sample.attributes.map((a) => ({ label: a.label, value: a.value })),
+  });
   const form = useForm<SampleValues>({ resolver: zodResolver(sampleSchema), defaultValues: values() });
   useEffect(() => {
     if (open) form.reset(values());
     // eslint-disable-next-line react-hooks/exhaustive-deps -- reload the form only when the dialog opens
   }, [open]);
   const m = useMutation({
-    mutationFn: async (v: SampleValues) => unwrap(await api.PATCH('/api/v1/samples/{id}', { params: { path: { id: sample.id } }, body: { version: sample.version, description: v.description, condition: v.condition || null, quantity: v.quantity || null, size: v.size || null, returnable: v.returnable, attributes: v.attributes } })),
+    mutationFn: async (v: SampleValues) =>
+      unwrap(
+        await api.PATCH('/api/v1/samples/{id}', {
+          params: { path: { id: sample.id } },
+          body: {
+            version: sample.version,
+            description: v.description,
+            condition: v.condition || null,
+            quantity: v.quantity || null,
+            size: v.size || null,
+            returnable: v.returnable,
+            attributes: v.attributes,
+          },
+        }),
+      ),
     onSuccess: (j) => {
       updated(j);
       toast.success('Sample saved');
@@ -143,7 +183,13 @@ function SampleCard({ job, sample, highlighted, onCancel }: { job: Job; sample: 
   const canFiles = can('jobs.create', 'jobs.edit');
   const canCancelTests = can('jobs.cancel', 'planning.edit');
   return (
-    <section id={`sample-${sample.id}`} tabIndex={-1} aria-label={`Sample ${sample.sampleNo}`} aria-current={highlighted ? 'true' : undefined} className={cn('scroll-mt-4 rounded-lg border bg-surface outline-none', highlighted ? 'border-brand-focus ring-2 ring-brand-focus' : 'border-gray-200')}>
+    <section
+      id={`sample-${sample.id}`}
+      tabIndex={-1}
+      aria-label={`Sample ${sample.sampleNo}`}
+      aria-current={highlighted ? 'true' : undefined}
+      className={cn('scroll-mt-4 rounded-lg border bg-surface outline-none', highlighted ? 'border-brand-focus ring-2 ring-brand-focus' : 'border-gray-200')}
+    >
       <div className="flex flex-wrap items-start justify-between gap-2 border-b border-gray-200 px-4 py-3">
         <div>
           <h3 className="flex flex-wrap items-center gap-2 text-sm font-semibold text-gray-900">
@@ -174,13 +220,15 @@ function SampleCard({ job, sample, highlighted, onCancel }: { job: Job; sample: 
       <div className="grid grid-cols-[minmax(0,1fr)] gap-4 p-4 lg:grid-cols-[1fr_2fr]">
         <div className="space-y-3">
           <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[13px]">
-            {([
-              ['Condition', sample.condition],
-              ['Quantity', sample.quantity],
-              ['Size', sample.size],
-              ['Retain until', sample.retentionUntil ? formatDate(sample.retentionUntil) : null],
-              ...sample.attributes.map((a) => [a.label, a.value]),
-            ] as [string, string | null][]).map(([label, value], i) => (
+            {(
+              [
+                ['Condition', sample.condition],
+                ['Quantity', sample.quantity],
+                ['Size', sample.size],
+                ['Retain until', sample.retentionUntil ? formatDate(sample.retentionUntil) : null],
+                ...sample.attributes.map((a) => [a.label, a.value]),
+              ] as [string, string | null][]
+            ).map(([label, value], i) => (
               <div key={`${label}-${i}`}>
                 <dt className="text-xs font-medium text-gray-600">{label}</dt>
                 <dd className="text-gray-900">{value || '—'}</dd>
@@ -249,7 +297,12 @@ function SampleCard({ job, sample, highlighted, onCancel }: { job: Job; sample: 
                       {canCancelTests && (
                         <td className="px-2 py-1 text-right">
                           {!CLOSED_TEST.includes(t.status) && (
-                            <Button variant="ghost" size="sm" aria-label={`Cancel ${t.testCode} on ${sample.sampleNo}`} onClick={() => onCancel({ type: 'test', id: t.id, version: t.version, label: `${t.testCode} on ${sample.sampleNo}` })}>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              aria-label={`Cancel ${t.testCode} on ${sample.sampleNo}`}
+                              onClick={() => onCancel({ type: 'test', id: t.id, version: t.version, label: `${t.testCode} on ${sample.sampleNo}` })}
+                            >
                               Cancel
                             </Button>
                           )}
@@ -278,7 +331,8 @@ function Deviations({ job }: { job: Job }) {
   const types = useLookups('DEVIATION_TYPE');
   const form = useForm<DeviationValues>({ resolver: zodResolver(deviationSchema), defaultValues: { typeId: '', sampleId: '', remark: '' } });
   const m = useMutation({
-    mutationFn: async (v: DeviationValues) => unwrap(await api.POST('/api/v1/jobs/{id}/deviations', { params: { path: { id: job.id } }, body: { typeId: v.typeId, sampleId: v.sampleId || null, remark: v.remark || null } })),
+    mutationFn: async (v: DeviationValues) =>
+      unwrap(await api.POST('/api/v1/jobs/{id}/deviations', { params: { path: { id: job.id } }, body: { typeId: v.typeId, sampleId: v.sampleId || null, remark: v.remark || null } })),
     onSuccess: (j) => {
       updated(j);
       form.reset();
@@ -428,17 +482,17 @@ function Acknowledgement({ job }: { job: Job }) {
         actions={
           can('jobs.create', 'jobs.edit') && (
             <div className="flex flex-wrap gap-2">
-            <WhatsappButton kind="acknowledgement" entityId={job.id} title={`the acknowledgement for ${job.jobNo}`} />
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => {
-                form.reset({ to: job.contactEmail ?? '', cc: '' });
-                setOpen(true);
-              }}
-            >
-              Email acknowledgement
-            </Button>
+              <WhatsappButton kind="acknowledgement" entityId={job.id} title={`the acknowledgement for ${job.jobNo}`} />
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  form.reset({ to: job.contactEmail ?? '', cc: '' });
+                  setOpen(true);
+                }}
+              >
+                Email acknowledgement
+              </Button>
             </div>
           )
         }
@@ -732,8 +786,24 @@ export default function JobDetailPage() {
         </TabsContent>
       </Tabs>
       <CancelDialog target={cancelling} onClose={() => setCancelling(null)} />
-      <ReasonDialog open={dialog === 'hold'} onOpenChange={(o) => !o && setDialog(null)} title="Put this job on hold" description="Planning and testing stop until the hold is released." confirmLabel="Put on hold" loading={hold.isPending} onConfirm={(reason) => hold.mutate({ version: job.version, reason })} />
-      <ConfirmDialog open={dialog === 'release'} onOpenChange={(o) => !o && setDialog(null)} title="Release the hold?" description="The job returns to the status it had before." confirmLabel="Release hold" loading={release.isPending} onConfirm={() => release.mutate(job.version)} />
+      <ReasonDialog
+        open={dialog === 'hold'}
+        onOpenChange={(o) => !o && setDialog(null)}
+        title="Put this job on hold"
+        description="Planning and testing stop until the hold is released."
+        confirmLabel="Put on hold"
+        loading={hold.isPending}
+        onConfirm={(reason) => hold.mutate({ version: job.version, reason })}
+      />
+      <ConfirmDialog
+        open={dialog === 'release'}
+        onOpenChange={(o) => !o && setDialog(null)}
+        title="Release the hold?"
+        description="The job returns to the status it had before."
+        confirmLabel="Release hold"
+        loading={release.isPending}
+        onConfirm={() => release.mutate(job.version)}
+      />
     </>
   );
 }

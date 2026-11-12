@@ -7,7 +7,26 @@ import type { components } from '@/api/schema';
 import { useSession } from '@/app/providers';
 import { DataTable, useDebounced, type Col } from '@/components/DataTable';
 import { uploadEntityFile } from '@/components/shared';
-import { Badge, Button, Card, CardHeader, Checkbox, ConfirmDialog, Dialog, ErrorState, Field, Input, PageHeader, Select, Spinner, Tabs, TabsContent, TabsList, TabsTrigger, Textarea } from '@/components/ui/primitives';
+import {
+  Badge,
+  Button,
+  Card,
+  CardHeader,
+  Checkbox,
+  ConfirmDialog,
+  Dialog,
+  ErrorState,
+  Field,
+  Input,
+  PageHeader,
+  Select,
+  Spinner,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Textarea,
+} from '@/components/ui/primitives';
 import { DirtyScope, useCloseGuard, useDirtyScope, useLeaveGuard, useReportDirty } from '@/lib/use-leave-guard';
 import { api, unwrap } from '@/lib/api';
 import { formatDate, formatDateTime } from '@/lib/format';
@@ -56,7 +75,11 @@ function SignatureSection({ user, onChange }: { user: User; onChange: (user: Use
       <div className="mt-2 flex flex-wrap items-center gap-3">
         {user.signatureFileId ? (
           <>
-            {url.data ? <img src={url.data} alt={`Signature of ${user.name}`} className="h-14 max-w-48 rounded border border-gray-200 bg-surface object-contain p-1" /> : <span className="text-[13px] text-gray-700">{url.isError ? 'The image could not be shown.' : 'Loading…'}</span>}
+            {url.data ? (
+              <img src={url.data} alt={`Signature of ${user.name}`} className="h-14 max-w-48 rounded border border-gray-200 bg-surface object-contain p-1" />
+            ) : (
+              <span className="text-[13px] text-gray-700">{url.isError ? 'The image could not be shown.' : 'Loading…'}</span>
+            )}
             <span className="text-[13px] text-gray-800">Signature on file</span>
           </>
         ) : (
@@ -88,14 +111,25 @@ function UserForm({ user, onDone, onChange }: { user: User | null; onDone: () =>
   const [roleIds, setRoleIds] = useState<string[]>(user?.roles.map((r) => r.id) ?? []);
   const [isActive, setActive] = useState(user?.isActive ?? true);
   const form = useForm({ defaultValues: { name: user?.name ?? '', email: user?.email ?? '', designation: user?.designation ?? '', phone: user?.phone ?? '', password: '' } });
-  const initialRoles = user?.roles.map((r) => r.id).sort().join() ?? '';
+  const initialRoles =
+    user?.roles
+      .map((r) => r.id)
+      .sort()
+      .join() ?? '';
   useReportDirty(form.formState.isDirty || [...roleIds].sort().join() !== initialRoles || isActive !== (user?.isActive ?? true));
   const m = useMutation({
     mutationFn: async (v: { name: string; email: string; designation: string; phone: string; password: string }) => {
       if (user) {
-        return unwrap(await api.PATCH('/api/v1/admin/users/{id}', { params: { path: { id: user.id } }, body: { version: user.version, name: v.name, designation: v.designation || undefined, phone: v.phone || undefined, isActive, roleIds } }));
+        return unwrap(
+          await api.PATCH('/api/v1/admin/users/{id}', {
+            params: { path: { id: user.id } },
+            body: { version: user.version, name: v.name, designation: v.designation || undefined, phone: v.phone || undefined, isActive, roleIds },
+          }),
+        );
       }
-      return unwrap(await api.POST('/api/v1/admin/users', { body: { email: v.email, name: v.name, password: v.password, designation: v.designation || undefined, phone: v.phone || undefined, roleIds } }));
+      return unwrap(
+        await api.POST('/api/v1/admin/users', { body: { email: v.email, name: v.name, password: v.password, designation: v.designation || undefined, phone: v.phone || undefined, roleIds } }),
+      );
     },
     onSuccess: () => {
       client.invalidateQueries({ queryKey: ['users'] });
@@ -130,7 +164,13 @@ function UserForm({ user, onDone, onChange }: { user: User | null; onDone: () =>
         <legend className="mb-1 text-[13px] font-medium text-gray-700">Roles</legend>
         <div className="grid grid-cols-[minmax(0,1fr)] gap-1.5 sm:grid-cols-2">
           {roles.data?.map((r) => (
-            <Checkbox key={r.id} id={`role-${r.id}`} label={r.name} checked={roleIds.includes(r.id)} onCheckedChange={(v) => setRoleIds((ids) => (v ? [...ids, r.id] : ids.filter((x) => x !== r.id)))} />
+            <Checkbox
+              key={r.id}
+              id={`role-${r.id}`}
+              label={r.name}
+              checked={roleIds.includes(r.id)}
+              onCheckedChange={(v) => setRoleIds((ids) => (v ? [...ids, r.id] : ids.filter((x) => x !== r.id)))}
+            />
           ))}
         </div>
       </fieldset>
@@ -224,7 +264,22 @@ function UsersTab() {
           Add user
         </Button>
       </div>
-      <DataTable ariaLabel="Users" columns={columns} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} sort={list.sort} onSortChange={list.setSort} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} onRowClick={setEditing} getRowId={(r) => r.id} emptyTitle="No users match" />
+      <DataTable
+        ariaLabel="Users"
+        columns={columns}
+        rows={q.data?.data}
+        meta={q.data?.meta}
+        loading={q.isLoading}
+        error={q.error}
+        onRetry={q.refetch}
+        sort={list.sort}
+        onSortChange={list.setSort}
+        onPageChange={list.setPage}
+        onPageSizeChange={list.setPageSize}
+        onRowClick={setEditing}
+        getRowId={(r) => r.id}
+        emptyTitle="No users match"
+      />
       <Dialog open={!!editing} onOpenChange={(o) => !o && closeGuard.requestClose()} title={editing === 'new' ? 'Add user' : 'Edit user'}>
         <DirtyScope value={formScope.report}>{editing && <UserForm user={editing === 'new' ? null : editing} onDone={() => setEditing(null)} onChange={setEditing} />}</DirtyScope>
       </Dialog>
@@ -252,7 +307,9 @@ function RoleEditor({ role, onDone }: { role: Role | null; onDone: () => void })
   const m = useMutation({
     mutationFn: async () =>
       role
-        ? unwrap(await api.PATCH('/api/v1/admin/roles/{id}', { params: { path: { id: role.id } }, body: { version: role.version, name, description: description || undefined, permissions: selected } }))
+        ? unwrap(
+            await api.PATCH('/api/v1/admin/roles/{id}', { params: { path: { id: role.id } }, body: { version: role.version, name, description: description || undefined, permissions: selected } }),
+          )
         : unwrap(await api.POST('/api/v1/admin/roles', { body: { name, description: description || undefined, permissions: selected } })),
     onSuccess: () => {
       client.invalidateQueries({ queryKey: ['roles'] });
@@ -284,7 +341,12 @@ function RoleEditor({ role, onDone }: { role: Role | null; onDone: () => void })
             <div className="space-y-1">
               {items.map((p) => (
                 <div key={p.code}>
-                  <Checkbox id={`p-${p.code}`} label={p.description} checked={selected.includes(p.code)} onCheckedChange={(v) => setSelected((s) => (v ? [...s, p.code] : s.filter((x) => x !== p.code)))} />
+                  <Checkbox
+                    id={`p-${p.code}`}
+                    label={p.description}
+                    checked={selected.includes(p.code)}
+                    onCheckedChange={(v) => setSelected((s) => (v ? [...s, p.code] : s.filter((x) => x !== p.code)))}
+                  />
                 </div>
               ))}
             </div>
@@ -347,7 +409,12 @@ function SettingRow({ setting }: { setting: Setting }) {
       if (typeof setting.default === 'number') value = Number(text);
       else if (typeof setting.default === 'boolean') value = text === 'true';
       else if (typeof setting.default === 'object') value = JSON.parse(text);
-      return unwrap(await api.PUT('/api/v1/admin/settings/{key}', { params: { path: { key: setting.key } }, body: { value: value as Record<string, never>, version: setting.version, reason: reason || undefined } }));
+      return unwrap(
+        await api.PUT('/api/v1/admin/settings/{key}', {
+          params: { path: { key: setting.key } },
+          body: { value: value as Record<string, never>, version: setting.version, reason: reason || undefined },
+        }),
+      );
     },
     onSuccess: () => {
       setReason('');
@@ -379,7 +446,9 @@ function SettingRow({ setting }: { setting: Setting }) {
         ) : (
           <Input id={id} type={typeof setting.default === 'number' ? 'number' : 'text'} value={text} onChange={(e) => setText(e.target.value)} />
         )}
-        {dirty && isSensitive(setting.key) && <Input aria-label="Reason for this change" placeholder="Reason for this change (required, written to the audit log)" value={reason} onChange={(e) => setReason(e.target.value)} />}
+        {dirty && isSensitive(setting.key) && (
+          <Input aria-label="Reason for this change" placeholder="Reason for this change (required, written to the audit log)" value={reason} onChange={(e) => setReason(e.target.value)} />
+        )}
       </div>
       <Button type="submit" variant={dirty ? 'primary' : 'secondary'} size="sm" className="mt-0.5" disabled={!dirty} loading={m.isPending}>
         Save
@@ -424,7 +493,10 @@ function TermsCard({ kind, label, current }: { kind: 'QUOTATION' | 'INVOICE' | '
   });
   return (
     <Card>
-      <CardHeader title={label} description={current ? `Version ${current.versionNo}, saved ${formatDate(current.createdAt)}. Issued documents keep the version they were issued with.` : 'No terms saved yet.'} />
+      <CardHeader
+        title={label}
+        description={current ? `Version ${current.versionNo}, saved ${formatDate(current.createdAt)}. Issued documents keep the version they were issued with.` : 'No terms saved yet.'}
+      />
       <div className="space-y-2 p-4">
         <Textarea aria-label={label} rows={8} value={body} onChange={(e) => setBody(e.target.value)} />
         <Button size="sm" disabled={!body.trim() || body === current?.body} loading={m.isPending} onClick={() => m.mutate()}>
@@ -512,8 +584,26 @@ function HolidaysTab() {
           Add holiday
         </Button>
       </form>
-      <DataTable ariaLabel="Holidays" columns={columns} rows={q.data} loading={q.isLoading} error={q.error} getRowId={(r) => r.id} emptyTitle="No holidays added" emptyHint="Due dates skip these days, along with non-working weekdays." />
-      <ConfirmDialog open={!!removing} onOpenChange={(o) => !o && setRemoving(null)} title={`Remove ${removing?.name ?? 'this holiday'}?`} description="Due dates worked out from now on will count this day as a working day." confirmLabel="Remove" danger loading={remove.isPending} onConfirm={() => removing && remove.mutate(removing.id)} />
+      <DataTable
+        ariaLabel="Holidays"
+        columns={columns}
+        rows={q.data}
+        loading={q.isLoading}
+        error={q.error}
+        getRowId={(r) => r.id}
+        emptyTitle="No holidays added"
+        emptyHint="Due dates skip these days, along with non-working weekdays."
+      />
+      <ConfirmDialog
+        open={!!removing}
+        onOpenChange={(o) => !o && setRemoving(null)}
+        title={`Remove ${removing?.name ?? 'this holiday'}?`}
+        description="Due dates worked out from now on will count this day as a working day."
+        confirmLabel="Remove"
+        danger
+        loading={remove.isPending}
+        onConfirm={() => removing && remove.mutate(removing.id)}
+      />
     </div>
   );
 }
@@ -526,11 +616,11 @@ function AuditTab() {
   const columns = useMemo<Col<AuditEntry>[]>(
     () => [
       { id: 'at', header: 'When', cell: ({ row }) => formatDateTime(row.original.at) },
-      { id: 'user', header: 'User', cell: ({ row }) => (row.original.userName) ?? 'System' },
+      { id: 'user', header: 'User', cell: ({ row }) => row.original.userName ?? 'System' },
       { accessorKey: 'action', header: 'Action' },
       { accessorKey: 'entity', header: 'Record' },
-      { id: 'reason', header: 'Reason', cell: ({ row }) => (row.original.reason) ?? '' },
-      { id: 'ip', header: 'IP', cell: ({ row }) => (row.original.ip) ?? '' },
+      { id: 'reason', header: 'Reason', cell: ({ row }) => row.original.reason ?? '' },
+      { id: 'ip', header: 'IP', cell: ({ row }) => row.original.ip ?? '' },
     ],
     [],
   );
@@ -550,8 +640,27 @@ function AuditTab() {
           <Input id="a-to" type="date" defaultValue={list.filters.to ?? ''} onChange={(e) => list.setFilter('to', e.target.value)} />
         </Field>
       </div>
-      <DataTable ariaLabel="Audit log" columns={columns} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} onRowClick={setSelected} getRowId={(r) => r.id} emptyTitle="No entries match" />
-      <Dialog wide open={!!selected} onOpenChange={(o) => !o && setSelected(null)} title={selected?.action ?? ''} description={selected ? `${formatDateTime(selected.at)} · ${(selected.userName) ?? 'System'}` : undefined}>
+      <DataTable
+        ariaLabel="Audit log"
+        columns={columns}
+        rows={q.data?.data}
+        meta={q.data?.meta}
+        loading={q.isLoading}
+        error={q.error}
+        onRetry={q.refetch}
+        onPageChange={list.setPage}
+        onPageSizeChange={list.setPageSize}
+        onRowClick={setSelected}
+        getRowId={(r) => r.id}
+        emptyTitle="No entries match"
+      />
+      <Dialog
+        wide
+        open={!!selected}
+        onOpenChange={(o) => !o && setSelected(null)}
+        title={selected?.action ?? ''}
+        description={selected ? `${formatDateTime(selected.at)} · ${selected.userName ?? 'System'}` : undefined}
+      >
         {selected && (
           <div className="grid grid-cols-[minmax(0,1fr)] gap-3 md:grid-cols-2">
             {(['before', 'after'] as const).map((k) => (

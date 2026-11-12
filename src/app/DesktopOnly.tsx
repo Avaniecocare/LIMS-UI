@@ -52,7 +52,15 @@ function DesktopOnly({ summary, onContinue }: { summary?: string; onContinue: ()
               </a>
             </Button>
           )}
-          <Button variant="secondary" onClick={() => void navigator.clipboard?.writeText(url).then(() => toast.success('Link copied'), () => toast.error('Could not copy the link'))}>
+          <Button
+            variant="secondary"
+            onClick={() =>
+              void navigator.clipboard?.writeText(url).then(
+                () => toast.success('Link copied'),
+                () => toast.error('Could not copy the link'),
+              )
+            }
+          >
             <Copy aria-hidden />
             Copy link
           </Button>

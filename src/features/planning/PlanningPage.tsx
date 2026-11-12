@@ -35,7 +35,11 @@ function useWorkload() {
 const instrumentLabel = (i: Instrument) => `${i.code} — ${i.name}${i.calibrationOverdue ? ' (calibration overdue)' : ''}`;
 
 function TestParameters({ testId }: { testId: string }) {
-  const q = useQuery({ queryKey: ['test-parameters', testId], staleTime: 60_000, queryFn: async () => unwrap(await api.GET('/api/v1/masters/test-parameters', { params: { query: { testId, pageSize: 200 } } })).data });
+  const q = useQuery({
+    queryKey: ['test-parameters', testId],
+    staleTime: 60_000,
+    queryFn: async () => unwrap(await api.GET('/api/v1/masters/test-parameters', { params: { query: { testId, pageSize: 200 } } })).data,
+  });
   if (q.isLoading) return <p className="text-xs text-gray-600">Loading parameters…</p>;
   if (q.error) return <p className="text-xs text-red-800">The parameters could not be loaded.</p>;
   if (!q.data?.length) return <p className="text-xs text-red-800">This test has no parameters. Add them in Masters before planning.</p>;
@@ -57,11 +61,35 @@ interface PlanTestValues {
 const blankTest: PlanTestValues = { analysisMode: '', officeInstructions: '', technicalData: '', assignedToId: '', instrumentId: '' };
 type TestInfo = Pick<Suggested, 'testId' | 'testCode' | 'testName' | 'methodName' | 'category'>;
 
-function PlanDialog({ jobId, sampleIds, testIds, open, onOpenChange, onPlanned }: { jobId: string; sampleIds?: string[]; testIds: string[]; open: boolean; onOpenChange: (o: boolean) => void; onPlanned: () => void }) {
+function PlanDialog({
+  jobId,
+  sampleIds,
+  testIds,
+  open,
+  onOpenChange,
+  onPlanned,
+}: {
+  jobId: string;
+  sampleIds?: string[];
+  testIds: string[];
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  onPlanned: () => void;
+}) {
   const job = useQuery({ queryKey: ['job', jobId], enabled: open, queryFn: async () => unwrap(await api.GET('/api/v1/jobs/{id}', { params: { path: { id: jobId } } })) });
   const masters = useTests();
-  const specs = useQuery({ queryKey: ['spec-options'], enabled: open, staleTime: 60_000, queryFn: async () => unwrap(await api.GET('/api/v1/masters/specifications', { params: { query: { pageSize: 200 } } })).data });
-  const groups = useQuery({ queryKey: ['test-group-options'], enabled: open, staleTime: 60_000, queryFn: async () => unwrap(await api.GET('/api/v1/masters/test-groups', { params: { query: { pageSize: 200 } } })).data });
+  const specs = useQuery({
+    queryKey: ['spec-options'],
+    enabled: open,
+    staleTime: 60_000,
+    queryFn: async () => unwrap(await api.GET('/api/v1/masters/specifications', { params: { query: { pageSize: 200 } } })).data,
+  });
+  const groups = useQuery({
+    queryKey: ['test-group-options'],
+    enabled: open,
+    staleTime: 60_000,
+    queryFn: async () => unwrap(await api.GET('/api/v1/masters/test-groups', { params: { query: { pageSize: 200 } } })).data,
+  });
   const technicians = useTechnicians();
   const instruments = useInstruments();
   const workload = useWorkload();
@@ -85,7 +113,12 @@ function PlanDialog({ jobId, sampleIds, testIds, open, onOpenChange, onPlanned }
   const openWork = (id: string) => workload.data?.technicians.find((w) => w.id === id)?.openTests;
 
   const suggest = useMutation({
-    mutationFn: async () => unwrap(await api.GET('/api/v1/planning/suggest', { params: { query: { ...(specificationId ? { specificationId } : {}), ...(dualSpecificationId ? { dualSpecificationId } : {}), ...(groupId ? { groupId } : {}) } } })),
+    mutationFn: async () =>
+      unwrap(
+        await api.GET('/api/v1/planning/suggest', {
+          params: { query: { ...(specificationId ? { specificationId } : {}), ...(dualSpecificationId ? { dualSpecificationId } : {}), ...(groupId ? { groupId } : {}) } },
+        }),
+      ),
     onSuccess: (rows) => {
       setSuggested((prev) => ({ ...prev, ...Object.fromEntries(rows.map((r) => [r.testId, r])) }));
       setIds((prev) => [...prev, ...rows.map((r) => r.testId).filter((id) => !prev.includes(id))]);
@@ -104,7 +137,14 @@ function PlanDialog({ jobId, sampleIds, testIds, open, onOpenChange, onPlanned }
             notes: notes.trim() || null,
             tests: ids.map((testId) => {
               const v = values[testId] ?? blankTest;
-              return { testId, analysisMode: v.analysisMode || null, officeInstructions: v.officeInstructions.trim() || null, technicalData: v.technicalData.trim() || null, assignedToId: v.assignedToId || null, instrumentId: v.instrumentId || null };
+              return {
+                testId,
+                analysisMode: v.analysisMode || null,
+                officeInstructions: v.officeInstructions.trim() || null,
+                technicalData: v.technicalData.trim() || null,
+                assignedToId: v.assignedToId || null,
+                instrumentId: v.instrumentId || null,
+              };
             }),
           },
         }),
@@ -139,17 +179,26 @@ function PlanDialog({ jobId, sampleIds, testIds, open, onOpenChange, onPlanned }
             <div className="max-h-32 space-y-1 overflow-y-auto rounded-md border border-gray-200 p-2">
               {activeSamples.map((s) => (
                 <div key={s.id}>
-                  <Checkbox id={`plan-s-${s.id}`} label={`${s.sampleNo} — ${s.description}`} checked={samples.includes(s.id)} onCheckedChange={(v) => setPickedSamples(v ? [...samples, s.id] : samples.filter((x) => x !== s.id))} />
+                  <Checkbox
+                    id={`plan-s-${s.id}`}
+                    label={`${s.sampleNo} — ${s.description}`}
+                    checked={samples.includes(s.id)}
+                    onCheckedChange={(v) => setPickedSamples(v ? [...samples, s.id] : samples.filter((x) => x !== s.id))}
+                  />
                 </div>
               ))}
             </div>
           </fieldset>
           <div className="grid grid-cols-[minmax(0,1fr)] gap-3 md:grid-cols-[1fr_1fr_1fr_auto] md:items-start">
             <Field label="Grade / specification" htmlFor="plan-spec" hint="Results are checked against its limits.">
-              <Select id="plan-spec" value={specificationId} onChange={(e) => {
+              <Select
+                id="plan-spec"
+                value={specificationId}
+                onChange={(e) => {
                   setSpecificationId(e.target.value);
                   if (!e.target.value || e.target.value === dualSpecificationId) setDualSpecificationId('');
-                }}>
+                }}
+              >
                 <option value="">None</option>
                 {specs.data?.map(specOption)}
               </Select>
@@ -297,7 +346,12 @@ function AssignDialog({ rows, reassign, open, onOpenChange, onAssigned }: { rows
     }
   }, [open]);
   const m = useMutation({
-    mutationFn: async () => unwrap(await api.POST('/api/v1/planning/assign', { body: { sampleTestIds: rows.map((r) => r.id), assignedToId, instrumentId: instrumentId || null, versions: Object.fromEntries(rows.map((r) => [r.id, r.version])) } })),
+    mutationFn: async () =>
+      unwrap(
+        await api.POST('/api/v1/planning/assign', {
+          body: { sampleTestIds: rows.map((r) => r.id), assignedToId, instrumentId: instrumentId || null, versions: Object.fromEntries(rows.map((r) => [r.id, r.version])) },
+        }),
+      ),
     onSuccess: () => {
       toast.success(`${rows.length} ${rows.length === 1 ? 'test' : 'tests'} ${reassign ? 'reassigned' : 'assigned'}`);
       onAssigned();
@@ -318,7 +372,13 @@ function AssignDialog({ rows, reassign, open, onOpenChange, onAssigned }: { rows
   const unauthorised = rows.filter((r) => authorisation.data?.missing.includes(r.testId));
   const unauthorisedNames = [...new Set(unauthorised.map((r) => r.testName))];
   return (
-    <Dialog open={open} onOpenChange={onOpenChange} title={`${verb} ${rows.length} ${rows.length === 1 ? 'test' : 'tests'}`} description="Current open work is shown for each person and instrument." wide>
+    <Dialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title={`${verb} ${rows.length} ${rows.length === 1 ? 'test' : 'tests'}`}
+      description="Current open work is shown for each person and instrument."
+      wide
+    >
       <form
         className="space-y-4"
         onSubmit={(e) => {
@@ -327,7 +387,10 @@ function AssignDialog({ rows, reassign, open, onOpenChange, onAssigned }: { rows
         }}
       >
         {unauthorisedNames.length > 0 && (
-          <p role="status" className={cn('rounded-md border px-3 py-2 text-[13px]', authorisation.data?.enforced ? 'border-red-300 bg-red-50 text-red-900' : 'border-amber-300 bg-amber-50 text-amber-900')}>
+          <p
+            role="status"
+            className={cn('rounded-md border px-3 py-2 text-[13px]', authorisation.data?.enforced ? 'border-red-300 bg-red-50 text-red-900' : 'border-amber-300 bg-amber-50 text-amber-900')}
+          >
             {technicians.data?.find((t) => t.id === assignedToId)?.name ?? 'This person'} is not authorised for {unauthorisedNames.join(', ')}.{' '}
             {authorisation.data?.enforced ? 'Your lab requires authorisation, so this assignment will be refused.' : 'You can still assign; consider authorising them in Quality, Competency.'}
           </p>
@@ -449,7 +512,11 @@ export default function PlanningPage() {
   const view = (list.filters.view ?? 'unplanned') as (typeof VIEWS)[number]['value'];
   const jobFilter = list.filters.jobId ?? '';
   const q = useQuery({ queryKey: ['planning', list.query], queryFn: async () => unwrap(await api.GET('/api/v1/planning/tests', { params: { query: list.query } })) });
-  const departments = useQuery({ queryKey: ['department-options'], staleTime: 60_000, queryFn: async () => unwrap(await api.GET('/api/v1/masters/departments', { params: { query: { pageSize: 200 } } })).data });
+  const departments = useQuery({
+    queryKey: ['department-options'],
+    staleTime: 60_000,
+    queryFn: async () => unwrap(await api.GET('/api/v1/masters/departments', { params: { query: { pageSize: 200 } } })).data,
+  });
 
   const [selected, setSelected] = useState<Record<string, Row>>({});
   const [dialog, setDialog] = useState<'plan' | 'plan-job' | 'assign' | null>(null);
@@ -500,7 +567,12 @@ export default function PlanningPage() {
               id: 'cancel',
               header: () => <span className="sr-only">Cancel</span>,
               cell: ({ row: { original: r } }) => (
-                <Button variant="ghost" size="sm" aria-label={`Cancel ${r.testCode} on ${r.sampleNo}`} onClick={() => setCancelling({ type: 'test', id: r.id, version: r.version, label: `${r.testCode} on ${r.sampleNo}` })}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  aria-label={`Cancel ${r.testCode} on ${r.sampleNo}`}
+                  onClick={() => setCancelling({ type: 'test', id: r.id, version: r.version, label: `${r.testCode} on ${r.sampleNo}` })}
+                >
                   Cancel
                 </Button>
               ),
@@ -545,77 +617,86 @@ export default function PlanningPage() {
             </TabsTrigger>
           ))}
         </TabsList>
-      <TabsContent value={view} className="space-y-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search test, sample or job" label="Search tests" />
-          <div className="w-52">
-            <JobPicker ariaLabel="Job filter" placeholder="All jobs" value={jobFilter} onChange={(v) => list.setFilter('jobId', v || null)} />
+        <TabsContent value={view} className="space-y-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search test, sample or job" label="Search tests" />
+            <div className="w-52">
+              <JobPicker ariaLabel="Job filter" placeholder="All jobs" value={jobFilter} onChange={(v) => list.setFilter('jobId', v || null)} />
+            </div>
+            <Select aria-label="Department filter" className="w-44" value={list.filters.departmentId ?? ''} onChange={(e) => list.setFilter('departmentId', e.target.value || null)}>
+              <option value="">All departments</option>
+              {departments.data?.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.name}
+                </option>
+              ))}
+            </Select>
+            <SavedFilters screen="planning" current={list.allParams} onApply={list.applyFilters} />
           </div>
-          <Select aria-label="Department filter" className="w-44" value={list.filters.departmentId ?? ''} onChange={(e) => list.setFilter('departmentId', e.target.value || null)}>
-            <option value="">All departments</option>
-            {departments.data?.map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.name}
-              </option>
-            ))}
-          </Select>
-          <SavedFilters screen="planning" current={list.allParams} onApply={list.applyFilters} />
-        </div>
-        <DataTable
-          ariaLabel="Tests to plan"
-          columns={columns}
-          rows={q.data?.data}
-          meta={q.data?.meta}
-          loading={q.isLoading}
-          error={q.error}
-          onRetry={q.refetch}
-          sort={list.sort}
-          onSortChange={list.setSort}
-          onPageChange={list.setPage}
-          onPageSizeChange={list.setPageSize}
-          getRowId={(r) => r.id}
-          selection={canEdit ? selection : undefined}
-          onSelectionChange={
-            canEdit
-              ? (next) =>
-                  setSelected((prev) => {
-                    const out: Record<string, Row> = {};
-                    for (const id of Object.keys(next)) {
-                      const row = prev[id] ?? q.data?.data.find((r) => r.id === id);
-                      if (row) out[id] = row;
-                    }
-                    return out;
-                  })
-              : undefined
-          }
-          bulkActions={
-            <>
-              {view === 'unplanned' ? (
-                <Button size="sm" disabled={!singleJob} onClick={() => setDialog('plan')}>
-                  Plan
+          <DataTable
+            ariaLabel="Tests to plan"
+            columns={columns}
+            rows={q.data?.data}
+            meta={q.data?.meta}
+            loading={q.isLoading}
+            error={q.error}
+            onRetry={q.refetch}
+            sort={list.sort}
+            onSortChange={list.setSort}
+            onPageChange={list.setPage}
+            onPageSizeChange={list.setPageSize}
+            getRowId={(r) => r.id}
+            selection={canEdit ? selection : undefined}
+            onSelectionChange={
+              canEdit
+                ? (next) =>
+                    setSelected((prev) => {
+                      const out: Record<string, Row> = {};
+                      for (const id of Object.keys(next)) {
+                        const row = prev[id] ?? q.data?.data.find((r) => r.id === id);
+                        if (row) out[id] = row;
+                      }
+                      return out;
+                    })
+                : undefined
+            }
+            bulkActions={
+              <>
+                {view === 'unplanned' ? (
+                  <Button size="sm" disabled={!singleJob} onClick={() => setDialog('plan')}>
+                    Plan
+                  </Button>
+                ) : (
+                  <Button size="sm" onClick={() => setDialog('assign')}>
+                    {view === 'assigned' ? 'Reassign' : 'Assign'}
+                  </Button>
+                )}
+                {view !== 'unplanned' && singleJob && (
+                  <DocumentButton kind="job-card" params={{ jobId: singleJob }} size="sm">
+                    Job card
+                  </DocumentButton>
+                )}
+                <Button variant="ghost" size="sm" onClick={clear}>
+                  Clear
                 </Button>
-              ) : (
-                <Button size="sm" onClick={() => setDialog('assign')}>
-                  {view === 'assigned' ? 'Reassign' : 'Assign'}
-                </Button>
-              )}
-              {view !== 'unplanned' && singleJob && (
-                <DocumentButton kind="job-card" params={{ jobId: singleJob }} size="sm">
-                  Job card
-                </DocumentButton>
-              )}
-              <Button variant="ghost" size="sm" onClick={clear}>
-                Clear
-              </Button>
-              {view === 'unplanned' && !singleJob && <span className="text-[13px] text-gray-700">Plan samples from one job at a time.</span>}
-            </>
-          }
-          emptyTitle={view === 'unplanned' ? 'No tests waiting to be planned' : view === 'unassigned' ? 'No planned tests waiting for a technician' : 'No tests are assigned'}
-          emptyHint={view === 'unplanned' && jobFilter && canEdit ? 'A sample booked without requested tests can still be planned with Plan samples.' : undefined}
-        />
-      </TabsContent>
+                {view === 'unplanned' && !singleJob && <span className="text-[13px] text-gray-700">Plan samples from one job at a time.</span>}
+              </>
+            }
+            emptyTitle={view === 'unplanned' ? 'No tests waiting to be planned' : view === 'unassigned' ? 'No planned tests waiting for a technician' : 'No tests are assigned'}
+            emptyHint={view === 'unplanned' && jobFilter && canEdit ? 'A sample booked without requested tests can still be planned with Plan samples.' : undefined}
+          />
+        </TabsContent>
       </Tabs>
-      {dialog === 'plan' && singleJob && <PlanDialog open jobId={singleJob} sampleIds={[...new Set(rows.map((r) => r.sampleId))]} testIds={[...new Set(rows.map((r) => r.testId))]} onOpenChange={(o) => !o && setDialog(null)} onPlanned={() => afterChange(singleJob)} />}
+      {dialog === 'plan' && singleJob && (
+        <PlanDialog
+          open
+          jobId={singleJob}
+          sampleIds={[...new Set(rows.map((r) => r.sampleId))]}
+          testIds={[...new Set(rows.map((r) => r.testId))]}
+          onOpenChange={(o) => !o && setDialog(null)}
+          onPlanned={() => afterChange(singleJob)}
+        />
+      )}
       {dialog === 'plan-job' && jobFilter && <PlanDialog open jobId={jobFilter} testIds={[]} onOpenChange={(o) => !o && setDialog(null)} onPlanned={() => afterChange(jobFilter)} />}
       <CancelDialog target={cancelling} onClose={() => setCancelling(null)} onCancelled={clear} />
       <AssignDialog rows={rows} reassign={view === 'assigned'} open={dialog === 'assign'} onOpenChange={(o) => setDialog(o ? 'assign' : null)} onAssigned={() => afterChange(singleJob)} />

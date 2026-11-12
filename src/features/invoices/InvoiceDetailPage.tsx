@@ -76,7 +76,8 @@ function RateDialog({ invoice, line, onClose, onSaved }: { invoice: Invoice; lin
   }, [line?.id]);
   const e = form.formState.errors;
   const m = useMutation({
-    mutationFn: async (v: RateValues) => unwrap(await api.PATCH('/api/v1/invoices/{id}', { params: { path: { id: invoice.id } }, body: { version: invoice.version, lineRates: [{ lineId: line!.id, rate: v.rate, reason: v.reason }] } })),
+    mutationFn: async (v: RateValues) =>
+      unwrap(await api.PATCH('/api/v1/invoices/{id}', { params: { path: { id: invoice.id } }, body: { version: invoice.version, lineRates: [{ lineId: line!.id, rate: v.rate, reason: v.reason }] } })),
     onSuccess: (i) => {
       toast.success('Rate changed');
       onSaved(i);
@@ -153,7 +154,13 @@ function Lines({ invoice, canChangeRate, onChangeRate }: { invoice: Invoice; can
   );
 }
 
-const draftSchema = z.object({ discountPct: z.string().trim().regex(/^$|^\d+(\.\d{1,2})?$/, 'Enter a percentage, such as 5'), notes: z.string() });
+const draftSchema = z.object({
+  discountPct: z
+    .string()
+    .trim()
+    .regex(/^$|^\d+(\.\d{1,2})?$/, 'Enter a percentage, such as 5'),
+  notes: z.string(),
+});
 type DraftValues = z.infer<typeof draftSchema>;
 
 function DraftForm({ invoice, onSaved, onConflict }: { invoice: Invoice; onSaved: (i: Invoice) => void; onConflict: () => void }) {
@@ -164,7 +171,13 @@ function DraftForm({ invoice, onSaved, onConflict }: { invoice: Invoice; onSaved
   }, [invoice.version]);
   const e = form.formState.errors;
   const m = useMutation({
-    mutationFn: async (v: DraftValues) => unwrap(await api.PATCH('/api/v1/invoices/{id}', { params: { path: { id: invoice.id } }, body: { version: invoice.version, notes: v.notes.trim() || null, ...(v.discountPct ? { discountPct: v.discountPct } : {}) } })),
+    mutationFn: async (v: DraftValues) =>
+      unwrap(
+        await api.PATCH('/api/v1/invoices/{id}', {
+          params: { path: { id: invoice.id } },
+          body: { version: invoice.version, notes: v.notes.trim() || null, ...(v.discountPct ? { discountPct: v.discountPct } : {}) },
+        }),
+      ),
     onSuccess: (i) => {
       toast.success('Draft saved');
       onSaved(i);
@@ -202,7 +215,19 @@ function useContactEmail(customerId: string, enabled: boolean) {
   });
 }
 
-function IssueDialog({ invoice, open, onOpenChange, onSaved, onConflict }: { invoice: Invoice; open: boolean; onOpenChange: (o: boolean) => void; onSaved: (i: Invoice) => void; onConflict: () => void }) {
+function IssueDialog({
+  invoice,
+  open,
+  onOpenChange,
+  onSaved,
+  onConflict,
+}: {
+  invoice: Invoice;
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  onSaved: (i: Invoice) => void;
+  onConflict: () => void;
+}) {
   const form = useForm<IssueValues>({ resolver: zodResolver(issueSchema), defaultValues: { invoiceDate: '', emailTo: '', emailCc: '' } });
   const contact = useContactEmail(invoice.customerId, open);
   useEffect(() => {
@@ -211,7 +236,13 @@ function IssueDialog({ invoice, open, onOpenChange, onSaved, onConflict }: { inv
   }, [open, contact.data]);
   const e = form.formState.errors;
   const m = useMutation({
-    mutationFn: async (v: IssueValues) => unwrap(await api.POST('/api/v1/invoices/{id}/issue', { params: { path: { id: invoice.id } }, body: { version: invoice.version, ...(v.invoiceDate ? { invoiceDate: v.invoiceDate } : {}), ...(v.emailTo ? { emailTo: v.emailTo } : {}), ...(v.emailCc ? { emailCc: v.emailCc } : {}) } })),
+    mutationFn: async (v: IssueValues) =>
+      unwrap(
+        await api.POST('/api/v1/invoices/{id}/issue', {
+          params: { path: { id: invoice.id } },
+          body: { version: invoice.version, ...(v.invoiceDate ? { invoiceDate: v.invoiceDate } : {}), ...(v.emailTo ? { emailTo: v.emailTo } : {}), ...(v.emailCc ? { emailCc: v.emailCc } : {}) },
+        }),
+      ),
     onSuccess: (i) => {
       toast.success(`Invoice ${i.invoiceNo} issued`);
       onSaved(i);
@@ -300,7 +331,13 @@ function CreditNoteDialog({ invoice, open, onOpenChange, onSaved }: { invoice: I
   }, [open]);
   const e = form.formState.errors;
   const m = useMutation({
-    mutationFn: async (v: CreditValues) => unwrap(await api.POST('/api/v1/invoices/{id}/credit-notes', { params: { path: { id: invoice.id } }, body: { taxableAmount: v.taxableAmount, reason: v.reason, ...(v.issuedOn ? { issuedOn: v.issuedOn } : {}) } })),
+    mutationFn: async (v: CreditValues) =>
+      unwrap(
+        await api.POST('/api/v1/invoices/{id}/credit-notes', {
+          params: { path: { id: invoice.id } },
+          body: { taxableAmount: v.taxableAmount, reason: v.reason, ...(v.issuedOn ? { issuedOn: v.issuedOn } : {}) },
+        }),
+      ),
     onSuccess: (i) => {
       toast.success('Credit note raised');
       onSaved(i);
@@ -363,14 +400,23 @@ export default function InvoiceDetailPage() {
   const [tab, setTab] = useState('details');
   const [dialog, setDialog] = useState<'issue' | 'cancel' | 'email' | 'credit' | 'pay' | 'remind' | null>(null);
   const [rating, setRating] = useState<Line | null>(null);
-  const emails = useQuery({ queryKey: ['invoice-emails', id], enabled: tab === 'delivery', queryFn: async () => unwrap(await api.GET('/api/v1/invoices/{id}/emails', { params: { path: { id: id! } } })) });
-  const history = useQuery({ queryKey: ['invoice-history', id], enabled: tab === 'history', queryFn: async () => unwrap(await api.GET('/api/v1/invoices/{id}/history', { params: { path: { id: id! } } })) });
+  const emails = useQuery({
+    queryKey: ['invoice-emails', id],
+    enabled: tab === 'delivery',
+    queryFn: async () => unwrap(await api.GET('/api/v1/invoices/{id}/emails', { params: { path: { id: id! } } })),
+  });
+  const history = useQuery({
+    queryKey: ['invoice-history', id],
+    enabled: tab === 'history',
+    queryFn: async () => unwrap(await api.GET('/api/v1/invoices/{id}/history', { params: { path: { id: id! } } })),
+  });
   const saved = (i: Invoice) => {
     client.setQueryData(key, i);
     refreshBilling(client);
   };
   const cancel = useMutation({
-    mutationFn: async ({ version, reason }: { version: number; reason: string }) => unwrap(await api.POST('/api/v1/invoices/{id}/cancel', { params: { path: { id: id! } }, body: { version, reason } })),
+    mutationFn: async ({ version, reason }: { version: number; reason: string }) =>
+      unwrap(await api.POST('/api/v1/invoices/{id}/cancel', { params: { path: { id: id! } }, body: { version, reason } })),
     onSuccess: (i) => {
       toast.success('Invoice cancelled');
       setDialog(null);
@@ -403,7 +449,11 @@ export default function InvoiceDetailPage() {
         title={
           <span className="inline-flex flex-wrap items-center gap-2">
             {i.invoiceNo ?? (draft ? 'Draft invoice' : 'Invoice without a number')} <StatusBadge status={i.status} />
-            {i.overdue && <Badge tone="red">Overdue by {i.daysOverdue} {i.daysOverdue === 1 ? 'day' : 'days'}</Badge>}
+            {i.overdue && (
+              <Badge tone="red">
+                Overdue by {i.daysOverdue} {i.daysOverdue === 1 ? 'day' : 'days'}
+              </Badge>
+            )}
           </span>
         }
         description={
@@ -588,8 +638,16 @@ export default function InvoiceDetailPage() {
       <CreditNoteDialog invoice={i} open={dialog === 'credit'} onOpenChange={(o) => setDialog(o ? 'credit' : null)} onSaved={saved} />
       <RecordPaymentDialog open={dialog === 'pay'} onOpenChange={(o) => setDialog(o ? 'pay' : null)} invoice={i} />
       <ReminderDialog invoice={dialog === 'remind' ? i : null} onClose={() => setDialog(null)} />
-      <ReasonDialog open={dialog === 'cancel'} onOpenChange={(o) => setDialog(o ? 'cancel' : null)} title={`Cancel ${i.invoiceNo ?? 'this draft invoice'}`} description="This cannot be undone. An invoice with payments or credit notes must have them reversed first." confirmLabel="Cancel invoice" danger loading={cancel.isPending} onConfirm={(reason) => cancel.mutate({ version: i.version, reason })} />
+      <ReasonDialog
+        open={dialog === 'cancel'}
+        onOpenChange={(o) => setDialog(o ? 'cancel' : null)}
+        title={`Cancel ${i.invoiceNo ?? 'this draft invoice'}`}
+        description="This cannot be undone. An invoice with payments or credit notes must have them reversed first."
+        confirmLabel="Cancel invoice"
+        danger
+        loading={cancel.isPending}
+        onConfirm={(reason) => cancel.mutate({ version: i.version, reason })}
+      />
     </>
   );
 }
-

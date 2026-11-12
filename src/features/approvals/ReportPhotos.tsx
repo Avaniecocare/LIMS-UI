@@ -44,8 +44,14 @@ export function ReportPhotos({ report, version, editable, onSaved, onConflict }:
   const client = useQueryClient();
   const sampleKey = ['files', 'Sample', report.sampleId, 'sample-image'];
   const reportKey = ['files', 'Report', report.id, 'report-photo'];
-  const sampleFiles = useQuery({ queryKey: sampleKey, queryFn: async () => unwrap(await api.GET('/api/v1/files', { params: { query: { entity: 'Sample', entityId: report.sampleId, category: 'sample-image' } } })) });
-  const reportFiles = useQuery({ queryKey: reportKey, queryFn: async () => unwrap(await api.GET('/api/v1/files', { params: { query: { entity: 'Report', entityId: report.id, category: 'report-photo' } } })) });
+  const sampleFiles = useQuery({
+    queryKey: sampleKey,
+    queryFn: async () => unwrap(await api.GET('/api/v1/files', { params: { query: { entity: 'Sample', entityId: report.sampleId, category: 'sample-image' } } })),
+  });
+  const reportFiles = useQuery({
+    queryKey: reportKey,
+    queryFn: async () => unwrap(await api.GET('/api/v1/files', { params: { query: { entity: 'Report', entityId: report.id, category: 'report-photo' } } })),
+  });
   const files = useMemo(() => [...(sampleFiles.data ?? []), ...(reportFiles.data ?? [])].filter((f) => f.mimeType.startsWith('image/')), [sampleFiles.data, reportFiles.data]);
   const fromBooking = useMemo(() => new Set((sampleFiles.data ?? []).map((f) => f.id)), [sampleFiles.data]);
 
@@ -163,7 +169,11 @@ export function ReportPhotos({ report, version, editable, onSaved, onConflict }:
       <div className="space-y-3 p-4">
         {loading && <Spinner label="Loading photos" />}
         {error && <ErrorState error={error} onRetry={() => void Promise.all([sampleFiles.refetch(), reportFiles.refetch()])} />}
-        {!loading && !error && shown.length === 0 && <EmptyState title={editable ? 'No photos of this sample yet' : 'No photos on this report'}>{editable && <p className="mt-1 text-[13px] text-gray-600">Add photos from this computer or take them with the camera.</p>}</EmptyState>}
+        {!loading && !error && shown.length === 0 && (
+          <EmptyState title={editable ? 'No photos of this sample yet' : 'No photos on this report'}>
+            {editable && <p className="mt-1 text-[13px] text-gray-600">Add photos from this computer or take them with the camera.</p>}
+          </EmptyState>
+        )}
         <ul className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2 xl:grid-cols-3" aria-label="Sample photos">
           <Thumbs ids={shown.map((r) => r.fileId)}>
             {(urls) =>
@@ -184,11 +194,23 @@ export function ReportPhotos({ report, version, editable, onSaved, onConflict }:
                     </div>
                     {editable ? (
                       <>
-                        <Checkbox id={`photo-${r.fileId}`} label="Print on report" checked={r.selected} disabled={!r.selected && selectedCount >= MAX_PHOTOS} onCheckedChange={(v) => change(r.fileId, { selected: v === true })} />
+                        <Checkbox
+                          id={`photo-${r.fileId}`}
+                          label="Print on report"
+                          checked={r.selected}
+                          disabled={!r.selected && selectedCount >= MAX_PHOTOS}
+                          onCheckedChange={(v) => change(r.fileId, { selected: v === true })}
+                        />
                         {r.selected && (
                           <>
                             <Field label="Caption" htmlFor={`cap-${r.fileId}`}>
-                              <Input id={`cap-${r.fileId}`} maxLength={200} placeholder="For example: as received, fracture face" value={r.caption} onChange={(e) => change(r.fileId, { caption: e.target.value })} />
+                              <Input
+                                id={`cap-${r.fileId}`}
+                                maxLength={200}
+                                placeholder="For example: as received, fracture face"
+                                value={r.caption}
+                                onChange={(e) => change(r.fileId, { caption: e.target.value })}
+                              />
                             </Field>
                             <div className="flex items-end gap-2">
                               <Field label="Print size" htmlFor={`size-${r.fileId}`} className="flex-1">

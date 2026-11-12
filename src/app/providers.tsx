@@ -50,7 +50,15 @@ export function focusColor(hex: string, against = '#ffffff', min = 3): string {
   const rgb = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
   for (let k = 0; k <= 20; k++) {
     const f = 1 - k / 20;
-    const c = '#' + rgb.map((v) => Math.round(v * f).toString(16).padStart(2, '0')).join('');
+    const c =
+      '#' +
+      rgb
+        .map((v) =>
+          Math.round(v * f)
+            .toString(16)
+            .padStart(2, '0'),
+        )
+        .join('');
     if (contrastRatio(c, against) >= min) return c;
   }
   return DARK_TEXT;
@@ -62,7 +70,15 @@ export function lightenToContrast(hex: string, against: string, min: number): st
   const rgb = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
   for (let k = 0; k <= 20; k++) {
     const f = k / 20;
-    const c = '#' + rgb.map((v) => Math.round(v + (255 - v) * f).toString(16).padStart(2, '0')).join('');
+    const c =
+      '#' +
+      rgb
+        .map((v) =>
+          Math.round(v + (255 - v) * f)
+            .toString(16)
+            .padStart(2, '0'),
+        )
+        .join('');
     if (contrastRatio(c, against) >= min) return c;
   }
   return '#ffffff';
@@ -75,7 +91,16 @@ const DARK_NAV = '#11151b';
 /** `color-mix(in srgb, hex share, white)` as a #rrggbb colour, matching the body background in index.css. */
 function mixWithWhite(hex: string, share: number): string {
   const n = parseInt(hex.slice(1), 16);
-  return '#' + [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => Math.round(v * share + 255 * (1 - share)).toString(16).padStart(2, '0')).join('');
+  return (
+    '#' +
+    [(n >> 16) & 255, (n >> 8) & 255, n & 255]
+      .map((v) =>
+        Math.round(v * share + 255 * (1 - share))
+          .toString(16)
+          .padStart(2, '0'),
+      )
+      .join('')
+  );
 }
 
 export function applyBranding(b: Branding) {

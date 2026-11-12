@@ -58,7 +58,16 @@ function ReadyTab() {
   });
   const columns = useMemo<Col<Ready>[]>(
     () => [
-      { accessorKey: 'jobNo', id: 'jobNo', header: 'Job', cell: ({ row }) => <Link to={`/samples/jobs/${row.original.jobId}`} className="underline" onClick={(e) => e.stopPropagation()}>{row.original.jobNo}</Link> },
+      {
+        accessorKey: 'jobNo',
+        id: 'jobNo',
+        header: 'Job',
+        cell: ({ row }) => (
+          <Link to={`/samples/jobs/${row.original.jobId}`} className="underline" onClick={(e) => e.stopPropagation()}>
+            {row.original.jobNo}
+          </Link>
+        ),
+      },
       { accessorKey: 'customerName', id: 'customerName', header: 'Customer' },
       { id: 'reports', header: 'Reports', cell: ({ row }) => row.original.reportNos.join(', ') || '—' },
       { accessorKey: 'testCount', id: 'testCount', header: 'Tests' },
@@ -85,8 +94,8 @@ function ReadyTab() {
       <div className="flex flex-wrap items-center gap-2">
         <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search job or customer" label="Search jobs ready to invoice" />
         <MobileFilters filters={list.filters} onClear={list.clearFilters}>
-        <CustomerFilter value={list.filters.customerId ?? ''} onChange={(v) => list.setFilter('customerId', v)} />
-        <SavedFilters screen="invoices-ready" current={list.allParams} onApply={list.applyFilters} />
+          <CustomerFilter value={list.filters.customerId ?? ''} onChange={(v) => list.setFilter('customerId', v)} />
+          <SavedFilters screen="invoices-ready" current={list.allParams} onApply={list.applyFilters} />
         </MobileFilters>
       </div>
       {canEdit && <p className="text-[13px] text-gray-700">Select one job, or several for the same customer, to create a draft invoice.</p>}
@@ -129,7 +138,15 @@ function ReadyTab() {
         }
         emptyTitle="No jobs are ready to invoice"
       />
-      <ConfirmDialog open={confirm} onOpenChange={setConfirm} title="Create a draft invoice?" description={chosen[0] && `For ${chosen[0].customerName}, from ${chosen.map((j) => j.jobNo).join(', ')}. Nothing goes to the customer until it is issued.`} confirmLabel="Create draft" loading={create.isPending} onConfirm={() => create.mutate()} />
+      <ConfirmDialog
+        open={confirm}
+        onOpenChange={setConfirm}
+        title="Create a draft invoice?"
+        description={chosen[0] && `For ${chosen[0].customerName}, from ${chosen.map((j) => j.jobNo).join(', ')}. Nothing goes to the customer until it is issued.`}
+        confirmLabel="Create draft"
+        loading={create.isPending}
+        onConfirm={() => create.mutate()}
+      />
     </div>
   );
 }
@@ -141,7 +158,12 @@ function AllTab() {
   const q = useQuery({ queryKey: ['invoices', query], queryFn: async () => unwrap(await api.GET('/api/v1/invoices', { params: { query } })) });
   const columns = useMemo<Col<InvoiceSummary>[]>(
     () => [
-      { id: 'invoiceNo', header: 'Invoice', enableSorting: true, cell: ({ row: { original: i } }) => i.invoiceNo ?? <span className="text-gray-700">{i.status === 'DRAFT' ? 'Draft' : 'No number'}</span> },
+      {
+        id: 'invoiceNo',
+        header: 'Invoice',
+        enableSorting: true,
+        cell: ({ row: { original: i } }) => i.invoiceNo ?? <span className="text-gray-700">{i.status === 'DRAFT' ? 'Draft' : 'No number'}</span>,
+      },
       { accessorKey: 'customerName', id: 'customerName', header: 'Customer' },
       {
         id: 'status',
@@ -166,20 +188,35 @@ function AllTab() {
       <div className="flex flex-wrap items-center gap-2">
         <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search invoice or customer" label="Search invoices" />
         <MobileFilters filters={list.filters} onClear={list.clearFilters}>
-        <Select aria-label="Status filter" className="w-40" value={list.filters.status ?? ''} onChange={(e) => list.setFilter('status', e.target.value || null)}>
-          <option value="">All statuses</option>
-          {['DRAFT', 'ISSUED', 'PARTIALLY_PAID', 'PAID', 'CANCELLED'].map((s) => (
-            <option key={s} value={s}>
-              {humanize(s)}
-            </option>
-          ))}
-        </Select>
-        <CustomerFilter value={list.filters.customerId ?? ''} onChange={(v) => list.setFilter('customerId', v)} />
-        <DateRangeFilter label="Invoice date" from={list.filters.from ?? ''} to={list.filters.to ?? ''} onChange={list.setFilter} />
-        <SavedFilters screen="invoices" current={list.allParams} onApply={list.applyFilters} />
+          <Select aria-label="Status filter" className="w-40" value={list.filters.status ?? ''} onChange={(e) => list.setFilter('status', e.target.value || null)}>
+            <option value="">All statuses</option>
+            {['DRAFT', 'ISSUED', 'PARTIALLY_PAID', 'PAID', 'CANCELLED'].map((s) => (
+              <option key={s} value={s}>
+                {humanize(s)}
+              </option>
+            ))}
+          </Select>
+          <CustomerFilter value={list.filters.customerId ?? ''} onChange={(v) => list.setFilter('customerId', v)} />
+          <DateRangeFilter label="Invoice date" from={list.filters.from ?? ''} to={list.filters.to ?? ''} onChange={list.setFilter} />
+          <SavedFilters screen="invoices" current={list.allParams} onApply={list.applyFilters} />
         </MobileFilters>
       </div>
-      <DataTable ariaLabel="Invoices" columns={columns} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} sort={list.sort} onSortChange={list.setSort} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} onRowClick={(r) => navigate(`/invoices/${r.id}`)} getRowId={(r) => r.id} emptyTitle="No invoices found" />
+      <DataTable
+        ariaLabel="Invoices"
+        columns={columns}
+        rows={q.data?.data}
+        meta={q.data?.meta}
+        loading={q.isLoading}
+        error={q.error}
+        onRetry={q.refetch}
+        sort={list.sort}
+        onSortChange={list.setSort}
+        onPageChange={list.setPage}
+        onPageSizeChange={list.setPageSize}
+        onRowClick={(r) => navigate(`/invoices/${r.id}`)}
+        getRowId={(r) => r.id}
+        emptyTitle="No invoices found"
+      />
     </div>
   );
 }
@@ -195,7 +232,8 @@ function PaymentsTab() {
   const [reversing, setReversing] = useState<Payment | null>(null);
   const canEdit = can('payments.edit');
   const reverse = useMutation({
-    mutationFn: async ({ payment, reason }: { payment: Payment; reason: string }) => unwrap(await api.POST('/api/v1/payments/{id}/reverse', { params: { path: { id: payment.id } }, body: { reason } })),
+    mutationFn: async ({ payment, reason }: { payment: Payment; reason: string }) =>
+      unwrap(await api.POST('/api/v1/payments/{id}/reverse', { params: { path: { id: payment.id } }, body: { reason } })),
     onSuccess: (p) => {
       toast.success(`Payment ${p.paymentNo} reversed`);
       setReversing(null);
@@ -268,13 +306,13 @@ function PaymentsTab() {
       <div className="flex flex-wrap items-center gap-2">
         <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search receipt, reference or customer" label="Search payments" />
         <MobileFilters filters={list.filters} onClear={list.clearFilters}>
-        <CustomerFilter value={list.filters.customerId ?? ''} onChange={(v) => list.setFilter('customerId', v)} />
-        <Select aria-label="On account filter" className="w-44" value={list.filters.unapplied ?? ''} onChange={(e) => list.setFilter('unapplied', e.target.value || null)}>
-          <option value="">All payments</option>
-          <option value="true">With money on account</option>
-        </Select>
-        <DateRangeFilter label="Payment date" from={list.filters.from ?? ''} to={list.filters.to ?? ''} onChange={list.setFilter} />
-        <SavedFilters screen="payments" current={list.allParams} onApply={list.applyFilters} />
+          <CustomerFilter value={list.filters.customerId ?? ''} onChange={(v) => list.setFilter('customerId', v)} />
+          <Select aria-label="On account filter" className="w-44" value={list.filters.unapplied ?? ''} onChange={(e) => list.setFilter('unapplied', e.target.value || null)}>
+            <option value="">All payments</option>
+            <option value="true">With money on account</option>
+          </Select>
+          <DateRangeFilter label="Payment date" from={list.filters.from ?? ''} to={list.filters.to ?? ''} onChange={list.setFilter} />
+          <SavedFilters screen="payments" current={list.allParams} onApply={list.applyFilters} />
         </MobileFilters>
         {canEdit && (
           <Button className="ml-auto" onClick={() => setRecording(true)}>
@@ -283,10 +321,34 @@ function PaymentsTab() {
           </Button>
         )}
       </div>
-      <DataTable ariaLabel="Payments" columns={columns} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} sort={list.sort} onSortChange={list.setSort} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} getRowId={(r) => r.id} renderExpanded={() => null} emptyTitle="No payments found" />
+      <DataTable
+        ariaLabel="Payments"
+        columns={columns}
+        rows={q.data?.data}
+        meta={q.data?.meta}
+        loading={q.isLoading}
+        error={q.error}
+        onRetry={q.refetch}
+        sort={list.sort}
+        onSortChange={list.setSort}
+        onPageChange={list.setPage}
+        onPageSizeChange={list.setPageSize}
+        getRowId={(r) => r.id}
+        renderExpanded={() => null}
+        emptyTitle="No payments found"
+      />
       <RecordPaymentDialog open={recording} onOpenChange={setRecording} />
       <ApplyAdvanceDialog payment={applying} onClose={() => setApplying(null)} />
-      <ReasonDialog open={!!reversing} onOpenChange={(o) => !o && setReversing(null)} title={`Reverse ${reversing?.paymentNo ?? ''}`} description="The record stays, and its invoices go back to their earlier balance." confirmLabel="Reverse payment" danger loading={reverse.isPending} onConfirm={(reason) => reversing && reverse.mutate({ payment: reversing, reason })} />
+      <ReasonDialog
+        open={!!reversing}
+        onOpenChange={(o) => !o && setReversing(null)}
+        title={`Reverse ${reversing?.paymentNo ?? ''}`}
+        description="The record stays, and its invoices go back to their earlier balance."
+        confirmLabel="Reverse payment"
+        danger
+        loading={reverse.isPending}
+        onConfirm={(reason) => reversing && reverse.mutate({ payment: reversing, reason })}
+      />
     </div>
   );
 }
@@ -312,9 +374,9 @@ export default function InvoicesPage() {
           ))}
         </TabsList>
         <TabsContent value={tab}>
-      {tab === 'ready' && <ReadyTab key="ready" />}
-      {tab === 'all' && <AllTab key="all" />}
-      {tab === 'payments' && <PaymentsTab key="payments" />}
+          {tab === 'ready' && <ReadyTab key="ready" />}
+          {tab === 'all' && <AllTab key="all" />}
+          {tab === 'payments' && <PaymentsTab key="payments" />}
         </TabsContent>
       </Tabs>
     </>

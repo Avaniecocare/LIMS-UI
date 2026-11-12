@@ -35,7 +35,8 @@ test('quality: record a calibration, authorise an analyst, and take a non-confor
   // Competency: authorise the technician for Density (withdrawing any earlier authorisation, so the test can run again).
   const techs = await admin.get('/quality/people');
   const tushar = techs.find((p: { name: string }) => p.name === 'Tushar Technician');
-  for (const a of await admin.get(`/quality/authorisations?userId=${tushar.id}`)) if (a.state === 'ACTIVE' && a.testCode === 'DEN') await admin.post(`/quality/authorisations/${a.id}/withdraw`, { reason: 'Test set-up' });
+  for (const a of await admin.get(`/quality/authorisations?userId=${tushar.id}`))
+    if (a.state === 'ACTIVE' && a.testCode === 'DEN') await admin.post(`/quality/authorisations/${a.id}/withdraw`, { reason: 'Test set-up' });
   await page.getByRole('tab', { name: 'Competency' }).click();
   await page.getByRole('button', { name: 'Authorise' }).click();
   const auth = page.getByRole('dialog', { name: 'Authorise an analyst for a test' });
@@ -44,7 +45,12 @@ test('quality: record a calibration, authorise an analyst, and take a non-confor
   await auth.getByLabel('Evidence').fill('Five supervised trials within repeatability limits');
   await auth.getByRole('button', { name: 'Authorise' }).click();
   await expect(page.getByText('Authorised', { exact: true })).toBeVisible();
-  await expect(page.getByRole('table', { name: 'Authorisations' }).getByRole('row', { name: /Tushar Technician.*Density.*Active/ }).first()).toBeVisible();
+  await expect(
+    page
+      .getByRole('table', { name: 'Authorisations' })
+      .getByRole('row', { name: /Tushar Technician.*Density.*Active/ })
+      .first(),
+  ).toBeVisible();
 
   // Non-conformance: raised, worked through the steps, verified by someone other than the owner.
   const ncTitle = `Balance used past its calibration date ${unique('NC')}`;
@@ -58,7 +64,10 @@ test('quality: record a calibration, authorise an analyst, and take a non-confor
   await raise.getByLabel('Owner').selectOption({ label: 'Asha Admin' });
   await raise.getByRole('button', { name: 'Raise' }).click();
   await expect(page.getByText(/\/NC\/.* raised/)).toBeVisible();
-  await page.getByRole('table', { name: 'Non-conformances' }).getByRole('row', { name: new RegExp(ncTitle) }).click();
+  await page
+    .getByRole('table', { name: 'Non-conformances' })
+    .getByRole('row', { name: new RegExp(ncTitle) })
+    .click();
   const nc = page.getByRole('dialog', { name: new RegExp(ncTitle) });
   await nc.getByRole('button', { name: 'Start action' }).click();
   await expect(page.getByText('Record the correction or the root cause first')).toBeVisible();
@@ -86,7 +95,10 @@ test('privacy: an erasure request is logged, the person found, erased from conta
   await log.getByLabel('What they asked').fill('I have left the company; please delete my details.');
   await log.getByRole('button', { name: 'Log request' }).click();
   await expect(page.getByText(/Logged. Answer by/)).toBeVisible();
-  await page.getByRole('table', { name: 'Privacy requests' }).getByRole('row', { name: new RegExp(email) }).click();
+  await page
+    .getByRole('table', { name: 'Privacy requests' })
+    .getByRole('row', { name: new RegExp(email) })
+    .click();
   const req = page.getByRole('dialog', { name: /Erasure: Bina Buyer/ });
   await expect(req.getByText('Customer contact', { exact: true })).toBeVisible();
   await expect(req.getByText('Can be erased')).toBeVisible();

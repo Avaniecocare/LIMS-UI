@@ -38,33 +38,45 @@ export function AccessRequestsTab() {
     onError: toastError,
   });
   const cols: Col<AccessRequest>[] = [
-    { id: 'who', header: 'Person', cell: ({ row }) => (
-      <div>
-        <span className="font-medium">{row.original.userName}</span>
-        <span className="block text-xs text-gray-600">{row.original.currentRoles.join(', ') || 'No roles'}</span>
-      </div>
-    ) },
+    {
+      id: 'who',
+      header: 'Person',
+      cell: ({ row }) => (
+        <div>
+          <span className="font-medium">{row.original.userName}</span>
+          <span className="block text-xs text-gray-600">{row.original.currentRoles.join(', ') || 'No roles'}</span>
+        </div>
+      ),
+    },
     { id: 'page', header: 'Asked for', cell: ({ row }) => <code className="text-[13px]">{row.original.page}</code> },
     { id: 'reason', header: 'Reason', cell: ({ row }) => <span className="text-[13px]">{row.original.reason}</span> },
     { id: 'when', header: 'Asked', cell: ({ row }) => formatDateTime(row.original.createdAt) },
-    { id: 'status', header: 'Status', cell: ({ row }) => (
-      <div>
-        <StatusBadge status={row.original.status} />
-        {row.original.grantedRoleName && <span className="block text-xs text-gray-600">Given {row.original.grantedRoleName}</span>}
-        {row.original.decisionNote && <span className="block text-xs text-gray-600">{row.original.decisionNote}</span>}
-      </div>
-    ) },
-    { id: 'actions', header: '', cell: ({ row }) =>
-      row.original.status === 'PENDING' ? (
-        <div className="flex justify-end gap-2">
-          <Button size="sm" onClick={() => setApproving(row.original)}>
-            Approve
-          </Button>
-          <Button size="sm" variant="secondary" onClick={() => setDenying(row.original)}>
-            Decline
-          </Button>
+    {
+      id: 'status',
+      header: 'Status',
+      cell: ({ row }) => (
+        <div>
+          <StatusBadge status={row.original.status} />
+          {row.original.grantedRoleName && <span className="block text-xs text-gray-600">Given {row.original.grantedRoleName}</span>}
+          {row.original.decisionNote && <span className="block text-xs text-gray-600">{row.original.decisionNote}</span>}
         </div>
-      ) : null },
+      ),
+    },
+    {
+      id: 'actions',
+      header: '',
+      cell: ({ row }) =>
+        row.original.status === 'PENDING' ? (
+          <div className="flex justify-end gap-2">
+            <Button size="sm" onClick={() => setApproving(row.original)}>
+              Approve
+            </Button>
+            <Button size="sm" variant="secondary" onClick={() => setDenying(row.original)}>
+              Decline
+            </Button>
+          </div>
+        ) : null,
+    },
   ];
   return (
     <div className="space-y-3">
@@ -75,9 +87,28 @@ export function AccessRequestsTab() {
           <TabsTrigger value="DENIED">Declined</TabsTrigger>
         </TabsList>
       </Tabs>
-      <DataTable ariaLabel="Access requests" columns={cols} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} onPageChange={(p) => setPage((x) => ({ ...x, page: p }))} onPageSizeChange={(s) => setPage({ page: 1, pageSize: s })} emptyTitle={status === 'PENDING' ? 'Nobody is waiting for access' : 'Nothing here yet'} />
+      <DataTable
+        ariaLabel="Access requests"
+        columns={cols}
+        rows={q.data?.data}
+        meta={q.data?.meta}
+        loading={q.isLoading}
+        error={q.error}
+        onRetry={q.refetch}
+        onPageChange={(p) => setPage((x) => ({ ...x, page: p }))}
+        onPageSizeChange={(s) => setPage({ page: 1, pageSize: s })}
+        emptyTitle={status === 'PENDING' ? 'Nobody is waiting for access' : 'Nothing here yet'}
+      />
       {approving && <ApproveDialog request={approving} onDone={done} onClose={() => setApproving(null)} />}
-      <ReasonDialog open={!!denying} onOpenChange={(o) => !o && setDenying(null)} title={`Decline ${denying?.userName ?? ''}'s request?`} description="Your reason is sent to them." confirmLabel="Decline" loading={deny.isPending} onConfirm={(note) => denying && deny.mutate({ id: denying.id, note })} />
+      <ReasonDialog
+        open={!!denying}
+        onOpenChange={(o) => !o && setDenying(null)}
+        title={`Decline ${denying?.userName ?? ''}'s request?`}
+        description="Your reason is sent to them."
+        confirmLabel="Decline"
+        loading={deny.isPending}
+        onConfirm={(note) => denying && deny.mutate({ id: denying.id, note })}
+      />
     </div>
   );
 }
@@ -145,12 +176,16 @@ export function AccessReviewTab() {
     </div>
   );
   const cols: Col<ReviewUser>[] = [
-    { id: 'name', header: 'Person', cell: ({ row }) => (
-      <div>
-        <span className="font-medium">{row.original.name}</span>
-        <span className="block text-xs text-gray-600">{row.original.email}</span>
-      </div>
-    ) },
+    {
+      id: 'name',
+      header: 'Person',
+      cell: ({ row }) => (
+        <div>
+          <span className="font-medium">{row.original.name}</span>
+          <span className="block text-xs text-gray-600">{row.original.email}</span>
+        </div>
+      ),
+    },
     { id: 'roles', header: 'Roles', cell: ({ row }) => row.original.roles.join(', ') || '—' },
     { id: 'perms', header: 'Permissions', cell: ({ row }) => row.original.permissionCount },
     { id: 'last', header: 'Last sign-in', cell: ({ row }) => (row.original.lastLoginAt ? formatDate(row.original.lastLoginAt) : 'Never') },

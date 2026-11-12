@@ -34,7 +34,12 @@ function ResultsTab() {
   // The tab lives in the URL with the filters; list.query already leaves it out of API calls.
   const query = list.query;
   const q = useQuery({ queryKey: ['test-approvals', query], queryFn: async () => unwrap(await api.GET('/api/v1/tests/approvals', { params: { query } })) });
-  const departments = useQuery({ queryKey: ['department-options'], enabled: can('masters.view'), staleTime: 60_000, queryFn: async () => unwrap(await api.GET('/api/v1/masters/departments', { params: { query: { pageSize: 200 } } })).data });
+  const departments = useQuery({
+    queryKey: ['department-options'],
+    enabled: can('masters.view'),
+    staleTime: 60_000,
+    queryFn: async () => unwrap(await api.GET('/api/v1/masters/departments', { params: { query: { pageSize: 200 } } })).data,
+  });
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [selected, setSelected] = useState<Record<string, Item>>({});
   const [approving, setApproving] = useState<Item | null>(null);
@@ -63,7 +68,8 @@ function ResultsTab() {
     },
   });
   const reject = useMutation({
-    mutationFn: async ({ item, reason }: { item: Item; reason: string }) => unwrap(await api.POST('/api/v1/tests/{id}/reject', { params: { path: { id: item.id } }, body: { version: item.version, reason } })),
+    mutationFn: async ({ item, reason }: { item: Item; reason: string }) =>
+      unwrap(await api.POST('/api/v1/tests/{id}/reject', { params: { path: { id: item.id } }, body: { version: item.version, reason } })),
     onSuccess: (_t, { item }) => {
       toast.success(`${item.testCode} on ${item.sampleNo} sent back`);
       setRejecting(null);
@@ -78,7 +84,10 @@ function ResultsTab() {
   const bulk = useMutation({
     mutationFn: async () => unwrap(await api.POST('/api/v1/tests/approvals/bulk', { body: { items: chosen.map((i) => ({ id: i.id, version: i.version })) } })),
     onSuccess: (res) => {
-      setBulkResult({ approved: res.approved.length, failed: res.failed.map((f) => ({ label: selected[f.id] ? `${selected[f.id].testCode} on ${selected[f.id].sampleNo}` : f.id, message: f.message })) });
+      setBulkResult({
+        approved: res.approved.length,
+        failed: res.failed.map((f) => ({ label: selected[f.id] ? `${selected[f.id].testCode} on ${selected[f.id].sampleNo}` : f.id, message: f.message })),
+      });
       setBulkConfirm(false);
       setSelected({});
       refresh();
@@ -95,7 +104,13 @@ function ResultsTab() {
         id: 'expand',
         header: () => <span className="sr-only">Details</span>,
         cell: ({ row: { original: i } }) => (
-          <Button variant="ghost" size="icon" aria-expanded={!!expanded[i.id]} aria-label={`${expanded[i.id] ? 'Hide' : 'Show'} results of ${i.testCode} on ${i.sampleNo}`} onClick={() => setExpanded((e) => ({ ...e, [i.id]: !e[i.id] }))}>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-expanded={!!expanded[i.id]}
+            aria-label={`${expanded[i.id] ? 'Hide' : 'Show'} results of ${i.testCode} on ${i.sampleNo}`}
+            onClick={() => setExpanded((e) => ({ ...e, [i.id]: !e[i.id] }))}
+          >
             {expanded[i.id] ? <ChevronDown aria-hidden /> : <ChevronRight aria-hidden />}
           </Button>
         ),
@@ -161,17 +176,17 @@ function ResultsTab() {
       <div className="flex flex-wrap items-center gap-2">
         <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search test, sample or job" label="Search results to approve" />
         <MobileFilters filters={list.filters} onClear={list.clearFilters}>
-        {departments.data && (
-          <Select aria-label="Department filter" className="w-44" value={list.filters.departmentId ?? ''} onChange={(e) => list.setFilter('departmentId', e.target.value || null)}>
-            <option value="">All departments</option>
-            {departments.data.map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.name}
-              </option>
-            ))}
-          </Select>
-        )}
-        <SavedFilters screen="approvals-results" current={list.allParams} onApply={list.applyFilters} />
+          {departments.data && (
+            <Select aria-label="Department filter" className="w-44" value={list.filters.departmentId ?? ''} onChange={(e) => list.setFilter('departmentId', e.target.value || null)}>
+              <option value="">All departments</option>
+              {departments.data.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.name}
+                </option>
+              ))}
+            </Select>
+          )}
+          <SavedFilters screen="approvals-results" current={list.allParams} onApply={list.applyFilters} />
         </MobileFilters>
       </div>
       {bulkResult && (
@@ -242,14 +257,51 @@ function ResultsTab() {
         }
         emptyTitle="No results are waiting for approval"
       />
-      <ConfirmDialog open={!!approving} onOpenChange={(o) => !o && setApproving(null)} title="Approve these results?" description={approving && `${approving.testCode} on ${approving.sampleNo}. Approved results are locked.`} confirmLabel="Approve" loading={approve.isPending} onConfirm={() => approving && approve.mutate(approving)} />
-      <ConfirmDialog open={bulkConfirm} onOpenChange={setBulkConfirm} title={`Approve ${chosen.length} ${chosen.length === 1 ? 'test' : 'tests'}?`} description="Approved results are locked. Each test is approved on its own, so any that cannot be approved are listed afterwards." confirmLabel="Approve selected" loading={bulk.isPending} onConfirm={() => bulk.mutate()} />
-      <ReasonDialog open={!!rejecting} onOpenChange={(o) => !o && setRejecting(null)} title="Send these results back" description={rejecting && `${rejecting.testCode} on ${rejecting.sampleNo} goes back to ${rejecting.conductedByName ?? 'the analyst'}, who sees your reason.`} confirmLabel="Reject" danger loading={reject.isPending} onConfirm={(reason) => rejecting && reject.mutate({ item: rejecting, reason })} />
+      <ConfirmDialog
+        open={!!approving}
+        onOpenChange={(o) => !o && setApproving(null)}
+        title="Approve these results?"
+        description={approving && `${approving.testCode} on ${approving.sampleNo}. Approved results are locked.`}
+        confirmLabel="Approve"
+        loading={approve.isPending}
+        onConfirm={() => approving && approve.mutate(approving)}
+      />
+      <ConfirmDialog
+        open={bulkConfirm}
+        onOpenChange={setBulkConfirm}
+        title={`Approve ${chosen.length} ${chosen.length === 1 ? 'test' : 'tests'}?`}
+        description="Approved results are locked. Each test is approved on its own, so any that cannot be approved are listed afterwards."
+        confirmLabel="Approve selected"
+        loading={bulk.isPending}
+        onConfirm={() => bulk.mutate()}
+      />
+      <ReasonDialog
+        open={!!rejecting}
+        onOpenChange={(o) => !o && setRejecting(null)}
+        title="Send these results back"
+        description={rejecting && `${rejecting.testCode} on ${rejecting.sampleNo} goes back to ${rejecting.conductedByName ?? 'the analyst'}, who sees your reason.`}
+        confirmLabel="Reject"
+        danger
+        loading={reject.isPending}
+        onConfirm={(reason) => rejecting && reject.mutate({ item: rejecting, reason })}
+      />
     </div>
   );
 }
 
-function ReportsTable({ status, title, search, sort, onSortChange }: { status: ReportStatus; title?: string; search: string; sort: { id: string; desc: boolean } | null; onSortChange: (s: { id: string; desc: boolean } | null) => void }) {
+function ReportsTable({
+  status,
+  title,
+  search,
+  sort,
+  onSortChange,
+}: {
+  status: ReportStatus;
+  title?: string;
+  search: string;
+  sort: { id: string; desc: boolean } | null;
+  onSortChange: (s: { id: string; desc: boolean } | null) => void;
+}) {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
@@ -305,7 +357,7 @@ function ReportsTab({ statuses, screen }: { statuses: { status: ReportStatus; ti
       <div className="flex flex-wrap items-center gap-2">
         <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search report, sample or customer" label="Search reports" />
         <MobileFilters filters={list.filters} onClear={list.clearFilters}>
-        <SavedFilters screen={screen} current={list.allParams} onApply={list.applyFilters} />
+          <SavedFilters screen={screen} current={list.allParams} onApply={list.applyFilters} />
         </MobileFilters>
       </div>
       {statuses.map((s) => (
@@ -341,20 +393,20 @@ export default function ApprovalsPage() {
           ))}
         </TabsList>
         <TabsContent value={tab}>
-      {tab === 'results' && <ResultsTab />}
-      {tab === 'review' && (
-        <ReportsTab
-          key="review"
-          screen="approvals-review"
-          statuses={[
-            { status: 'IN_REVIEW', title: 'In review' },
-            { status: 'DRAFT', title: 'Draft, not yet submitted for review' },
-          ]}
-        />
-      )}
-      {tab === 'sign' && <ReportsTab key="sign" screen="approvals-sign" statuses={[{ status: 'PENDING_APPROVAL' }]} />}
-      {tab === 'issue' && <ReportsTab key="issue" screen="approvals-issue" statuses={[{ status: 'APPROVED' }]} />}
-      {tab === 'issued' && <ReportsTab key="issued" screen="approvals-issued" statuses={[{ status: 'ISSUED' }]} />}
+          {tab === 'results' && <ResultsTab />}
+          {tab === 'review' && (
+            <ReportsTab
+              key="review"
+              screen="approvals-review"
+              statuses={[
+                { status: 'IN_REVIEW', title: 'In review' },
+                { status: 'DRAFT', title: 'Draft, not yet submitted for review' },
+              ]}
+            />
+          )}
+          {tab === 'sign' && <ReportsTab key="sign" screen="approvals-sign" statuses={[{ status: 'PENDING_APPROVAL' }]} />}
+          {tab === 'issue' && <ReportsTab key="issue" screen="approvals-issue" statuses={[{ status: 'APPROVED' }]} />}
+          {tab === 'issued' && <ReportsTab key="issued" screen="approvals-issued" statuses={[{ status: 'ISSUED' }]} />}
         </TabsContent>
       </Tabs>
     </>

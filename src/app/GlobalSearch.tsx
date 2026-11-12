@@ -119,10 +119,19 @@ export function GlobalSearch({ onDone }: { onDone?: () => void } = {}) {
           }
         }}
       />
-      <kbd aria-hidden className="pointer-events-none absolute top-2 right-2 hidden rounded border border-gray-200 bg-gray-50 px-1.5 py-px font-sans text-[11px] text-gray-600 md:block peer-focus:hidden">
+      <kbd
+        aria-hidden
+        className="pointer-events-none absolute top-2 right-2 hidden rounded border border-gray-200 bg-gray-50 px-1.5 py-px font-sans text-[11px] text-gray-600 md:block peer-focus:hidden"
+      >
         {mac ? '⌘' : 'Ctrl'} K
       </kbd>
-      <div id={listId} role="listbox" aria-label="Search results" hidden={!showList} className="absolute top-10 left-0 z-30 max-h-96 w-full min-w-72 animate-pop-in overflow-y-auto rounded-md border border-gray-200 bg-surface-raised py-1 shadow-lg">
+      <div
+        id={listId}
+        role="listbox"
+        aria-label="Search results"
+        hidden={!showList}
+        className="absolute top-10 left-0 z-30 max-h-96 w-full min-w-72 animate-pop-in overflow-y-auto rounded-md border border-gray-200 bg-surface-raised py-1 shadow-lg"
+      >
         {showList &&
           items.map((r, i) => (
             <button

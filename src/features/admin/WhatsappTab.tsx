@@ -107,21 +107,32 @@ export function WhatsappTab() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => void navigator.clipboard.writeText(s.webhookUrl).then(() => toast.success('Callback URL copied'), () => toast.error('Could not copy. Select the address and copy it.'))}
+              onClick={() =>
+                void navigator.clipboard.writeText(s.webhookUrl).then(
+                  () => toast.success('Callback URL copied'),
+                  () => toast.error('Could not copy. Select the address and copy it.'),
+                )
+              }
             >
               <Copy aria-hidden />
               Copy
             </Button>
           </div>
           <p>
-            <span className="font-medium text-gray-900">Verify token</span>: the WHATSAPP_VERIFY_TOKEN set on your server. Then subscribe to the <code className="rounded bg-gray-100 px-1">messages</code> field.
+            <span className="font-medium text-gray-900">Verify token</span>: the WHATSAPP_VERIFY_TOKEN set on your server. Then subscribe to the{' '}
+            <code className="rounded bg-gray-100 px-1">messages</code> field.
           </p>
-          {!s.receipts && <p className="text-amber-900">Your server also needs WHATSAPP_APP_SECRET (from the app's Settings, Basic) and WHATSAPP_VERIFY_TOKEN. Until then messages still send, but stay at Sent.</p>}
+          {!s.receipts && (
+            <p className="text-amber-900">Your server also needs WHATSAPP_APP_SECRET (from the app's Settings, Basic) and WHATSAPP_VERIFY_TOKEN. Until then messages still send, but stay at Sent.</p>
+          )}
         </div>
       </Card>
 
       <Card>
-        <CardHeader title="Message templates" description="WhatsApp only lets a business start a conversation with a template it has approved. For each message, enter the template's exact name and language, then put the values in the same order as the {{1}}, {{2}}... in its approved wording." />
+        <CardHeader
+          title="Message templates"
+          description="WhatsApp only lets a business start a conversation with a template it has approved. For each message, enter the template's exact name and language, then put the values in the same order as the {{1}}, {{2}}... in its approved wording."
+        />
         <ul className="divide-y divide-gray-100">
           {s.templates.map((t) => {
             const d = draft[t.key];
@@ -146,7 +157,17 @@ export function WhatsappTab() {
                             <Button variant="ghost" size="icon" aria-label={`Move ${label(k)} down`} disabled={i === d.values.length - 1} onClick={() => setValues(t.key, swap(d.values, i, i + 1))}>
                               <ArrowDown aria-hidden />
                             </Button>
-                            <Button variant="ghost" size="icon" aria-label={`Remove ${label(k)}`} onClick={() => setValues(t.key, d.values.filter((v) => v !== k))}>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              aria-label={`Remove ${label(k)}`}
+                              onClick={() =>
+                                setValues(
+                                  t.key,
+                                  d.values.filter((v) => v !== k),
+                                )
+                              }
+                            >
                               <X aria-hidden />
                             </Button>
                           </span>
@@ -171,7 +192,13 @@ export function WhatsappTab() {
                     <Input id={`wa-name-${t.key}`} disabled={!canEdit} value={d.name} onChange={(e) => setDraft((x) => ({ ...x, [t.key]: { ...x[t.key], name: e.target.value.trim() } }))} />
                   </Field>
                   <Field label="Language" htmlFor={`wa-lang-${t.key}`}>
-                    <Input id={`wa-lang-${t.key}`} disabled={!canEdit} value={d.language} onChange={(e) => setDraft((x) => ({ ...x, [t.key]: { ...x[t.key], language: e.target.value.trim() } }))} placeholder="en" />
+                    <Input
+                      id={`wa-lang-${t.key}`}
+                      disabled={!canEdit}
+                      value={d.language}
+                      onChange={(e) => setDraft((x) => ({ ...x, [t.key]: { ...x[t.key], language: e.target.value.trim() } }))}
+                      placeholder="en"
+                    />
                   </Field>
                 </div>
               </li>

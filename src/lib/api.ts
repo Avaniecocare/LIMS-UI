@@ -63,7 +63,11 @@ const middleware: Middleware = {
   async onResponse({ response: first, request }) {
     let response = first;
     if (response.status === 403 && reauthPrompt && pending.has(request)) {
-      const code = await response.clone().json().then((b: { error?: { code?: string } }) => b.error?.code).catch(() => null);
+      const code = await response
+        .clone()
+        .json()
+        .then((b: { error?: { code?: string } }) => b.error?.code)
+        .catch(() => null);
       if (code === 'REAUTH_REQUIRED' && (await reauthPrompt())) {
         const again = pending.get(request)!();
         if (csrfToken) again.headers.set('X-CSRF-Token', csrfToken);
@@ -78,13 +82,7 @@ const middleware: Middleware = {
       // not JSON: fall through to the generic message
     }
     if (response.status === 401 && !request.url.includes('/auth/')) onUnauthenticated?.();
-    throw new ApiError(
-      response.status,
-      body.error?.code ?? 'ERROR',
-      body.error?.message ?? 'Something went wrong. Please try again.',
-      body.error?.fields ?? [],
-      body.error?.requestId ?? null,
-    );
+    throw new ApiError(response.status, body.error?.code ?? 'ERROR', body.error?.message ?? 'Something went wrong. Please try again.', body.error?.fields ?? [], body.error?.requestId ?? null);
   },
 };
 

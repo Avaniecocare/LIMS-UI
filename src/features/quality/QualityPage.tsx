@@ -106,7 +106,15 @@ function EquipmentTab() {
   const manage = can('quality.manage');
   const columns = useMemo<Col<Equipment>[]>(
     () => [
-      { id: 'code', header: 'Instrument', cell: ({ row }) => <span><span className="font-medium">{row.original.code}</span> {row.original.name}</span> },
+      {
+        id: 'code',
+        header: 'Instrument',
+        cell: ({ row }) => (
+          <span>
+            <span className="font-medium">{row.original.code}</span> {row.original.name}
+          </span>
+        ),
+      },
       { id: 'dept', header: 'Department', cell: ({ row }) => row.original.departmentName ?? '—' },
       { id: 'cal', header: 'Calibration due', cell: ({ row }) => <span className="whitespace-nowrap">{formatDate(row.original.calibrationDueAt)}</span> },
       { id: 'maint', header: 'Maintenance due', cell: ({ row }) => <span className="whitespace-nowrap">{formatDate(row.original.maintenanceDueAt)}</span> },
@@ -137,7 +145,17 @@ function EquipmentTab() {
   );
   return (
     <>
-      <DataTable ariaLabel="Equipment" columns={columns} rows={q.data} loading={q.isLoading} error={q.error} onRetry={q.refetch} getRowId={(r) => r.id} emptyTitle="No instruments yet" emptyHint="Add instruments in Masters, then schedule their calibration here." />
+      <DataTable
+        ariaLabel="Equipment"
+        columns={columns}
+        rows={q.data}
+        loading={q.isLoading}
+        error={q.error}
+        onRetry={q.refetch}
+        getRowId={(r) => r.id}
+        emptyTitle="No instruments yet"
+        emptyHint="Add instruments in Masters, then schedule their calibration here."
+      />
       {recording && <RecordEventDialog instrument={recording} onClose={() => setRecording(null)} />}
       {scheduling && <ScheduleDialog instrument={scheduling} onClose={() => setScheduling(null)} />}
       {history && <HistoryDialog instrument={history} onClose={() => setHistory(null)} />}
@@ -154,7 +172,15 @@ function RecordEventDialog({ instrument, onClose }: { instrument: Equipment; onC
       unwrap(
         await api.POST('/api/v1/quality/equipment/{id}/events', {
           params: { path: { id: instrument.id } },
-          body: { kind: v.kind as 'CALIBRATION', performedOn: v.performedOn, performedBy: v.performedBy, outcome: v.outcome as 'PASS', certificateNo: v.certificateNo || null, nextDueOn: v.nextDueOn || null, notes: v.notes || null },
+          body: {
+            kind: v.kind as 'CALIBRATION',
+            performedOn: v.performedOn,
+            performedBy: v.performedBy,
+            outcome: v.outcome as 'PASS',
+            certificateNo: v.certificateNo || null,
+            nextDueOn: v.nextDueOn || null,
+            notes: v.notes || null,
+          },
         }),
       ),
     onSuccess: () => {
@@ -201,7 +227,9 @@ function RecordEventDialog({ instrument, onClose }: { instrument: Equipment; onC
           <Textarea id="ev-notes" rows={2} value={v.notes} onChange={(e) => setV({ ...v, notes: e.target.value })} />
         </Field>
       </div>
-      {v.outcome === 'FAIL' && v.kind === 'CALIBRATION' && <p className="mt-2 rounded-md bg-red-50 px-3 py-2 text-[13px] text-red-900">A failed calibration makes the instrument due today, so it shows as overdue until it passes again.</p>}
+      {v.outcome === 'FAIL' && v.kind === 'CALIBRATION' && (
+        <p className="mt-2 rounded-md bg-red-50 px-3 py-2 text-[13px] text-red-900">A failed calibration makes the instrument due today, so it shows as overdue until it passes again.</p>
+      )}
       <div className="mt-4 flex justify-end gap-2">
         <Button variant="secondary" onClick={onClose}>
           Cancel
@@ -220,7 +248,13 @@ function ScheduleDialog({ instrument, onClose }: { instrument: Equipment; onClos
   const [maint, setMaint] = useState(instrument.maintenanceIntervalMonths?.toString() ?? '');
   const [maintDue, setMaintDue] = useState(instrument.maintenanceDueAt ? String(instrument.maintenanceDueAt).slice(0, 10) : '');
   const m = useMutation({
-    mutationFn: async () => unwrap(await api.PATCH('/api/v1/quality/equipment/{id}/schedule', { params: { path: { id: instrument.id } }, body: { version: instrument.version, calibrationIntervalMonths: cal ? Number(cal) : null, maintenanceIntervalMonths: maint ? Number(maint) : null, maintenanceDueAt: maintDue || null } })),
+    mutationFn: async () =>
+      unwrap(
+        await api.PATCH('/api/v1/quality/equipment/{id}/schedule', {
+          params: { path: { id: instrument.id } },
+          body: { version: instrument.version, calibrationIntervalMonths: cal ? Number(cal) : null, maintenanceIntervalMonths: maint ? Number(maint) : null, maintenanceDueAt: maintDue || null },
+        }),
+      ),
     onSuccess: () => {
       void client.invalidateQueries({ queryKey: ['quality-equipment'] });
       toast.success('Schedule saved');
@@ -229,7 +263,12 @@ function ScheduleDialog({ instrument, onClose }: { instrument: Equipment; onClos
     onError: toastError,
   });
   return (
-    <Dialog open onOpenChange={(o) => !o && onClose()} title={`Schedule for ${instrument.code}`} description="Intervals set the next due date each time the work is recorded. The calibration due date itself is set by recording a calibration, or in Masters.">
+    <Dialog
+      open
+      onOpenChange={(o) => !o && onClose()}
+      title={`Schedule for ${instrument.code}`}
+      description="Intervals set the next due date each time the work is recorded. The calibration due date itself is set by recording a calibration, or in Masters."
+    >
       <div className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-3">
         <Field label="Calibrate every (months)" htmlFor="sc-cal">
           <Input id="sc-cal" type="number" min={1} max={120} value={cal} onChange={(e) => setCal(e.target.value)} />
@@ -254,7 +293,10 @@ function ScheduleDialog({ instrument, onClose }: { instrument: Equipment; onClos
 }
 
 function HistoryDialog({ instrument, onClose }: { instrument: Equipment; onClose: () => void }) {
-  const q = useQuery({ queryKey: ['equipment-events', instrument.id], queryFn: async () => unwrap(await api.GET('/api/v1/quality/equipment/{id}/events', { params: { path: { id: instrument.id } } })) });
+  const q = useQuery({
+    queryKey: ['equipment-events', instrument.id],
+    queryFn: async () => unwrap(await api.GET('/api/v1/quality/equipment/{id}/events', { params: { path: { id: instrument.id } } })),
+  });
   const label: Record<string, string> = { CALIBRATION: 'Calibration', INTERMEDIATE_CHECK: 'Intermediate check', MAINTENANCE: 'Maintenance', REPAIR: 'Repair', BREAKDOWN: 'Breakdown' };
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()} title={`History of ${instrument.code}`} description={instrument.name} wide>
@@ -264,7 +306,8 @@ function HistoryDialog({ instrument, onClose }: { instrument: Equipment; onClose
         {q.data?.map((e) => (
           <li key={e.id} className="py-2">
             <p className="font-medium text-gray-900">
-              {label[e.kind]} on {formatDate(e.performedOn)} <Badge tone={e.outcome === 'FAIL' ? 'red' : 'green'}>{e.outcome === 'ADJUSTED' ? 'Adjusted' : e.outcome === 'FAIL' ? 'Fail' : 'Pass'}</Badge>
+              {label[e.kind]} on {formatDate(e.performedOn)}{' '}
+              <Badge tone={e.outcome === 'FAIL' ? 'red' : 'green'}>{e.outcome === 'ADJUSTED' ? 'Adjusted' : e.outcome === 'FAIL' ? 'Fail' : 'Pass'}</Badge>
             </p>
             <p className="text-gray-700">
               By {e.performedBy}
@@ -294,7 +337,15 @@ function CompetencyTab() {
       { id: 'test', header: 'Test', cell: ({ row }) => `${row.original.testCode} ${row.original.testName}` },
       { id: 'from', header: 'Authorised', cell: ({ row }) => <span className="whitespace-nowrap">{formatDate(row.original.authorisedOn)}</span> },
       { id: 'until', header: 'Valid until', cell: ({ row }) => <span className="whitespace-nowrap">{row.original.validUntil ? formatDate(row.original.validUntil) : 'No end date'}</span> },
-      { id: 'state', header: 'State', cell: ({ row }) => <Badge tone={row.original.state === 'ACTIVE' ? 'green' : row.original.state === 'EXPIRED' ? 'amber' : 'gray'}>{row.original.state === 'ACTIVE' ? 'Active' : row.original.state === 'EXPIRED' ? 'Expired' : 'Withdrawn'}</Badge> },
+      {
+        id: 'state',
+        header: 'State',
+        cell: ({ row }) => (
+          <Badge tone={row.original.state === 'ACTIVE' ? 'green' : row.original.state === 'EXPIRED' ? 'amber' : 'gray'}>
+            {row.original.state === 'ACTIVE' ? 'Active' : row.original.state === 'EXPIRED' ? 'Expired' : 'Withdrawn'}
+          </Badge>
+        ),
+      },
       { id: 'evidence', header: 'Evidence', cell: ({ row }) => <span className="line-clamp-2 text-gray-700">{row.original.evidence ?? '—'}</span> },
       {
         id: 'actions',
@@ -321,11 +372,53 @@ function CompetencyTab() {
   );
   return (
     <div className="space-y-4">
-      <Section title="Authorisations" description="Who may perform which test, from when, until when, and on what evidence. Planners are warned when they assign a test to someone not authorised for it." action={manage ? <Button size="sm" onClick={() => setAdding('auth')}><Plus aria-hidden />Authorise</Button> : null}>
-        <DataTable ariaLabel="Authorisations" columns={authCols} rows={auths.data} loading={auths.isLoading} error={auths.error} onRetry={auths.refetch} getRowId={(r) => r.id} emptyTitle="No authorisations yet" maxHeightClass="max-h-96" />
+      <Section
+        title="Authorisations"
+        description="Who may perform which test, from when, until when, and on what evidence. Planners are warned when they assign a test to someone not authorised for it."
+        action={
+          manage ? (
+            <Button size="sm" onClick={() => setAdding('auth')}>
+              <Plus aria-hidden />
+              Authorise
+            </Button>
+          ) : null
+        }
+      >
+        <DataTable
+          ariaLabel="Authorisations"
+          columns={authCols}
+          rows={auths.data}
+          loading={auths.isLoading}
+          error={auths.error}
+          onRetry={auths.refetch}
+          getRowId={(r) => r.id}
+          emptyTitle="No authorisations yet"
+          maxHeightClass="max-h-96"
+        />
       </Section>
-      <Section title="Training" description="Courses, internal sessions and on-the-job training." action={manage ? <Button size="sm" variant="secondary" onClick={() => setAdding('training')}><Plus aria-hidden />Add training</Button> : null}>
-        <DataTable ariaLabel="Training records" columns={trainingCols} rows={training.data} loading={training.isLoading} error={training.error} onRetry={training.refetch} getRowId={(r) => r.id} emptyTitle="No training recorded yet" maxHeightClass="max-h-96" />
+      <Section
+        title="Training"
+        description="Courses, internal sessions and on-the-job training."
+        action={
+          manage ? (
+            <Button size="sm" variant="secondary" onClick={() => setAdding('training')}>
+              <Plus aria-hidden />
+              Add training
+            </Button>
+          ) : null
+        }
+      >
+        <DataTable
+          ariaLabel="Training records"
+          columns={trainingCols}
+          rows={training.data}
+          loading={training.isLoading}
+          error={training.error}
+          onRetry={training.refetch}
+          getRowId={(r) => r.id}
+          emptyTitle="No training recorded yet"
+          maxHeightClass="max-h-96"
+        />
       </Section>
       {adding === 'auth' && <AuthoriseDialog onClose={() => setAdding(null)} />}
       {adding === 'training' && <TrainingDialog onClose={() => setAdding(null)} />}
@@ -356,7 +449,12 @@ function AuthoriseDialog({ onClose }: { onClose: () => void }) {
   const [v, setV] = useState({ userId: '', testId: '', authorisedOn: today(), validUntil: '', evidence: '' });
   const { errors, onError } = useFieldErrors();
   const m = useMutation({
-    mutationFn: async () => unwrap(await api.POST('/api/v1/quality/authorisations', { body: { userId: v.userId, testId: v.testId, authorisedOn: v.authorisedOn, validUntil: v.validUntil || null, evidence: v.evidence || null } })),
+    mutationFn: async () =>
+      unwrap(
+        await api.POST('/api/v1/quality/authorisations', {
+          body: { userId: v.userId, testId: v.testId, authorisedOn: v.authorisedOn, validUntil: v.validUntil || null, evidence: v.evidence || null },
+        }),
+      ),
     onSuccess: () => {
       void client.invalidateQueries({ queryKey: ['quality-authorisations'] });
       toast.success('Authorised');
@@ -370,21 +468,25 @@ function AuthoriseDialog({ onClose }: { onClose: () => void }) {
         <Field label="Analyst" htmlFor="au-user">
           <Select id="au-user" value={v.userId} onChange={(e) => setV({ ...v, userId: e.target.value })}>
             <option value="">Choose a person</option>
-            {people.data?.filter((p) => p.analyst).map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
+            {people.data
+              ?.filter((p) => p.analyst)
+              .map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
           </Select>
         </Field>
         <Field label="Test" htmlFor="au-test">
           <Select id="au-test" value={v.testId} onChange={(e) => setV({ ...v, testId: e.target.value })}>
             <option value="">Choose a test</option>
-            {tests.data?.filter((t) => t.isActive).map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.code} — {t.name}
-              </option>
-            ))}
+            {tests.data
+              ?.filter((t) => t.isActive)
+              .map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.code} — {t.name}
+                </option>
+              ))}
           </Select>
         </Field>
         <Field label="Authorised on" htmlFor="au-from">
@@ -444,7 +546,8 @@ function TrainingDialog({ onClose }: { onClose: () => void }) {
   const [v, setV] = useState({ userId: '', title: '', trainedOn: today(), trainer: '', hours: '' });
   const { errors, onError } = useFieldErrors();
   const m = useMutation({
-    mutationFn: async () => unwrap(await api.POST('/api/v1/quality/training', { body: { userId: v.userId, title: v.title, trainedOn: v.trainedOn, trainer: v.trainer || null, hours: v.hours ? Number(v.hours) : null } })),
+    mutationFn: async () =>
+      unwrap(await api.POST('/api/v1/quality/training', { body: { userId: v.userId, title: v.title, trainedOn: v.trainedOn, trainer: v.trainer || null, hours: v.hours ? Number(v.hours) : null } })),
     onSuccess: () => {
       void client.invalidateQueries({ queryKey: ['quality-training'] });
       toast.success('Training recorded');
@@ -501,9 +604,17 @@ function NcTab() {
       { id: 'no', header: 'Number', cell: ({ row }) => <span className="font-medium whitespace-nowrap">{row.original.ncNo}</span> },
       { id: 'title', header: 'Title', cell: ({ row }) => row.original.title },
       { id: 'source', header: 'Source', cell: ({ row }) => row.original.source },
-      { id: 'sev', header: 'Severity', cell: ({ row }) => <Badge tone={row.original.severity === 'CRITICAL' ? 'red' : row.original.severity === 'MAJOR' ? 'amber' : 'gray'}>{row.original.severity.toLowerCase()}</Badge> },
+      {
+        id: 'sev',
+        header: 'Severity',
+        cell: ({ row }) => <Badge tone={row.original.severity === 'CRITICAL' ? 'red' : row.original.severity === 'MAJOR' ? 'amber' : 'gray'}>{row.original.severity.toLowerCase()}</Badge>,
+      },
       { id: 'owner', header: 'Owner', cell: ({ row }) => row.original.ownerName ?? '—' },
-      { id: 'due', header: 'Due', cell: ({ row }) => <span className={row.original.overdue ? 'font-medium whitespace-nowrap text-red-800' : 'whitespace-nowrap'}>{formatDate(row.original.dueOn)}</span> },
+      {
+        id: 'due',
+        header: 'Due',
+        cell: ({ row }) => <span className={row.original.overdue ? 'font-medium whitespace-nowrap text-red-800' : 'whitespace-nowrap'}>{formatDate(row.original.dueOn)}</span>,
+      },
       { id: 'status', header: 'Status', cell: ({ row }) => <Badge tone={NC_TONE[row.original.status]}>{NC_LABEL[row.original.status]}</Badge> },
     ],
     [],
@@ -516,7 +627,17 @@ function NcTab() {
           Raise a non-conformance
         </Button>
       </div>
-      <DataTable ariaLabel="Non-conformances" columns={columns} rows={q.data} loading={q.isLoading} error={q.error} onRetry={q.refetch} getRowId={(r) => r.id} onRowClick={setOpen} emptyTitle="No non-conformances" />
+      <DataTable
+        ariaLabel="Non-conformances"
+        columns={columns}
+        rows={q.data}
+        loading={q.isLoading}
+        error={q.error}
+        onRetry={q.refetch}
+        getRowId={(r) => r.id}
+        onRowClick={setOpen}
+        emptyTitle="No non-conformances"
+      />
       {raising && <RaiseNcDialog onClose={() => setRaising(false)} />}
       {open && <NcDialog nc={open} onClose={() => setOpen(null)} />}
     </div>
@@ -528,7 +649,20 @@ function RaiseNcDialog({ onClose }: { onClose: () => void }) {
   const people = usePeople();
   const [v, setV] = useState({ source: 'Routine work', title: '', description: '', severity: 'MINOR', reference: '', ownerId: '', dueOn: '' });
   const m = useMutation({
-    mutationFn: async () => unwrap(await api.POST('/api/v1/quality/nc', { body: { source: v.source as 'Other', title: v.title, description: v.description, severity: v.severity as 'MINOR', reference: v.reference || null, ownerId: v.ownerId || null, dueOn: v.dueOn || null } })),
+    mutationFn: async () =>
+      unwrap(
+        await api.POST('/api/v1/quality/nc', {
+          body: {
+            source: v.source as 'Other',
+            title: v.title,
+            description: v.description,
+            severity: v.severity as 'MINOR',
+            reference: v.reference || null,
+            ownerId: v.ownerId || null,
+            dueOn: v.dueOn || null,
+          },
+        }),
+      ),
     onSuccess: (nc) => {
       void client.invalidateQueries({ queryKey: ['quality-nc'] });
       void client.invalidateQueries({ queryKey: ['quality-summary'] });
@@ -606,7 +740,8 @@ function NcDialog({ nc: start, onClose }: { nc: Nc; onClose: () => void }) {
   const [nc, setNc] = useState(start);
   const [v, setV] = useState({ correction: nc.correction ?? '', rootCause: nc.rootCause ?? '', correctiveAction: nc.correctiveAction ?? '', verification: nc.verification ?? '' });
   const m = useMutation({
-    mutationFn: async (status?: Nc['status']) => unwrap(await api.PATCH('/api/v1/quality/nc/{id}', { params: { path: { id: nc.id } }, body: { version: nc.version, ...v, ...(status ? { status } : {}) } })),
+    mutationFn: async (status?: Nc['status']) =>
+      unwrap(await api.PATCH('/api/v1/quality/nc/{id}', { params: { path: { id: nc.id } }, body: { version: nc.version, ...v, ...(status ? { status } : {}) } })),
     onSuccess: (next) => {
       setNc(next);
       void client.invalidateQueries({ queryKey: ['quality-nc'] });
@@ -621,7 +756,13 @@ function NcDialog({ nc: start, onClose }: { nc: Nc; onClose: () => void }) {
     </Field>
   );
   return (
-    <Dialog open onOpenChange={(o) => !o && onClose()} title={`${nc.ncNo}: ${nc.title}`} description={`${nc.source} · ${nc.severity.toLowerCase()} · raised by ${nc.createdByName ?? '—'}${nc.reference ? ` · ${nc.reference}` : ''}`} wide>
+    <Dialog
+      open
+      onOpenChange={(o) => !o && onClose()}
+      title={`${nc.ncNo}: ${nc.title}`}
+      description={`${nc.source} · ${nc.severity.toLowerCase()} · raised by ${nc.createdByName ?? '—'}${nc.reference ? ` · ${nc.reference}` : ''}`}
+      wide
+    >
       <div className="space-y-3">
         <p className="flex flex-wrap items-center gap-2 text-[13px]">
           <Badge tone={NC_TONE[nc.status]}>{NC_LABEL[nc.status]}</Badge>

@@ -20,9 +20,15 @@ test('a technician asks for access, an admin approves it, and the page opens', a
 
   await signIn(page, 'admin');
   await page.goto('/admin?tab=access');
-  const row = page.getByRole('table', { name: 'Access requests' }).getByRole('row', { name: /Saturdays/ }).first();
+  const row = page
+    .getByRole('table', { name: 'Access requests' })
+    .getByRole('row', { name: /Saturdays/ })
+    .first();
   await row.getByRole('button', { name: 'Approve' }).click();
-  await page.getByRole('dialog').getByLabel(/Give this role/).selectOption({ label: `Accounts (${accounts.permissions.length} permissions)` });
+  await page
+    .getByRole('dialog')
+    .getByLabel(/Give this role/)
+    .selectOption({ label: `Accounts (${accounts.permissions.length} permissions)` });
   await page.getByRole('dialog').getByRole('button', { name: 'Approve and give role' }).click();
   // Giving a role needs the admin's password.
   const confirm = page.getByRole('dialog', { name: 'Confirm your password' });
@@ -48,7 +54,11 @@ test('a technician asks for access, an admin approves it, and the page opens', a
 test('an admin previews the app as a technician and exits', async ({ page }) => {
   await signIn(page, 'admin');
   await page.goto('/admin?tab=roles');
-  await page.getByRole('table', { name: 'Roles' }).getByRole('row', { name: /Technician \/ Analyst/ }).getByRole('button', { name: 'Preview' }).click();
+  await page
+    .getByRole('table', { name: 'Roles' })
+    .getByRole('row', { name: /Technician \/ Analyst/ })
+    .getByRole('button', { name: 'Preview' })
+    .click();
   await expect(page.getByRole('status').filter({ hasText: 'Previewing as Technician / Analyst' })).toBeVisible();
   // A preview never shows more than the admin holds: admins do not hold tests.work, so My Tests stays hidden.
   await expect(nav(page).getByRole('link')).toHaveText(['Dashboard']);

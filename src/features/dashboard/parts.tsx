@@ -19,7 +19,10 @@ export type Metric = components['schemas']['MetricDto'];
 export function useDashboard() {
   const list = useListState();
   const { from, to } = list.filters;
-  const q = useQuery({ queryKey: ['dashboard', from ?? '', to ?? ''], queryFn: async () => unwrap(await api.GET('/api/v1/dashboard', { params: { query: { ...(from ? { from } : {}), ...(to ? { to } : {}) } } })) });
+  const q = useQuery({
+    queryKey: ['dashboard', from ?? '', to ?? ''],
+    queryFn: async () => unwrap(await api.GET('/api/v1/dashboard', { params: { query: { ...(from ? { from } : {}), ...(to ? { to } : {}) } } })),
+  });
   return { q, list };
 }
 

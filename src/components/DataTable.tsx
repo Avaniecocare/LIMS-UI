@@ -76,9 +76,7 @@ export function DataTable<T>({
           id: '__select',
           size: 36,
           enableSorting: false,
-          header: ({ table }) => (
-            <Checkbox aria-label="Select all on this page" checked={table.getIsAllPageRowsSelected()} onCheckedChange={(v) => table.toggleAllPageRowsSelected(!!v)} />
-          ),
+          header: ({ table }) => <Checkbox aria-label="Select all on this page" checked={table.getIsAllPageRowsSelected()} onCheckedChange={(v) => table.toggleAllPageRowsSelected(!!v)} />,
           cell: ({ row }) => (
             <span onClick={(e) => e.stopPropagation()}>
               <Checkbox aria-label="Select row" disabled={!row.getCanSelect()} checked={row.getIsSelected()} onCheckedChange={(v) => row.toggleSelected(!!v)} />
@@ -147,7 +145,12 @@ export function DataTable<T>({
             {tableRows.map((row) => (
               <li
                 key={row.id}
-                className={cn('px-3 py-2.5 text-[13px] transition-colors duration-(--motion-fast)', onRowClick && 'cursor-pointer active:bg-gray-100', row.getIsSelected() && 'bg-blue-50', fresh.has(row.id) && 'flash-new')}
+                className={cn(
+                  'px-3 py-2.5 text-[13px] transition-colors duration-(--motion-fast)',
+                  onRowClick && 'cursor-pointer active:bg-gray-100',
+                  row.getIsSelected() && 'bg-blue-50',
+                  fresh.has(row.id) && 'flash-new',
+                )}
                 onClick={onRowClick ? () => onRowClick(row.original) : undefined}
                 onKeyDown={onRowClick ? (e) => e.key === 'Enter' && e.target === e.currentTarget && onRowClick(row.original) : undefined}
                 tabIndex={onRowClick ? 0 : undefined}
@@ -193,7 +196,13 @@ export function DataTable<T>({
                   const sortable = header.column.columnDef.enableSorting === true && onSortChange;
                   const active = sort?.id === header.column.id;
                   return (
-                    <th key={header.id} scope="col" aria-sort={active ? (sort?.desc ? 'descending' : 'ascending') : undefined} className="px-3 py-2 text-left text-xs font-semibold whitespace-nowrap text-gray-700" style={header.column.columnDef.size && header.column.id === '__select' ? { width: header.column.columnDef.size } : undefined}>
+                    <th
+                      key={header.id}
+                      scope="col"
+                      aria-sort={active ? (sort?.desc ? 'descending' : 'ascending') : undefined}
+                      className="px-3 py-2 text-left text-xs font-semibold whitespace-nowrap text-gray-700"
+                      style={header.column.columnDef.size && header.column.id === '__select' ? { width: header.column.columnDef.size } : undefined}
+                    >
                       {sortable ? (
                         <button
                           type="button"
@@ -227,7 +236,12 @@ export function DataTable<T>({
                     <tr
                       data-index={v.index}
                       ref={items.length ? virtualizer.measureElement : undefined}
-                      className={cn('border-b border-gray-100 transition-colors duration-(--motion-fast)', onRowClick && 'cursor-pointer hover:bg-gray-50', row.getIsSelected() && 'bg-blue-50', fresh.has(row.id) && 'flash-new')}
+                      className={cn(
+                        'border-b border-gray-100 transition-colors duration-(--motion-fast)',
+                        onRowClick && 'cursor-pointer hover:bg-gray-50',
+                        row.getIsSelected() && 'bg-blue-50',
+                        fresh.has(row.id) && 'flash-new',
+                      )}
                       onClick={onRowClick ? () => onRowClick(row.original) : undefined}
                       onKeyDown={onRowClick ? (e) => e.key === 'Enter' && e.target === e.currentTarget && onRowClick(row.original) : undefined}
                       tabIndex={onRowClick ? 0 : undefined}
@@ -262,7 +276,9 @@ export function DataTable<T>({
       </div>
       {meta && (
         <div className="flex flex-wrap items-center justify-between gap-2 border-t border-gray-200 px-3 py-2 text-[13px] text-gray-700">
-          <span>{meta.total.toLocaleString('en-IN')} {meta.total === 1 ? 'record' : 'records'}</span>
+          <span>
+            {meta.total.toLocaleString('en-IN')} {meta.total === 1 ? 'record' : 'records'}
+          </span>
           <div className="flex items-center gap-2">
             {onPageSizeChange && (
               <label className="flex items-center gap-1.5">

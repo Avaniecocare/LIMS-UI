@@ -25,7 +25,21 @@ export const headerSchema = z.object(headerShape);
 export type HeaderValues = z.infer<typeof headerSchema>;
 export const HEADER_FIELDS = Object.keys(headerShape);
 
-export const emptyHeader: HeaderValues = { letterRef: '', letterDate: '', materialSpec: '', poNumber: '', poDate: '', receiptModeId: '', reportIssueDetails: '', reportIssueAddress: '', kindAttention: '', contactEmail: '', contactPhone: '', urgent: false, sampleDrawnByLab: false };
+export const emptyHeader: HeaderValues = {
+  letterRef: '',
+  letterDate: '',
+  materialSpec: '',
+  poNumber: '',
+  poDate: '',
+  receiptModeId: '',
+  reportIssueDetails: '',
+  reportIssueAddress: '',
+  kindAttention: '',
+  contactEmail: '',
+  contactPhone: '',
+  urgent: false,
+  sampleDrawnByLab: false,
+};
 
 /** Identity fields come back null for roles that may not see the customer, so they are not sent back either. */
 export function headerToBody(v: HeaderValues, identity: boolean) {
@@ -114,7 +128,13 @@ export function JobHeaderFields({ form: anyForm, identity, idPrefix, disabled }:
       )}
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2 md:col-span-3">
         <Checkbox id={id('urgent')} label="Urgent" disabled={disabled} checked={form.watch('urgent')} onCheckedChange={(v) => form.setValue('urgent', !!v, { shouldDirty: true })} />
-        <Checkbox id={id('drawn')} label="Sample drawn by the laboratory" disabled={disabled} checked={form.watch('sampleDrawnByLab')} onCheckedChange={(v) => form.setValue('sampleDrawnByLab', !!v, { shouldDirty: true })} />
+        <Checkbox
+          id={id('drawn')}
+          label="Sample drawn by the laboratory"
+          disabled={disabled}
+          checked={form.watch('sampleDrawnByLab')}
+          onCheckedChange={(v) => form.setValue('sampleDrawnByLab', !!v, { shouldDirty: true })}
+        />
       </div>
     </div>
   );

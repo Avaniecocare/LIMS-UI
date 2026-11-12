@@ -4,7 +4,15 @@ import { apiAs, issuedJob, plannedJob, signIn } from './helpers';
 const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', 'base64');
 const cssVar = (page: Page, name: string) => page.evaluate((n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim(), name);
 type Lab = { profile: Record<string, unknown>; branding: Record<string, unknown>; profileVersion: number; brandingVersion: number };
-const editable = (b: Record<string, unknown>) => ({ appName: b.appName, primaryColor: b.primaryColor, accentColor: b.accentColor, surfaceColor: b.surfaceColor, navColor: b.navColor, loginTagline: b.loginTagline, poweredBy: b.poweredBy });
+const editable = (b: Record<string, unknown>) => ({
+  appName: b.appName,
+  primaryColor: b.primaryColor,
+  accentColor: b.accentColor,
+  surfaceColor: b.surfaceColor,
+  navColor: b.navColor,
+  loginTagline: b.loginTagline,
+  poweredBy: b.poweredBy,
+});
 
 test('the admin rebrands the lab twice from the admin panel; screens, sign-in, emails and PDFs follow without a restart', async ({ page }) => {
   test.setTimeout(180_000);

@@ -79,15 +79,28 @@ export default function MyTestsPage() {
           <TabsTrigger value="open">To do</TabsTrigger>
           <TabsTrigger value="done">Submitted and approved</TabsTrigger>
         </TabsList>
-      <TabsContent value={view} className="space-y-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search test, sample or job" label="Search my tests" />
-          <MobileFilters filters={list.filters} onClear={list.clearFilters}>
-          <SavedFilters screen="my-tests" current={list.allParams} onApply={list.applyFilters} />
-          </MobileFilters>
-        </div>
-        <DataTable ariaLabel="My tests" columns={columns} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} onRowClick={(t) => navigate(`/my-tests/${t.id}`)} getRowId={(t) => t.id} emptyTitle={view === 'open' ? 'Nothing is waiting for you' : 'Nothing submitted yet'} />
-      </TabsContent>
+        <TabsContent value={view} className="space-y-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search test, sample or job" label="Search my tests" />
+            <MobileFilters filters={list.filters} onClear={list.clearFilters}>
+              <SavedFilters screen="my-tests" current={list.allParams} onApply={list.applyFilters} />
+            </MobileFilters>
+          </div>
+          <DataTable
+            ariaLabel="My tests"
+            columns={columns}
+            rows={q.data?.data}
+            meta={q.data?.meta}
+            loading={q.isLoading}
+            error={q.error}
+            onRetry={q.refetch}
+            onPageChange={list.setPage}
+            onPageSizeChange={list.setPageSize}
+            onRowClick={(t) => navigate(`/my-tests/${t.id}`)}
+            getRowId={(t) => t.id}
+            emptyTitle={view === 'open' ? 'Nothing is waiting for you' : 'Nothing submitted yet'}
+          />
+        </TabsContent>
       </Tabs>
     </>
   );

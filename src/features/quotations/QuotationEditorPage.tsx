@@ -18,14 +18,21 @@ import { VersionLines, VersionTotals } from './VersionView';
 
 type Quotation = components['schemas']['QuotationDto'];
 
-const decimal = (message: string) => z.string().trim().regex(/^$|^\d+(\.\d+)?$/, message);
+const decimal = (message: string) =>
+  z
+    .string()
+    .trim()
+    .regex(/^$|^\d+(\.\d+)?$/, message);
 
 const schema = z.object({
   customerId: z.string().min(1, 'Choose a customer'),
   orderId: z.string(),
   documentTitle: z.enum(['Quotation', 'Proforma Invoice']),
   validUntil: z.string(),
-  estimatedDays: z.string().trim().regex(/^$|^\d+$/, 'Whole days'),
+  estimatedDays: z
+    .string()
+    .trim()
+    .regex(/^$|^\d+$/, 'Whole days'),
   paymentTerms: z.string().trim().max(1000),
   deliveryAddress: z.string().trim().max(1000),
   contactPerson: z.string().trim().max(200),
@@ -47,7 +54,15 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 type LineValues = FormValues['lines'][number];
 
-const emptyLine = (from?: LineValues): LineValues => ({ sampleDescription: from?.sampleDescription ?? '', requiredQuantity: from?.requiredQuantity ?? '', testId: '', quantity: 1, rate: '', overrideReason: '', discountPct: '' });
+const emptyLine = (from?: LineValues): LineValues => ({
+  sampleDescription: from?.sampleDescription ?? '',
+  requiredQuantity: from?.requiredQuantity ?? '',
+  testId: '',
+  quantity: 1,
+  rate: '',
+  overrideReason: '',
+  discountPct: '',
+});
 
 function toForm(q: Quotation | null, preset: { customerId: string; orderId: string }): FormValues {
   const v = q?.versions.find((x) => x.versionNo === q.currentVersionNo);
@@ -87,7 +102,15 @@ function toBody(v: FormValues) {
     deliveryAddress: v.deliveryAddress || null,
     contactPerson: v.contactPerson || null,
     discountPct: v.discountPct || null,
-    lines: v.lines.map((l) => ({ sampleDescription: l.sampleDescription, requiredQuantity: l.requiredQuantity || null, testId: l.testId, quantity: l.quantity, rate: l.rate || null, overrideReason: l.overrideReason || null, discountPct: l.discountPct || null })),
+    lines: v.lines.map((l) => ({
+      sampleDescription: l.sampleDescription,
+      requiredQuantity: l.requiredQuantity || null,
+      testId: l.testId,
+      quantity: l.quantity,
+      rate: l.rate || null,
+      overrideReason: l.overrideReason || null,
+      discountPct: l.discountPct || null,
+    })),
   };
 }
 
@@ -255,7 +278,13 @@ function Editor({ quotation, preset }: { quotation: Quotation | null; preset: { 
             const le = e.lines?.[i];
             const label = (name: string) => `Line ${i + 1} ${name}`;
             return (
-              <div key={f.id} role="group" aria-label={`Line ${i + 1}`} className={`grid items-start gap-2 rounded-md border border-gray-200 p-3 sm:grid-cols-2 lg:rounded-none lg:border-0 lg:p-0 ${gridClass}`} onKeyDown={onLineKeyDown}>
+              <div
+                key={f.id}
+                role="group"
+                aria-label={`Line ${i + 1}`}
+                className={`grid items-start gap-2 rounded-md border border-gray-200 p-3 sm:grid-cols-2 lg:rounded-none lg:border-0 lg:p-0 ${gridClass}`}
+                onKeyDown={onLineKeyDown}
+              >
                 <p className="text-xs font-semibold text-gray-900 sm:col-span-2 lg:hidden" aria-hidden>
                   Line {i + 1}
                 </p>
@@ -291,7 +320,14 @@ function Editor({ quotation, preset }: { quotation: Quotation | null; preset: { 
                 <Cell error={le?.discountPct?.message} label={H.discount}>
                   <Input aria-label={label('discount percent')} inputMode="decimal" aria-invalid={!!le?.discountPct} {...form.register(`lines.${i}.discountPct`)} />
                 </Cell>
-                <Button variant="ghost" size="icon" className="justify-self-end lg:justify-self-auto" aria-label={`Remove line ${i + 1}`} disabled={lines.fields.length === 1} onClick={() => lines.remove(i)}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="justify-self-end lg:justify-self-auto"
+                  aria-label={`Remove line ${i + 1}`}
+                  disabled={lines.fields.length === 1}
+                  onClick={() => lines.remove(i)}
+                >
                   <Trash2 aria-hidden />
                 </Button>
               </div>

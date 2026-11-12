@@ -17,7 +17,10 @@ const row = (page: Page, code: string) => page.locator(`tr[data-parameter="${cod
 
 async function pickCustomer(page: Page, label: RegExp, name: string) {
   await page.getByRole('combobox', { name: label }).fill(name);
-  await page.getByRole('option', { name: new RegExp(name) }).first().click();
+  await page
+    .getByRole('option', { name: new RegExp(name) })
+    .first()
+    .click();
 }
 
 async function completeAllStages(page: Page) {
@@ -48,14 +51,20 @@ async function submitResults(page: Page) {
 
 async function openTest(page: Page, sampleNo: string, name: string) {
   await page.goto(`/my-tests?q=${encodeURIComponent(sampleNo)}`);
-  await page.getByRole('table', { name: 'My tests' }).getByRole('row', { name: new RegExp(name) }).click();
+  await page
+    .getByRole('table', { name: 'My tests' })
+    .getByRole('row', { name: new RegExp(name) })
+    .click();
   await expect(page.getByRole('heading', { level: 1 })).toContainText(name);
 }
 
 async function openReport(page: Page, user: string, tab: string, sampleNo: string) {
   await signIn(page, user);
   await page.goto(`/approvals?tab=${tab}&q=${encodeURIComponent(sampleNo)}`);
-  await page.getByRole('row', { name: new RegExp(sampleNo) }).first().click();
+  await page
+    .getByRole('row', { name: new RegExp(sampleNo) })
+    .first()
+    .click();
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Revision');
 }
 
@@ -66,7 +75,10 @@ async function signAndIssue(page: Page, emailTo: string) {
   const issue = page.getByRole('button', { name: 'Issue', exact: true });
   await expect(issue).toBeEnabled({ timeout: 90_000 });
   await issue.click();
-  await page.getByRole('dialog').getByLabel(/Email to/).fill(emailTo);
+  await page
+    .getByRole('dialog')
+    .getByLabel(/Email to/)
+    .fill(emailTo);
   await page.getByRole('dialog').getByRole('button', { name: 'Issue report' }).click();
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Issued');
 }
@@ -90,7 +102,10 @@ test('the full cycle, from a new customer to dashboard numbers that match their 
     await nav(page).getByRole('link', { name: 'Customers' }).click();
     await page.getByRole('button', { name: /New customer/ }).click();
     await page.getByLabel('Name', { exact: false }).first().fill(customerName);
-    await page.getByLabel(/^State/).first().fill(company.stateName);
+    await page
+      .getByLabel(/^State/)
+      .first()
+      .fill(company.stateName);
     await page.getByLabel(/^GST code/).fill(company.gstStateCode);
     await page.getByRole('button', { name: 'Add contact' }).click();
     await page.locator('#ct-0-name').fill('Bina Buyer');
@@ -193,7 +208,10 @@ test('the full cycle, from a new customer to dashboard numbers that match their 
   await test.step('the head of department rejects one result', async () => {
     await signIn(page, 'hod');
     await page.goto(`/approvals?tab=results&q=${encodeURIComponent(sampleNo)}`);
-    await approvals.getByRole('row', { name: /Flash Point/ }).getByRole('button', { name: 'Reject' }).click();
+    await approvals
+      .getByRole('row', { name: /Flash Point/ })
+      .getByRole('button', { name: 'Reject' })
+      .click();
     await page.getByRole('dialog').getByLabel('Reason').fill('Flash point looks low, repeat');
     await page.getByRole('dialog').getByRole('button', { name: 'Reject' }).click();
     // Wait for the server's answer: while the dialog is open the table is hidden from the accessibility tree.
@@ -271,7 +289,10 @@ test('the full cycle, from a new customer to dashboard numbers that match their 
     await page.goto(`/invoices?tab=ready&q=${encodeURIComponent(jobNo)}`);
     const ready = page.getByRole('table', { name: 'Jobs ready to invoice' });
     await expect(ready).toContainText(customerName);
-    await ready.getByRole('row', { name: new RegExp(jobNo) }).getByRole('checkbox').click();
+    await ready
+      .getByRole('row', { name: new RegExp(jobNo) })
+      .getByRole('checkbox')
+      .click();
     await page.getByRole('button', { name: 'Create draft invoice' }).click();
     await page.getByRole('alertdialog').getByRole('button', { name: 'Create draft' }).click();
     await expect(page).toHaveURL(/\/invoices\/[0-9a-f-]{36}/);
@@ -318,7 +339,10 @@ test('the full cycle, from a new customer to dashboard numbers that match their 
   await test.step('a revision of the report goes round and is issued', async () => {
     await signIn(page, 'signatory');
     await page.goto(`/approvals?tab=issued&q=${encodeURIComponent(sampleNo)}`);
-    await page.getByRole('row', { name: new RegExp(sampleNo) }).first().click();
+    await page
+      .getByRole('row', { name: new RegExp(sampleNo) })
+      .first()
+      .click();
     await page.getByRole('button', { name: 'Revise' }).click();
     await page.getByRole('dialog').getByLabel('Reason').fill('Customer asked for a correction');
     await page.getByRole('dialog').getByRole('button', { name: 'Start revision' }).click();
@@ -366,7 +390,10 @@ test('the full cycle, from a new customer to dashboard numbers that match their 
 
     // Every status on the chart equals the report behind it, and a bar goes to the same place.
     await page.goto('/analytics');
-    const panel = page.locator('div').filter({ has: page.getByRole('heading', { name: 'Samples by status' }) }).last();
+    const panel = page
+      .locator('div')
+      .filter({ has: page.getByRole('heading', { name: 'Samples by status' }) })
+      .last();
     await expect(page.getByRole('img', { name: /^Samples by status\./ })).toBeVisible();
     await page.getByRole('button', { name: 'Show Samples by status as a table' }).click();
     const links = page.getByRole('table', { name: 'Samples by status as a table' }).getByRole('link');

@@ -124,19 +124,19 @@ function ResultInput({ result, entry }: { result: ParameterResult; entry: EntryH
   if (result.kind === 'RESULT_SET') {
     return (
       <>
-      <Select {...shared} value={value} aria-invalid={!!refused} aria-describedby={refused ? errorId : undefined} onChange={(e) => entry.onChange(result, e.target.value)}>
-        <option value="">Choose…</option>
-        {result.options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.value}
-          </option>
-        ))}
-      </Select>
-      {refused && (
-        <p id={errorId} className="mt-1 text-xs text-red-800">
-          {refused}
-        </p>
-      )}
+        <Select {...shared} value={value} aria-invalid={!!refused} aria-describedby={refused ? errorId : undefined} onChange={(e) => entry.onChange(result, e.target.value)}>
+          <option value="">Choose…</option>
+          {result.options.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.value}
+            </option>
+          ))}
+        </Select>
+        {refused && (
+          <p id={errorId} className="mt-1 text-xs text-red-800">
+            {refused}
+          </p>
+        )}
       </>
     );
   }
@@ -144,7 +144,16 @@ function ResultInput({ result, entry }: { result: ParameterResult; entry: EntryH
   const error = invalid ? 'Enter a number' : (refused ?? result.error);
   return (
     <>
-      <Input {...shared} className={cn('h-11', result.kind === 'NUMERIC' && 'tabular-nums')} inputMode={result.kind === 'NUMERIC' ? 'decimal' : undefined} autoComplete="off" value={value} aria-invalid={!!error} aria-describedby={error ? errorId : undefined} onChange={(e) => entry.onChange(result, e.target.value)} />
+      <Input
+        {...shared}
+        className={cn('h-11', result.kind === 'NUMERIC' && 'tabular-nums')}
+        inputMode={result.kind === 'NUMERIC' ? 'decimal' : undefined}
+        autoComplete="off"
+        value={value}
+        aria-invalid={!!error}
+        aria-describedby={error ? errorId : undefined}
+        onChange={(e) => entry.onChange(result, e.target.value)}
+      />
       {error && (
         <p id={errorId} className="mt-1 text-xs text-red-800">
           {error}

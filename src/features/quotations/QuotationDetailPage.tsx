@@ -8,7 +8,24 @@ import { z } from 'zod';
 import type { components } from '@/api/schema';
 import { useSession } from '@/app/providers';
 import { DocumentButton, EmailLogTable, ReasonDialog, StatusBadge } from '@/components/shared';
-import { Button, Card, CardHeader, ConfirmDialog, Dialog, EmptyState, ErrorState, Field, Input, PageHeader, Spinner, Tabs, TabsContent, TabsList, TabsTrigger, Textarea } from '@/components/ui/primitives';
+import {
+  Button,
+  Card,
+  CardHeader,
+  ConfirmDialog,
+  Dialog,
+  EmptyState,
+  ErrorState,
+  Field,
+  Input,
+  PageHeader,
+  Spinner,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Textarea,
+} from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
 import { formatDate, formatDateTime, formatINR, humanize } from '@/lib/format';
 import { applyServerErrors, toastError } from '@/lib/forms';
@@ -36,7 +53,8 @@ function SendDialog({ quotation, open, onOpenChange, onSent }: { quotation: Quot
     if (open) form.reset({ to: contact?.email ?? '', cc: '', message: '' });
   }, [open, contact?.email, form]);
   const m = useMutation({
-    mutationFn: async (v: SendValues) => unwrap(await api.POST('/api/v1/quotations/{id}/send', { params: { path: { id: quotation.id } }, body: { version: quotation.version, to: v.to, cc: v.cc || null, message: v.message || null } })),
+    mutationFn: async (v: SendValues) =>
+      unwrap(await api.POST('/api/v1/quotations/{id}/send', { params: { path: { id: quotation.id } }, body: { version: quotation.version, to: v.to, cc: v.cc || null, message: v.message || null } })),
     onSuccess: (q) => {
       toast.success('Quotation queued for sending');
       onSent(q);
@@ -114,7 +132,11 @@ export default function QuotationDetailPage() {
     refetchInterval: (query) => (query.state.data?.some((r) => r.status === 'QUEUED') ? 3000 : false),
     queryFn: async () => unwrap(await api.GET('/api/v1/quotations/{id}/emails', { params: { path: { id: id! } } })),
   });
-  const history = useQuery({ queryKey: ['quotation-history', id], enabled: tab === 'history', queryFn: async () => unwrap(await api.GET('/api/v1/quotations/{id}/history', { params: { path: { id: id! } } })) });
+  const history = useQuery({
+    queryKey: ['quotation-history', id],
+    enabled: tab === 'history',
+    queryFn: async () => unwrap(await api.GET('/api/v1/quotations/{id}/history', { params: { path: { id: id! } } })),
+  });
 
   const applied = (updated: Quotation) => {
     client.setQueryData(['quotation', updated.id], updated);
@@ -126,9 +148,21 @@ export default function QuotationDetailPage() {
     setDialog(null);
   };
   const path = { path: { id: id! } };
-  const accept = useMutation({ mutationFn: async (version: number) => unwrap(await api.POST('/api/v1/quotations/{id}/accept', { params: path, body: { version } })), onSuccess: applied, onError: toastError });
-  const reject = useMutation({ mutationFn: async (b: { version: number; reason: string }) => unwrap(await api.POST('/api/v1/quotations/{id}/reject', { params: path, body: b })), onSuccess: applied, onError: toastError });
-  const revise = useMutation({ mutationFn: async (b: { version: number; reason: string }) => unwrap(await api.POST('/api/v1/quotations/{id}/revise', { params: path, body: b })), onSuccess: applied, onError: toastError });
+  const accept = useMutation({
+    mutationFn: async (version: number) => unwrap(await api.POST('/api/v1/quotations/{id}/accept', { params: path, body: { version } })),
+    onSuccess: applied,
+    onError: toastError,
+  });
+  const reject = useMutation({
+    mutationFn: async (b: { version: number; reason: string }) => unwrap(await api.POST('/api/v1/quotations/{id}/reject', { params: path, body: b })),
+    onSuccess: applied,
+    onError: toastError,
+  });
+  const revise = useMutation({
+    mutationFn: async (b: { version: number; reason: string }) => unwrap(await api.POST('/api/v1/quotations/{id}/revise', { params: path, body: b })),
+    onSuccess: applied,
+    onError: toastError,
+  });
   const convert = useMutation({
     mutationFn: async () => unwrap(await api.POST('/api/v1/quotations/{id}/convert', { params: path })),
     onSuccess: (res) => {
@@ -171,7 +205,11 @@ export default function QuotationDetailPage() {
                 <Link to={`/quotations/${quotation.id}/edit`}>Edit</Link>
               </Button>
             )}
-            {(status === 'DRAFT' || status === 'SENT') && can('quotations.send') && <Button variant={status === 'DRAFT' ? 'primary' : 'secondary'} onClick={() => setDialog('send')}>{status === 'DRAFT' ? 'Send' : 'Send again'}</Button>}
+            {(status === 'DRAFT' || status === 'SENT') && can('quotations.send') && (
+              <Button variant={status === 'DRAFT' ? 'primary' : 'secondary'} onClick={() => setDialog('send')}>
+                {status === 'DRAFT' ? 'Send' : 'Send again'}
+              </Button>
+            )}
             {status === 'DRAFT' && can('quotations.decide') && (
               <Button variant="secondary" onClick={() => setDialog('accept')}>
                 Customer accepted
@@ -255,10 +293,46 @@ export default function QuotationDetailPage() {
         </TabsContent>
       </Tabs>
       <SendDialog quotation={quotation} open={dialog === 'send'} onOpenChange={(o) => setDialog(o ? 'send' : null)} onSent={applied} />
-      <ConfirmDialog open={dialog === 'accept'} onOpenChange={(o) => !o && setDialog(null)} title="Accept this quotation?" description={status === 'DRAFT' ? 'For a customer who accepted on the phone or in person. The prices and terms on this version are frozen now, as if it had been sent; nothing is emailed.' : 'Record that the customer accepted the current version.'} confirmLabel="Accept" loading={accept.isPending} onConfirm={() => accept.mutate(quotation.version)} />
-      <ConfirmDialog open={dialog === 'convert'} onOpenChange={(o) => !o && setDialog(null)} title="Convert to a job?" description="This creates a job with the samples and tests on this quotation. It can only be done once." confirmLabel="Convert to job" loading={convert.isPending} onConfirm={() => convert.mutate()} />
-      <ReasonDialog open={dialog === 'reject'} onOpenChange={(o) => !o && setDialog(null)} title="Reject this quotation" confirmLabel="Reject" danger loading={reject.isPending} onConfirm={(reason) => reject.mutate({ version: quotation.version, reason })} />
-      <ReasonDialog open={dialog === 'revise'} onOpenChange={(o) => !o && setDialog(null)} title="Revise this quotation" description="Creates a new draft version. Earlier versions stay as they were." confirmLabel="Revise" loading={revise.isPending} onConfirm={(reason) => revise.mutate({ version: quotation.version, reason })} />
+      <ConfirmDialog
+        open={dialog === 'accept'}
+        onOpenChange={(o) => !o && setDialog(null)}
+        title="Accept this quotation?"
+        description={
+          status === 'DRAFT'
+            ? 'For a customer who accepted on the phone or in person. The prices and terms on this version are frozen now, as if it had been sent; nothing is emailed.'
+            : 'Record that the customer accepted the current version.'
+        }
+        confirmLabel="Accept"
+        loading={accept.isPending}
+        onConfirm={() => accept.mutate(quotation.version)}
+      />
+      <ConfirmDialog
+        open={dialog === 'convert'}
+        onOpenChange={(o) => !o && setDialog(null)}
+        title="Convert to a job?"
+        description="This creates a job with the samples and tests on this quotation. It can only be done once."
+        confirmLabel="Convert to job"
+        loading={convert.isPending}
+        onConfirm={() => convert.mutate()}
+      />
+      <ReasonDialog
+        open={dialog === 'reject'}
+        onOpenChange={(o) => !o && setDialog(null)}
+        title="Reject this quotation"
+        confirmLabel="Reject"
+        danger
+        loading={reject.isPending}
+        onConfirm={(reason) => reject.mutate({ version: quotation.version, reason })}
+      />
+      <ReasonDialog
+        open={dialog === 'revise'}
+        onOpenChange={(o) => !o && setDialog(null)}
+        title="Revise this quotation"
+        description="Creates a new draft version. Earlier versions stay as they were."
+        confirmLabel="Revise"
+        loading={revise.isPending}
+        onConfirm={(reason) => revise.mutate({ version: quotation.version, reason })}
+      />
     </>
   );
 }

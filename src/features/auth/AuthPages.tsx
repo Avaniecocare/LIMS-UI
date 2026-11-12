@@ -23,7 +23,9 @@ function AuthShell({ title, children, wide }: { title: string; children: ReactNo
   const showPoweredBy = branding?.poweredBy && branding.poweredByName && branding.poweredByName !== branding.productName;
   return (
     <main className="auth-backdrop flex min-h-full items-center justify-center p-4">
-      <div className={`flex w-full overflow-hidden rounded-xl border-t-4 border-accent-brand bg-surface shadow-lg ${branding?.loginImageUrl ? (wide ? 'max-w-4xl' : 'max-w-3xl') : wide ? 'max-w-xl' : 'max-w-sm'}`}>
+      <div
+        className={`flex w-full overflow-hidden rounded-xl border-t-4 border-accent-brand bg-surface shadow-lg ${branding?.loginImageUrl ? (wide ? 'max-w-4xl' : 'max-w-3xl') : wide ? 'max-w-xl' : 'max-w-sm'}`}
+      >
         {branding?.loginImageUrl && <img src={branding.loginImageUrl} alt="" className="hidden w-1/2 object-cover md:block" />}
         <div className="flex-1 p-6">
           <div className="mb-5 flex items-center gap-3">
@@ -231,7 +233,19 @@ export function SetupPage() {
   const [workingDays, setWorkingDays] = useState([1, 2, 3, 4, 5, 6]);
   const form = useForm({
     resolver: zodResolver(setupSchema),
-    defaultValues: { setupToken: '', adminName: '', adminEmail: '', adminPassword: '', gstRate: 18, defaultCreditDays: 30, sampleRetentionDays: 90, reportRetentionYears: 5, quotationTerms: '', invoiceTerms: '', reportTerms: '' },
+    defaultValues: {
+      setupToken: '',
+      adminName: '',
+      adminEmail: '',
+      adminPassword: '',
+      gstRate: 18,
+      defaultCreditDays: 30,
+      sampleRetentionDays: 90,
+      reportRetentionYears: 5,
+      quotationTerms: '',
+      invoiceTerms: '',
+      reportTerms: '',
+    },
   });
   const e = form.formState.errors;
   const m = useMutation({
@@ -301,7 +315,13 @@ export function SetupPage() {
             <p className="mb-1 text-[13px] font-medium text-gray-700">Working days</p>
             <div className="flex flex-wrap gap-1.5">
               {DAYS.map((d, i) => (
-                <button key={d} type="button" aria-pressed={workingDays.includes(i)} className={`rounded-md border px-2.5 py-1 text-[13px] ${workingDays.includes(i) ? 'border-brand bg-brand text-brand-fg' : 'border-gray-300 bg-surface text-gray-800'}`} onClick={() => setWorkingDays((w) => (w.includes(i) ? w.filter((x) => x !== i) : [...w, i].sort()))}>
+                <button
+                  key={d}
+                  type="button"
+                  aria-pressed={workingDays.includes(i)}
+                  className={`rounded-md border px-2.5 py-1 text-[13px] ${workingDays.includes(i) ? 'border-brand bg-brand text-brand-fg' : 'border-gray-300 bg-surface text-gray-800'}`}
+                  onClick={() => setWorkingDays((w) => (w.includes(i) ? w.filter((x) => x !== i) : [...w, i].sort()))}
+                >
                   {d}
                 </button>
               ))}

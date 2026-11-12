@@ -50,7 +50,16 @@ export function NotificationBell() {
   const rows = q.data?.data ?? [];
   return (
     <div className="relative" ref={root}>
-      <Button ref={button} variant="ghost" size="icon" className="relative size-9" aria-label={unread ? `Notifications, ${unread} unread` : 'Notifications'} aria-expanded={open} aria-controls={panelId} onClick={() => setOpen((o) => !o)}>
+      <Button
+        ref={button}
+        variant="ghost"
+        size="icon"
+        className="relative size-9"
+        aria-label={unread ? `Notifications, ${unread} unread` : 'Notifications'}
+        aria-expanded={open}
+        aria-controls={panelId}
+        onClick={() => setOpen((o) => !o)}
+      >
         <Bell aria-hidden />
         {unread > 0 && (
           <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-semibold text-white" aria-hidden>
@@ -58,7 +67,13 @@ export function NotificationBell() {
           </span>
         )}
       </Button>
-      <div id={panelId} role="region" aria-label="Notifications" hidden={!open} className="absolute top-full right-0 z-30 mt-1 w-96 max-w-[calc(100vw-2rem)] rounded-lg border border-gray-200 bg-surface shadow-lg">
+      <div
+        id={panelId}
+        role="region"
+        aria-label="Notifications"
+        hidden={!open}
+        className="absolute top-full right-0 z-30 mt-1 w-96 max-w-[calc(100vw-2rem)] rounded-lg border border-gray-200 bg-surface shadow-lg"
+      >
         {open && (
           <>
             <div className="flex items-center justify-between gap-2 border-b border-gray-200 px-3 py-2">
@@ -74,38 +89,42 @@ export function NotificationBell() {
               {rows.map((n) => {
                 const link = safeAppPath(n.link);
                 return (
-                <li key={n.id} className={cn('flex items-start justify-between gap-2 px-3 py-2 text-[13px]', !n.readAt && 'bg-blue-50')}>
-                  <div className="min-w-0">
-                    {link ? (
-                      <Link
-                        to={link}
-                        className="font-medium text-gray-900 underline"
-                        onClick={() => {
-                          setOpen(false);
-                          if (!n.readAt) markRead.mutate(n.id);
-                        }}
-                      >
-                        {n.title}
-                      </Link>
-                    ) : (
-                      <span className="font-medium text-gray-900">{n.title}</span>
+                  <li key={n.id} className={cn('flex items-start justify-between gap-2 px-3 py-2 text-[13px]', !n.readAt && 'bg-blue-50')}>
+                    <div className="min-w-0">
+                      {link ? (
+                        <Link
+                          to={link}
+                          className="font-medium text-gray-900 underline"
+                          onClick={() => {
+                            setOpen(false);
+                            if (!n.readAt) markRead.mutate(n.id);
+                          }}
+                        >
+                          {n.title}
+                        </Link>
+                      ) : (
+                        <span className="font-medium text-gray-900">{n.title}</span>
+                      )}
+                      {n.body && <p className="break-words text-gray-800">{n.body}</p>}
+                      <p className="text-xs text-gray-600">
+                        {formatDateTime(n.createdAt)}
+                        {!n.readAt && ' · Unread'}
+                      </p>
+                    </div>
+                    {!n.readAt && (
+                      <Button variant="ghost" size="sm" className="shrink-0" aria-label={`Mark read: ${n.title}`} onClick={() => markRead.mutate(n.id)}>
+                        Mark read
+                      </Button>
                     )}
-                    {n.body && <p className="break-words text-gray-800">{n.body}</p>}
-                    <p className="text-xs text-gray-600">
-                      {formatDateTime(n.createdAt)}
-                      {!n.readAt && ' · Unread'}
-                    </p>
-                  </div>
-                  {!n.readAt && (
-                    <Button variant="ghost" size="sm" className="shrink-0" aria-label={`Mark read: ${n.title}`} onClick={() => markRead.mutate(n.id)}>
-                      Mark read
-                    </Button>
-                  )}
-                </li>
+                  </li>
                 );
               })}
             </ul>
-            {(q.data?.meta.total ?? 0) > rows.length && <p className="border-t border-gray-100 px-3 py-1.5 text-xs text-gray-600">Showing the latest {rows.length} of {q.data?.meta.total}.</p>}
+            {(q.data?.meta.total ?? 0) > rows.length && (
+              <p className="border-t border-gray-100 px-3 py-1.5 text-xs text-gray-600">
+                Showing the latest {rows.length} of {q.data?.meta.total}.
+              </p>
+            )}
           </>
         )}
       </div>

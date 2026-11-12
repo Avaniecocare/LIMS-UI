@@ -46,7 +46,13 @@ export function Layout() {
       if (saved) requestAnimationFrame(() => restoreScroll(el, saved));
       else el?.scrollTo?.({ top: 0 });
       if (!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
-        el?.firstElementChild?.animate?.([{ opacity: 0, transform: 'translateY(4px)' }, { opacity: 1, transform: 'none' }], { duration: 180, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' });
+        el?.firstElementChild?.animate?.(
+          [
+            { opacity: 0, transform: 'translateY(4px)' },
+            { opacity: 1, transform: 'none' },
+          ],
+          { duration: 180, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' },
+        );
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- once per page
@@ -58,7 +64,9 @@ export function Layout() {
   const phone = useIsPhone();
   const [searching, setSearching] = useState(false);
   // The phone's bottom bar: the four most useful places for this person, then More (the full menu as a drawer).
-  const bottom = BOTTOM_NAV_PRIORITY.map((to) => items.find((i) => i.to === to)).filter((i): i is (typeof items)[number] => !!i && mobileRule(i.to).support !== 'desktop').slice(0, 4);
+  const bottom = BOTTOM_NAV_PRIORITY.map((to) => items.find((i) => i.to === to))
+    .filter((i): i is (typeof items)[number] => !!i && mobileRule(i.to).support !== 'desktop')
+    .slice(0, 4);
   useEffect(() => {
     if (!phone) setSearching(false);
   }, [phone]);
@@ -99,7 +107,13 @@ export function Layout() {
                 onClick={() => {
                   if (!window.matchMedia('(min-width: 64rem)').matches) setOpen(false);
                 }}
-                className={({ isActive }) => cn('flex h-10 items-center gap-2.5 rounded-md text-sm font-medium transition-colors duration-(--motion-fast) pointer-coarse:h-11', open ? 'px-2.5' : 'justify-center', isActive ? 'bg-brand text-brand-fg shadow-[inset_3px_0_0_var(--brand-accent)]' : 'text-nav-fg hover:bg-nav-fg/15')}
+                className={({ isActive }) =>
+                  cn(
+                    'flex h-10 items-center gap-2.5 rounded-md text-sm font-medium transition-colors duration-(--motion-fast) pointer-coarse:h-11',
+                    open ? 'px-2.5' : 'justify-center',
+                    isActive ? 'bg-brand text-brand-fg shadow-[inset_3px_0_0_var(--brand-accent)]' : 'text-nav-fg hover:bg-nav-fg/15',
+                  )
+                }
               >
                 <item.icon className="size-5 shrink-0" aria-hidden />
                 <span className={open ? 'truncate' : 'sr-only'}>{item.label}</span>
@@ -117,7 +131,10 @@ export function Layout() {
             <span className="truncate text-sm font-semibold text-gray-900 md:hidden">{branding?.productName}</span>
           </Link>
           {/* On a phone the search is an icon that opens a full-width bar. It stays mounted, so scanners work from any screen. */}
-          <div id="header-slot" className={cn(phone && !searching && 'max-md:hidden', searching && 'max-md:absolute max-md:inset-x-3 max-md:bottom-2.5 max-md:z-10 max-md:flex max-md:items-center max-md:gap-2')}>
+          <div
+            id="header-slot"
+            className={cn(phone && !searching && 'max-md:hidden', searching && 'max-md:absolute max-md:inset-x-3 max-md:bottom-2.5 max-md:z-10 max-md:flex max-md:items-center max-md:gap-2')}
+          >
             <div className="min-w-0 flex-1">
               <GlobalSearch onDone={() => setSearching(false)} />
             </div>
@@ -143,33 +160,39 @@ export function Layout() {
             )}
             <NotificationBell />
             <DropdownMenu>
-            <DropdownTrigger asChild>
-              <Button variant="ghost" size="sm" aria-label={phone ? `${user?.name ?? 'Account'}: account menu` : undefined}>
-                {phone ? (
-                  <span aria-hidden className="flex size-8 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-800">
-                    {initials(user?.name)}
-                  </span>
-                ) : (
-                  <span className="max-w-40 truncate">{user?.name}</span>
-                )}
-                <ChevronDown aria-hidden className="max-md:hidden" />
-              </Button>
-            </DropdownTrigger>
-            <DropdownContent>
-              <div className="border-b border-gray-100 px-2 py-1.5 text-xs text-gray-600">
-                {phone && <span className="block text-sm font-medium text-gray-900">{user?.name}</span>}
-                {user?.roles.join(', ')}
-              </div>
-              <DropdownItem onSelect={() => navigate('/account')}>My account</DropdownItem>
-              <DropdownSeparator />
-              <DropdownLabel>Appearance</DropdownLabel>
-              <DropdownRadioGroup value={preference} onValueChange={(v) => setPreference(v as ThemePreference)}>
-                <DropdownRadioItem value="light" onSelect={(e) => e.preventDefault()}>Light</DropdownRadioItem>
-                <DropdownRadioItem value="dark" onSelect={(e) => e.preventDefault()}>Dark</DropdownRadioItem>
-                <DropdownRadioItem value="system" onSelect={(e) => e.preventDefault()}>Same as this device</DropdownRadioItem>
-              </DropdownRadioGroup>
-              <DropdownSeparator />
-              <DropdownItem onSelect={() => logout.mutate()}>Sign out</DropdownItem>
+              <DropdownTrigger asChild>
+                <Button variant="ghost" size="sm" aria-label={phone ? `${user?.name ?? 'Account'}: account menu` : undefined}>
+                  {phone ? (
+                    <span aria-hidden className="flex size-8 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-800">
+                      {initials(user?.name)}
+                    </span>
+                  ) : (
+                    <span className="max-w-40 truncate">{user?.name}</span>
+                  )}
+                  <ChevronDown aria-hidden className="max-md:hidden" />
+                </Button>
+              </DropdownTrigger>
+              <DropdownContent>
+                <div className="border-b border-gray-100 px-2 py-1.5 text-xs text-gray-600">
+                  {phone && <span className="block text-sm font-medium text-gray-900">{user?.name}</span>}
+                  {user?.roles.join(', ')}
+                </div>
+                <DropdownItem onSelect={() => navigate('/account')}>My account</DropdownItem>
+                <DropdownSeparator />
+                <DropdownLabel>Appearance</DropdownLabel>
+                <DropdownRadioGroup value={preference} onValueChange={(v) => setPreference(v as ThemePreference)}>
+                  <DropdownRadioItem value="light" onSelect={(e) => e.preventDefault()}>
+                    Light
+                  </DropdownRadioItem>
+                  <DropdownRadioItem value="dark" onSelect={(e) => e.preventDefault()}>
+                    Dark
+                  </DropdownRadioItem>
+                  <DropdownRadioItem value="system" onSelect={(e) => e.preventDefault()}>
+                    Same as this device
+                  </DropdownRadioItem>
+                </DropdownRadioGroup>
+                <DropdownSeparator />
+                <DropdownItem onSelect={() => logout.mutate()}>Sign out</DropdownItem>
               </DropdownContent>
             </DropdownMenu>
           </div>
@@ -187,13 +210,32 @@ export function Layout() {
         )}
         {/* relative: hidden labels (sr-only, absolutely placed) stay inside this scroll area instead of stretching the page.
             On a phone the bottom bar (and a page's action bar) sit over the end of the page, so it leaves room for them. */}
-         <main ref={main} onScroll={(e) => scrollPositions.set(entry.current, e.currentTarget.scrollTop)} id="main" className="relative min-h-0 flex-1 overflow-y-auto p-4 max-md:px-3 max-md:pb-[calc(var(--phone-bottom)+1rem)] lg:p-5">
+        <main
+          ref={main}
+          onScroll={(e) => scrollPositions.set(entry.current, e.currentTarget.scrollTop)}
+          id="main"
+          className="relative min-h-0 flex-1 overflow-y-auto p-4 max-md:px-3 max-md:pb-[calc(var(--phone-bottom)+1rem)] lg:p-5"
+        >
           <Outlet />
         </main>
         {phone && (
-          <nav aria-label="Quick" className="fixed inset-x-0 bottom-0 z-20 grid h-[calc(3.75rem+env(safe-area-inset-bottom))] border-t border-gray-200 bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur" style={{ gridTemplateColumns: `repeat(${bottom.length + 1}, minmax(0, 1fr))` }}>
+          <nav
+            aria-label="Quick"
+            className="fixed inset-x-0 bottom-0 z-20 grid h-[calc(3.75rem+env(safe-area-inset-bottom))] border-t border-gray-200 bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"
+            style={{ gridTemplateColumns: `repeat(${bottom.length + 1}, minmax(0, 1fr))` }}
+          >
             {bottom.map((item) => (
-              <NavLink key={item.to} to={item.to} end={item.to === '/'} className={({ isActive }) => cn('relative flex flex-col items-center justify-center gap-0.5 text-[11px] font-medium transition-colors duration-(--motion-fast) active:bg-gray-100', isActive ? 'text-brand' : 'text-gray-600')}>
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === '/'}
+                className={({ isActive }) =>
+                  cn(
+                    'relative flex flex-col items-center justify-center gap-0.5 text-[11px] font-medium transition-colors duration-(--motion-fast) active:bg-gray-100',
+                    isActive ? 'text-brand' : 'text-gray-600',
+                  )
+                }
+              >
                 {({ isActive }) => (
                   <>
                     {isActive && <span aria-hidden className="absolute top-0 h-0.5 w-8 animate-fade-in rounded-full bg-brand" />}
@@ -203,7 +245,12 @@ export function Layout() {
                 )}
               </NavLink>
             ))}
-            <button type="button" className="flex flex-col items-center justify-center gap-0.5 text-[11px] font-medium text-gray-600 active:bg-gray-100" aria-expanded={open} onClick={() => setOpen(true)}>
+            <button
+              type="button"
+              className="flex flex-col items-center justify-center gap-0.5 text-[11px] font-medium text-gray-600 active:bg-gray-100"
+              aria-expanded={open}
+              onClick={() => setOpen(true)}
+            >
               <LayoutGrid className="size-5" aria-hidden />
               More
             </button>
@@ -228,7 +275,12 @@ function restoreScroll(el: HTMLElement | null, top: number, until = performance.
 }
 
 function initials(name?: string | null) {
-  return (name ?? '?').split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]!.toUpperCase()).join('');
+  return (name ?? '?')
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]!.toUpperCase())
+    .join('');
 }
 
 /**

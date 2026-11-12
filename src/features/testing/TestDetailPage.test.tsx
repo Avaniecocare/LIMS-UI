@@ -61,7 +61,21 @@ describe('TestDetailPage', () => {
     const tests: Record<string, Test> = { a: testFor('a', 7), b: testFor('b', 2) };
     const saves: { id: string; remarks: unknown; version: number }[] = [];
     vi.spyOn(api, 'GET').mockImplementation((async (path: string, init?: { params?: { path?: { id?: string } } }) => {
-      if (path === '/api/v1/auth/me') return { data: { id: 'u1', name: 'Tech', email: 't@x', designation: null, roles: [], permissions: ['tests.work'], csrfToken: 'c', totpEnabled: false, mustChangePassword: false, totpAvailable: false } };
+      if (path === '/api/v1/auth/me')
+        return {
+          data: {
+            id: 'u1',
+            name: 'Tech',
+            email: 't@x',
+            designation: null,
+            roles: [],
+            permissions: ['tests.work'],
+            csrfToken: 'c',
+            totpEnabled: false,
+            mustChangePassword: false,
+            totpAvailable: false,
+          },
+        };
       if (path === '/api/v1/tests/{id}') return { data: tests[init!.params!.path!.id!] };
       return { data: [] };
     }) as never);

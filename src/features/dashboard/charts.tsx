@@ -101,8 +101,21 @@ export function BarPanel({ title, points, money }: { title: string; points: Poin
           <ResponsiveContainer width="100%" height="100%">
             <BarChart accessibilityLayer={false} data={points} layout="vertical" margin={{ top: 0, right: money ? 88 : 40, bottom: 0, left: 4 }} barCategoryGap={8}>
               <XAxis type="number" hide domain={[0, 'dataMax']} />
-              <YAxis type="category" dataKey="label" width={190} tickLine={false} axisLine={{ stroke: GRID }} tick={{ fill: INK, fontSize: 12 }} tickFormatter={(v: string) => shorten(v)} interval={0} />
-              <Tooltip cursor={{ fill: 'var(--color-gray-100)' }} isAnimationActive={false} content={({ active, payload }) => <ChartTip active={active} label={payload?.[0]?.payload?.label} rows={payload?.length ? [{ value: text(Number(payload[0].value)) }] : []} />} />
+              <YAxis
+                type="category"
+                dataKey="label"
+                width={190}
+                tickLine={false}
+                axisLine={{ stroke: GRID }}
+                tick={{ fill: INK, fontSize: 12 }}
+                tickFormatter={(v: string) => shorten(v)}
+                interval={0}
+              />
+              <Tooltip
+                cursor={{ fill: 'var(--color-gray-100)' }}
+                isAnimationActive={false}
+                content={({ active, payload }) => <ChartTip active={active} label={payload?.[0]?.payload?.label} rows={payload?.length ? [{ value: text(Number(payload[0].value)) }] : []} />}
+              />
               <Bar
                 dataKey="value"
                 fill={SERIES_1}
@@ -175,7 +188,13 @@ export function BilledCollectedPanel({ points }: { points: SeriesPoint[] }) {
               <CartesianGrid vertical={false} stroke={GRID} />
               <XAxis dataKey="month" tickLine={false} axisLine={{ stroke: GRID }} tick={{ fill: INK, fontSize: 12 }} />
               <YAxis width={80} tickLine={false} axisLine={false} tick={{ fill: INK, fontSize: 12 }} tickFormatter={(v: number) => formatINR(v).replace(/\.00$/, '')} />
-              <Tooltip cursor={{ fill: 'var(--color-gray-100)' }} isAnimationActive={false} content={({ active, label, payload }) => <ChartTip active={active} label={String(label ?? '')} rows={(payload ?? []).map((s) => ({ name: String(s.name), value: formatINR(Number(s.value)), color: String(s.color) }))} />} />
+              <Tooltip
+                cursor={{ fill: 'var(--color-gray-100)' }}
+                isAnimationActive={false}
+                content={({ active, label, payload }) => (
+                  <ChartTip active={active} label={String(label ?? '')} rows={(payload ?? []).map((s) => ({ name: String(s.name), value: formatINR(Number(s.value)), color: String(s.color) }))} />
+                )}
+              />
               <Legend verticalAlign="top" align="right" iconType="square" iconSize={10} formatter={(v) => <span style={{ color: INK, fontSize: 12 }}>{v}</span>} />
               <Bar dataKey="billed" name={BILLED} fill={SERIES_1} maxBarSize={24} radius={[4, 4, 0, 0]} isAnimationActive={false} />
               <Bar dataKey="collected" name={COLLECTED} fill={SERIES_2} maxBarSize={24} radius={[4, 4, 0, 0]} isAnimationActive={false} />

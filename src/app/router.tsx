@@ -31,7 +31,6 @@ export function KeyedById({ children }: { children: ReactNode }) {
 /** A detail page that keeps state per record: see KeyedById. */
 const detail = (Component: LazyExoticComponent<ComponentType>, permissions?: string[], module?: string): ReactNode => <KeyedById>{page(Component, permissions, module)}</KeyedById>;
 
-
 /** Only hides routes for a clean experience. The API enforces the same permission regardless. */
 function RequirePermission({ permissions, module, children }: { permissions?: string[]; module?: string; children: ReactNode }) {
   const { can, moduleOn } = useSession();
@@ -111,77 +110,77 @@ export const router = createBrowserRouter([
   {
     errorElement: <RouteError />,
     children: [
-  {
-    element: <PublicOnly />,
-    children: [
-      { path: '/login', element: suspended(LoginPage) },
-      { path: '/forgot-password', element: suspended(ForgotPasswordPage) },
-      { path: '/reset-password', element: suspended(ResetPasswordPage) },
-      { path: '/setup', element: suspended(SetupPage) },
-    ],
-  },
-  { path: '/change-password', element: suspended(RequiredPasswordChangePage) },
-  // Opened from the QR code on a report: no sign-in, signed-in or not.
-  {
-    path: '/verify/:code',
-    element: (
-      <Suspense fallback={<Spinner />}>
-        <VerifyReport />
-      </Suspense>
-    ),
-  },
-  // Opened on a phone from the QR code on the lab computer: the link itself is the permission, no sign-in.
-  {
-    path: '/phone/:token',
-    element: (
-      <Suspense fallback={<Spinner />}>
-        <PhoneUpload />
-      </Suspense>
-    ),
-  },
-  {
-    element: <RequireAuth />,
-    children: [
       {
-        // A page that crashes shows the message inside the layout, so the menu still works.
-        errorElement: <RouteError />,
+        element: <PublicOnly />,
         children: [
-      { path: '/', element: page(Dashboard) },
-      { path: '/analytics', element: page(Analytics, ['analytics.operations', 'analytics.quality', 'analytics.people', 'analytics.commercial'], 'analytics') },
-      { path: '/account', element: page(Account) },
-      { path: '/setup/lab', element: page(LabSetup, ['admin.company.edit']) },
-      { path: '/admin', element: page(Admin, ['admin.users', 'admin.roles', 'admin.settings', 'admin.audit', 'admin.company.view', 'privacy.manage']) },
-      { path: '/files', element: page(Files, ['files.view'], 'files') },
-      { path: '/quality', element: page(Quality, ['quality.view'], 'quality') },
-      { path: '/masters', element: page(Masters, ['masters.view', 'rates.view']) },
-      { path: '/masters/:key', element: page(Masters, ['masters.view', 'rates.view']) },
-      { path: '/customers', element: page(Customers, ['customers.view']) },
-      { path: '/customers/:id', element: detail(CustomerDetail, ['customers.view']) },
-      { path: '/orders', element: page(Orders, ['orders.view'], 'quotations') },
-      { path: '/orders/:id', element: detail(OrderDetail, ['orders.view'], 'quotations') },
-      { path: '/quotations', element: page(Quotations, ['quotations.view'], 'quotations') },
-      { path: '/quotations/new', element: page(QuotationEditor, ['quotations.edit'], 'quotations') },
-      { path: '/quotations/:id', element: detail(QuotationDetail, ['quotations.view'], 'quotations') },
-      { path: '/quotations/:id/edit', element: detail(QuotationEditor, ['quotations.edit'], 'quotations') },
-      { path: '/samples', element: page(Samples, ['jobs.view']) },
-      { path: '/samples/new', element: page(Booking, ['jobs.create']) },
-      { path: '/samples/jobs/:id', element: detail(JobDetail, ['jobs.view']) },
-      { path: '/planning', element: page(Planning, ['planning.view']) },
-      { path: '/my-tests', element: page(MyTests, ['tests.work']) },
-      { path: '/my-tests/:id', element: detail(TestDetail, ['tests.work', 'tests.viewAll']) },
-      { path: '/approvals', element: page(Approvals, ['tests.approve', 'reports.review', 'reports.approve', 'reports.issue', 'reports.view']) },
-      { path: '/approvals/reports/:id', element: detail(ReportDetail, ['reports.view']) },
-      { path: '/reports', element: page(ReportsCatalog, ['mis.view', 'mis.commercial'], 'analytics') },
-      { path: '/reports/:key', element: page(ReportView, ['mis.view', 'mis.commercial'], 'analytics') },
-      { path: '/dispatch', element: page(Dispatch, ['dispatch.view'], 'dispatch') },
-      { path: '/invoices', element: page(Invoices, ['invoices.view'], 'billing') },
-      { path: '/invoices/:id', element: detail(InvoiceDetail, ['invoices.view'], 'billing') },
-      { path: '/due-invoices', element: page(DueInvoices, ['invoices.view'], 'billing') },
-      { path: '*', element: <EmptyState title="Page not found" /> },
+          { path: '/login', element: suspended(LoginPage) },
+          { path: '/forgot-password', element: suspended(ForgotPasswordPage) },
+          { path: '/reset-password', element: suspended(ResetPasswordPage) },
+          { path: '/setup', element: suspended(SetupPage) },
         ],
       },
-    ],
-  },
+      { path: '/change-password', element: suspended(RequiredPasswordChangePage) },
+      // Opened from the QR code on a report: no sign-in, signed-in or not.
+      {
+        path: '/verify/:code',
+        element: (
+          <Suspense fallback={<Spinner />}>
+            <VerifyReport />
+          </Suspense>
+        ),
+      },
+      // Opened on a phone from the QR code on the lab computer: the link itself is the permission, no sign-in.
+      {
+        path: '/phone/:token',
+        element: (
+          <Suspense fallback={<Spinner />}>
+            <PhoneUpload />
+          </Suspense>
+        ),
+      },
+      {
+        element: <RequireAuth />,
+        children: [
+          {
+            // A page that crashes shows the message inside the layout, so the menu still works.
+            errorElement: <RouteError />,
+            children: [
+              { path: '/', element: page(Dashboard) },
+              { path: '/analytics', element: page(Analytics, ['analytics.operations', 'analytics.quality', 'analytics.people', 'analytics.commercial'], 'analytics') },
+              { path: '/account', element: page(Account) },
+              { path: '/setup/lab', element: page(LabSetup, ['admin.company.edit']) },
+              { path: '/admin', element: page(Admin, ['admin.users', 'admin.roles', 'admin.settings', 'admin.audit', 'admin.company.view', 'privacy.manage']) },
+              { path: '/files', element: page(Files, ['files.view'], 'files') },
+              { path: '/quality', element: page(Quality, ['quality.view'], 'quality') },
+              { path: '/masters', element: page(Masters, ['masters.view', 'rates.view']) },
+              { path: '/masters/:key', element: page(Masters, ['masters.view', 'rates.view']) },
+              { path: '/customers', element: page(Customers, ['customers.view']) },
+              { path: '/customers/:id', element: detail(CustomerDetail, ['customers.view']) },
+              { path: '/orders', element: page(Orders, ['orders.view'], 'quotations') },
+              { path: '/orders/:id', element: detail(OrderDetail, ['orders.view'], 'quotations') },
+              { path: '/quotations', element: page(Quotations, ['quotations.view'], 'quotations') },
+              { path: '/quotations/new', element: page(QuotationEditor, ['quotations.edit'], 'quotations') },
+              { path: '/quotations/:id', element: detail(QuotationDetail, ['quotations.view'], 'quotations') },
+              { path: '/quotations/:id/edit', element: detail(QuotationEditor, ['quotations.edit'], 'quotations') },
+              { path: '/samples', element: page(Samples, ['jobs.view']) },
+              { path: '/samples/new', element: page(Booking, ['jobs.create']) },
+              { path: '/samples/jobs/:id', element: detail(JobDetail, ['jobs.view']) },
+              { path: '/planning', element: page(Planning, ['planning.view']) },
+              { path: '/my-tests', element: page(MyTests, ['tests.work']) },
+              { path: '/my-tests/:id', element: detail(TestDetail, ['tests.work', 'tests.viewAll']) },
+              { path: '/approvals', element: page(Approvals, ['tests.approve', 'reports.review', 'reports.approve', 'reports.issue', 'reports.view']) },
+              { path: '/approvals/reports/:id', element: detail(ReportDetail, ['reports.view']) },
+              { path: '/reports', element: page(ReportsCatalog, ['mis.view', 'mis.commercial'], 'analytics') },
+              { path: '/reports/:key', element: page(ReportView, ['mis.view', 'mis.commercial'], 'analytics') },
+              { path: '/dispatch', element: page(Dispatch, ['dispatch.view'], 'dispatch') },
+              { path: '/invoices', element: page(Invoices, ['invoices.view'], 'billing') },
+              { path: '/invoices/:id', element: detail(InvoiceDetail, ['invoices.view'], 'billing') },
+              { path: '/due-invoices', element: page(DueInvoices, ['invoices.view'], 'billing') },
+              { path: '*', element: <EmptyState title="Page not found" /> },
+            ],
+          },
+        ],
+      },
     ],
   },
 ]);

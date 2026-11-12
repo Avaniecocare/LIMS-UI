@@ -59,8 +59,18 @@ export default function ReportViewPage() {
     enabled: !waitingForDefault,
     queryFn: async () => unwrap(await api.GET('/api/v1/mis/{key}', { params: { path: { key: key! }, query: list.query } })),
   });
-  const departments = useQuery({ queryKey: ['department-options'], enabled: filters.includes('department') && can('masters.view'), staleTime: 60_000, queryFn: async () => unwrap(await api.GET('/api/v1/masters/departments', { params: { query: { pageSize: 200 } } })).data });
-  const technicians = useQuery({ queryKey: ['technician-options'], enabled: filters.includes('technician') && can('planning.view'), staleTime: 60_000, queryFn: async () => unwrap(await api.GET('/api/v1/planning/technicians')) });
+  const departments = useQuery({
+    queryKey: ['department-options'],
+    enabled: filters.includes('department') && can('masters.view'),
+    staleTime: 60_000,
+    queryFn: async () => unwrap(await api.GET('/api/v1/masters/departments', { params: { query: { pageSize: 200 } } })).data,
+  });
+  const technicians = useQuery({
+    queryKey: ['technician-options'],
+    enabled: filters.includes('technician') && can('planning.view'),
+    staleTime: 60_000,
+    queryFn: async () => unwrap(await api.GET('/api/v1/planning/technicians')),
+  });
 
   const shownColumns: Column[] = q.data?.columns ?? report?.columns ?? [];
   const columns = useMemo<Col<Row>[]>(
@@ -68,7 +78,9 @@ export default function ReportViewPage() {
       shownColumns.map((c) => ({
         id: c.key,
         header: c.label,
-        cell: ({ row }) => <span className={RIGHT.includes(c.type) ? 'whitespace-nowrap tabular-nums' : c.type === 'text' ? undefined : 'whitespace-nowrap'}>{formatCell(c.type, row.original[c.key])}</span>,
+        cell: ({ row }) => (
+          <span className={RIGHT.includes(c.type) ? 'whitespace-nowrap tabular-nums' : c.type === 'text' ? undefined : 'whitespace-nowrap'}>{formatCell(c.type, row.original[c.key])}</span>
+        ),
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- the columns of one report do not change
     [q.data?.columns, report?.key],
@@ -79,7 +91,9 @@ export default function ReportViewPage() {
   if (!report) return <EmptyState title="This report is not available to you" />;
 
   const f = list.filters;
-  const exportParams = Object.fromEntries(Object.entries({ from: f.from, to: f.to, customerId: f.customerId, departmentId: f.departmentId, technicianId: f.technicianId, status: f.status }).filter(([, v]) => v));
+  const exportParams = Object.fromEntries(
+    Object.entries({ from: f.from, to: f.to, customerId: f.customerId, departmentId: f.departmentId, technicianId: f.technicianId, status: f.status }).filter(([, v]) => v),
+  );
   const statuses = STATUS_OPTIONS[report.key] ?? [];
 
   return (
@@ -142,7 +156,18 @@ export default function ReportViewPage() {
           )}
           <SavedFilters screen={`report-${report.key}`} current={list.allParams} onApply={list.applyFilters} />
         </div>
-        <DataTable ariaLabel={report.title} columns={columns} rows={q.data?.data as Row[] | undefined} meta={q.data?.meta} loading={q.isLoading || waitingForDefault} error={q.error} onRetry={q.refetch} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} emptyTitle="No records for these filters" />
+        <DataTable
+          ariaLabel={report.title}
+          columns={columns}
+          rows={q.data?.data as Row[] | undefined}
+          meta={q.data?.meta}
+          loading={q.isLoading || waitingForDefault}
+          error={q.error}
+          onRetry={q.refetch}
+          onPageChange={list.setPage}
+          onPageSizeChange={list.setPageSize}
+          emptyTitle="No records for these filters"
+        />
       </div>
     </>
   );

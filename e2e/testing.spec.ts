@@ -27,7 +27,10 @@ async function completeStages(page: Page, count: number) {
 async function openReport(page: Page, user: string, tab: string, sampleNo: string) {
   await signIn(page, user);
   await page.goto(`/approvals?tab=${tab}&q=${encodeURIComponent(sampleNo)}`);
-  await page.getByRole('row', { name: new RegExp(sampleNo) }).first().click();
+  await page
+    .getByRole('row', { name: new RegExp(sampleNo) })
+    .first()
+    .click();
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Revision');
 }
 
@@ -207,7 +210,11 @@ test('from result entry to an issued, then revised, report', async ({ page }) =>
   await page.goto(`/my-tests?q=${encodeURIComponent(sample.sampleNo)}`);
   await expect(page.getByRole('table', { name: 'My tests' })).toContainText('Load looks wrong, measure again');
   await page.getByRole('button', { name: /Notifications, \d+ unread/ }).click();
-  await page.getByRole('region', { name: 'Notifications' }).getByRole('link', { name: new RegExp(`Tensile test on ${sample.sampleNo} was sent back`) }).first().click();
+  await page
+    .getByRole('region', { name: 'Notifications' })
+    .getByRole('link', { name: new RegExp(`Tensile test on ${sample.sampleNo} was sent back`) })
+    .first()
+    .click();
   await expect(page.getByRole('alert').filter({ hasText: 'Sent back for correction' })).toContainText('Load looks wrong, measure again');
   await reading(row(page, 'LOAD')).fill('41000');
   await reading(row(page, 'LOAD')).blur();
@@ -220,7 +227,10 @@ test('from result entry to an issued, then revised, report', async ({ page }) =>
   // Bulk approve
   await signIn(page, 'hod');
   await page.goto(`/approvals?tab=results&q=${encodeURIComponent(sample.sampleNo)}`);
-  await approvals.getByRole('row', { name: new RegExp(sample.sampleNo) }).getByRole('checkbox').click();
+  await approvals
+    .getByRole('row', { name: new RegExp(sample.sampleNo) })
+    .getByRole('checkbox')
+    .click();
   await page.getByRole('button', { name: 'Approve selected' }).click();
   await page.getByRole('alertdialog').getByRole('button', { name: 'Approve selected' }).click();
   await expect(page.getByRole('status').filter({ hasText: '1 approved' })).toBeVisible();
@@ -232,7 +242,10 @@ test('from result entry to an issued, then revised, report', async ({ page }) =>
   // Review: drafts first, then reject, correct and resubmit
   await page.goto(`/approvals?tab=review&q=${encodeURIComponent(sample.sampleNo)}`);
   await expect(page.getByRole('tab')).toHaveText(['Review', 'Issued']);
-  await page.getByRole('row', { name: new RegExp(sample.sampleNo) }).first().click();
+  await page
+    .getByRole('row', { name: new RegExp(sample.sampleNo) })
+    .first()
+    .click();
   const report = () => page.frameLocator('iframe[title^="Preview of"]');
   await expect(report().getByText(sample.sampleNo).first()).toBeVisible();
   await page.getByRole('button', { name: 'Submit for review' }).click();
@@ -328,7 +341,10 @@ test('from result entry to an issued, then revised, report', async ({ page }) =>
   await page.getByRole('dialog').getByRole('button', { name: 'Sign and approve' }).click();
   await expect(issue).toBeEnabled({ timeout: 90_000 });
   await issue.click();
-  await page.getByRole('dialog').getByLabel(/Email to/).fill('');
+  await page
+    .getByRole('dialog')
+    .getByLabel(/Email to/)
+    .fill('');
   await page.getByRole('dialog').getByRole('button', { name: 'Issue report' }).click();
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Issued');
   await page.getByRole('tab', { name: /Revisions and tests/ }).click();
@@ -342,7 +358,6 @@ test('from result entry to an issued, then revised, report', async ({ page }) =>
   await shot(page, 'report-detail-issued');
   await page.getByRole('tab', { name: 'History' }).click();
   await expect(page.getByText('Customer asked for a correction').first()).toBeVisible();
-
 });
 
 test('autosave: keeps what is being typed, warns on leaving, and reloads on a conflict', async ({ page }) => {
@@ -482,12 +497,17 @@ test('an entry the server refuses is shown on its own input, and the rest still 
   await expect(reading(row(page, 'THICK'))).toHaveAttribute('aria-invalid', 'false');
 
   // The other value goes through on the retry without the refused one
-  await expect.poll(async () => {
-    const tech = await apiAs('tech2');
-    const test_ = await tech.get(`/tests/${sampleTestIds[0]}`);
-    await tech.dispose();
-    return test_.results.find((r: { code: string }) => r.code === 'THICK').numericValue;
-  }, { timeout: 15_000 }).toMatch(/^6\.2/);
+  await expect
+    .poll(
+      async () => {
+        const tech = await apiAs('tech2');
+        const test_ = await tech.get(`/tests/${sampleTestIds[0]}`);
+        await tech.dispose();
+        return test_.results.find((r: { code: string }) => r.code === 'THICK').numericValue;
+      },
+      { timeout: 15_000 },
+    )
+    .toMatch(/^6\.2/);
 
   // Correcting it clears the message and saves
   await reading(row(page, 'WIDTH')).fill('12.5');
@@ -542,7 +562,10 @@ test('cancelling shows the effect first, and blockers stop it', async ({ page })
 
   // One sample
   const second = job.samples[1];
-  await page.getByRole('region', { name: `Sample ${second.sampleNo}` }).getByRole('button', { name: 'Cancel sample' }).click();
+  await page
+    .getByRole('region', { name: `Sample ${second.sampleNo}` })
+    .getByRole('button', { name: 'Cancel sample' })
+    .click();
   dialog = page.getByRole('dialog');
   await expect(dialog.getByText(/^Samples \(1\)/)).toBeVisible();
   await expect(dialog.getByText(/^Tests \(2\)/)).toBeVisible();
@@ -684,7 +707,10 @@ test('samples filter by urgency and returnability; assignment sends the versions
   await expect(table).toContainText(sample.sampleNo);
 
   await page.goto(`/planning?view=unassigned&jobId=${job.id}`);
-  await page.getByRole('row', { name: new RegExp(sample.sampleNo) }).getByRole('checkbox').click();
+  await page
+    .getByRole('row', { name: new RegExp(sample.sampleNo) })
+    .getByRole('checkbox')
+    .click();
   await page.getByRole('button', { name: 'Assign' }).click();
   const dialog = page.getByRole('dialog');
   await dialog.getByRole('radio', { name: 'Tara Technician' }).check();
@@ -698,7 +724,10 @@ test('samples filter by urgency and returnability; assignment sends the versions
 test('an admin uploads a signature image for a user', async ({ page }) => {
   await signIn(page, 'admin');
   await page.goto('/admin');
-  await page.getByLabel(/Search/).first().fill('tech2@demo.example');
+  await page
+    .getByLabel(/Search/)
+    .first()
+    .fill('tech2@demo.example');
   await page.getByRole('row', { name: /tech2@demo.example/ }).click();
   const dialog = page.getByRole('dialog');
   const section = dialog.getByRole('region', { name: 'Signature image' });

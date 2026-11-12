@@ -56,7 +56,10 @@ test('an analyst finds a test with search and enters a result on the phone', asy
   await page.getByRole('combobox', { name: 'Search or scan' }).press('Enter');
   await expect(page).toHaveURL(new RegExp(`/my-tests/${sampleTestIds[0]}`));
   await page.getByRole('button', { name: 'Start test' }).click();
-  const input = page.locator('tr[data-parameter="DENSITY"]').getByRole('textbox').or(page.getByLabel(/Density/i).first());
+  const input = page
+    .locator('tr[data-parameter="DENSITY"]')
+    .getByRole('textbox')
+    .or(page.getByLabel(/Density/i).first());
   await input.first().fill('0.91');
   await expect(page.getByText(/Saved|Saving/).first()).toBeVisible();
   await noSideways(page);

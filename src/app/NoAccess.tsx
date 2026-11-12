@@ -24,7 +24,9 @@ export function NoAccess() {
           </span>
           <div>
             <h2 className="text-base font-semibold text-gray-900">You don't have access to this page</h2>
-            <p className="mt-1 text-sm text-gray-600">Your role doesn't include it. If you need it for your work, ask an administrator; they'll see your request and you'll be notified of the answer.</p>
+            <p className="mt-1 text-sm text-gray-600">
+              Your role doesn't include it. If you need it for your work, ask an administrator; they'll see your request and you'll be notified of the answer.
+            </p>
           </div>
         </div>
         {m.isSuccess || already ? (

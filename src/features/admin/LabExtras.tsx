@@ -27,7 +27,12 @@ export function ModulesTab() {
   const dirty = !!q.data && q.data.modules.some((m) => draft[m.key] !== m.enabled);
   const guard = useLeaveGuard(dirty);
   const save = useMutation({
-    mutationFn: async (list: ModuleList) => unwrap(await api.PUT('/api/v1/admin/lab/modules', { body: { version: list.version, enabled: Object.fromEntries(Object.entries(draft).filter(([k, on]) => list.modules.find((m) => m.key === k)?.enabled !== on)) } })),
+    mutationFn: async (list: ModuleList) =>
+      unwrap(
+        await api.PUT('/api/v1/admin/lab/modules', {
+          body: { version: list.version, enabled: Object.fromEntries(Object.entries(draft).filter(([k, on]) => list.modules.find((m) => m.key === k)?.enabled !== on)) },
+        }),
+      ),
     onSuccess: async (next) => {
       client.setQueryData(['lab-modules'], next);
       // Menus and pages follow the session's list of modules.
@@ -42,11 +47,21 @@ export function ModulesTab() {
   return (
     <Card>
       {guard.dialog}
-      <CardHeader title="Modules" description="Turn off what your laboratory does not use, to keep menus simple. Customers, booking, testing, approvals, reports and masters are always on. Turning a module off deletes nothing." />
+      <CardHeader
+        title="Modules"
+        description="Turn off what your laboratory does not use, to keep menus simple. Customers, booking, testing, approvals, reports and masters are always on. Turning a module off deletes nothing."
+      />
       <ul className="divide-y divide-gray-100">
         {q.data.modules.map((m) => (
           <li key={m.key} className="flex items-start gap-3 px-4 py-3">
-            <Checkbox id={`mod-${m.key}`} className="mt-0.5" checked={!!draft[m.key]} disabled={!canEdit || !!m.setupNeeded} onCheckedChange={(v) => setDraft((d) => ({ ...d, [m.key]: v === true }))} aria-label={m.label} />
+            <Checkbox
+              id={`mod-${m.key}`}
+              className="mt-0.5"
+              checked={!!draft[m.key]}
+              disabled={!canEdit || !!m.setupNeeded}
+              onCheckedChange={(v) => setDraft((d) => ({ ...d, [m.key]: v === true }))}
+              aria-label={m.label}
+            />
             <label htmlFor={`mod-${m.key}`} className="cursor-pointer text-[13px]">
               <span className="block font-medium text-gray-900">
                 {m.label} {m.setupNeeded ? <Badge tone="amber">Not set up</Badge> : !draft[m.key] && <Badge>Off</Badge>}
@@ -96,7 +111,10 @@ export function EmailTemplatesTab() {
                 type="button"
                 aria-current={t.key === current.key ? 'true' : undefined}
                 onClick={() => setSelected(t.key)}
-                className={cn('flex w-full items-center justify-between gap-2 rounded-md px-3 py-2 text-left text-[13px]', t.key === current.key ? 'bg-gray-100 font-medium text-gray-900' : 'text-gray-800 hover:bg-gray-50')}
+                className={cn(
+                  'flex w-full items-center justify-between gap-2 rounded-md px-3 py-2 text-left text-[13px]',
+                  t.key === current.key ? 'bg-gray-100 font-medium text-gray-900' : 'text-gray-800 hover:bg-gray-50',
+                )}
               >
                 {t.label}
                 {t.customized && <Badge tone="blue">Edited</Badge>}
@@ -131,7 +149,8 @@ function TemplateEditor({ template, version }: { template: Template; version: nu
     queryKey: ['email-preview', template.key, debouncedSubject, debouncedBody],
     retry: false,
     placeholderData: (prev) => prev,
-    queryFn: async () => unwrap(await api.POST('/api/v1/admin/lab/email-templates/{key}/preview', { params: { path: { key: template.key } }, body: { subject: debouncedSubject, body: debouncedBody } })),
+    queryFn: async () =>
+      unwrap(await api.POST('/api/v1/admin/lab/email-templates/{key}/preview', { params: { path: { key: template.key } }, body: { subject: debouncedSubject, body: debouncedBody } })),
   });
   useEffect(() => {
     const e = preview.error;
@@ -188,14 +207,34 @@ function TemplateEditor({ template, version }: { template: Template; version: nu
             <Field label="Subject" htmlFor="tpl-subject" error={errors.subject}>
               <Input ref={subjectRef} id="tpl-subject" value={subject} maxLength={200} onFocus={() => (lastField.current = 'subject')} onChange={(e) => setSubject(e.target.value)} />
             </Field>
-            <Field label="Message" htmlFor="tpl-body" error={errors.body} hint="A blank line starts a new paragraph. **Double asterisks** make bold. {{#name}}…{{/name}} shows a passage only when that value exists.">
-              <Textarea ref={bodyRef} id="tpl-body" rows={12} className="font-mono text-[13px]" value={body} maxLength={5000} onFocus={() => (lastField.current = 'body')} onChange={(e) => setBody(e.target.value)} />
+            <Field
+              label="Message"
+              htmlFor="tpl-body"
+              error={errors.body}
+              hint="A blank line starts a new paragraph. **Double asterisks** make bold. {{#name}}…{{/name}} shows a passage only when that value exists."
+            >
+              <Textarea
+                ref={bodyRef}
+                id="tpl-body"
+                rows={12}
+                className="font-mono text-[13px]"
+                value={body}
+                maxLength={5000}
+                onFocus={() => (lastField.current = 'body')}
+                onChange={(e) => setBody(e.target.value)}
+              />
             </Field>
             <div>
               <p className="mb-1 text-[13px] font-medium text-gray-700">Insert a value</p>
               <div className="flex flex-wrap gap-1.5">
                 {template.variables.map((v) => (
-                  <button key={v.name} type="button" title={`${v.description}, e.g. ${v.example}`} onClick={() => insert(v.name)} className="rounded-full border border-gray-300 bg-surface px-2 py-0.5 font-mono text-xs text-gray-800 hover:border-brand hover:text-brand">
+                  <button
+                    key={v.name}
+                    type="button"
+                    title={`${v.description}, e.g. ${v.example}`}
+                    onClick={() => insert(v.name)}
+                    className="rounded-full border border-gray-300 bg-surface px-2 py-0.5 font-mono text-xs text-gray-800 hover:border-brand hover:text-brand"
+                  >
                     {v.name}
                   </button>
                 ))}
@@ -208,7 +247,14 @@ function TemplateEditor({ template, version }: { template: Template; version: nu
               <span className="text-gray-600">Subject: </span>
               {preview.data?.subject ?? '…'}
             </p>
-            {preview.data && <iframe title={`Preview of ${template.label}`} sandbox="" srcDoc={preview.data.html} className={cn('h-96 w-full rounded border border-gray-200 bg-surface', preview.isFetching && 'opacity-70')} />}
+            {preview.data && (
+              <iframe
+                title={`Preview of ${template.label}`}
+                sandbox=""
+                srcDoc={preview.data.html}
+                className={cn('h-96 w-full rounded border border-gray-200 bg-surface', preview.isFetching && 'opacity-70')}
+              />
+            )}
           </div>
         </div>
         {canEdit && (
@@ -236,7 +282,15 @@ function TemplateEditor({ template, version }: { template: Template; version: nu
           </div>
         )}
       </Card>
-      <ConfirmDialog open={confirmReset} onOpenChange={setConfirmReset} title={`Reset "${template.label}"?`} description="Your wording is replaced by the standard wording. This can't be undone, but you can edit it again." confirmLabel="Reset" loading={reset.isPending} onConfirm={() => reset.mutate()} />
+      <ConfirmDialog
+        open={confirmReset}
+        onOpenChange={setConfirmReset}
+        title={`Reset "${template.label}"?`}
+        description="Your wording is replaced by the standard wording. This can't be undone, but you can edit it again."
+        confirmLabel="Reset"
+        loading={reset.isPending}
+        onConfirm={() => reset.mutate()}
+      />
     </div>
   );
 }

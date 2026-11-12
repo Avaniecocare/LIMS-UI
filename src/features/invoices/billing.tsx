@@ -21,10 +21,14 @@ export const PAYMENT_MODES = ['NEFT', 'RTGS', 'IMPS', 'UPI', 'CHEQUE', 'CASH', '
 /** Format check only; the amount itself is the server's to judge. */
 export const AMOUNT = /^\d+(\.\d{1,2})?$/;
 const amount = z.string().trim().regex(AMOUNT, 'Enter an amount, such as 1250.50');
-const optionalAmount = z.string().trim().regex(/^$|^\d+(\.\d{1,2})?$/, 'Enter an amount, such as 1250.50');
+const optionalAmount = z
+  .string()
+  .trim()
+  .regex(/^$|^\d+(\.\d{1,2})?$/, 'Enter an amount, such as 1250.50');
 
 export function refreshBilling(client: QueryClient) {
-  for (const key of ['invoice', 'invoices', 'invoices-ready', 'invoice-history', 'invoice-emails', 'due-invoices', 'due-summary', 'due-open', 'payments', 'dashboard']) client.invalidateQueries({ queryKey: [key] });
+  for (const key of ['invoice', 'invoices', 'invoices-ready', 'invoice-history', 'invoice-emails', 'due-invoices', 'due-summary', 'due-open', 'payments', 'dashboard'])
+    client.invalidateQueries({ queryKey: [key] });
 }
 
 export function Money({ value }: { value: string | number | null | undefined }) {
@@ -32,7 +36,11 @@ export function Money({ value }: { value: string | number | null | undefined }) 
 }
 
 function dueOpenQuery(customerId: string) {
-  return { queryKey: ['due-open', customerId], enabled: !!customerId, queryFn: async () => unwrap(await api.GET('/api/v1/invoices/due', { params: { query: { customerId, pageSize: 200, sort: 'dueDate', order: 'asc' as const } } })).data };
+  return {
+    queryKey: ['due-open', customerId],
+    enabled: !!customerId,
+    queryFn: async () => unwrap(await api.GET('/api/v1/invoices/due', { params: { query: { customerId, pageSize: 200, sort: 'dueDate', order: 'asc' as const } } })).data,
+  };
 }
 
 /** The customer's open invoices with an amount box for each. All totals stay on the server. */
@@ -96,18 +104,52 @@ const paymentSchema = z.object({
 type PaymentValues = z.infer<typeof paymentSchema>;
 
 /** Records a payment. Opened from an invoice, it starts with that invoice's balance allocated. */
-export function RecordPaymentDialog({ open, onOpenChange, invoice, customerId, onSaved }: { open: boolean; onOpenChange: (o: boolean) => void; invoice?: { id: string; customerId: string; balance: string } | null; customerId?: string; onSaved?: () => void }) {
+export function RecordPaymentDialog({
+  open,
+  onOpenChange,
+  invoice,
+  customerId,
+  onSaved,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  invoice?: { id: string; customerId: string; balance: string } | null;
+  customerId?: string;
+  onSaved?: () => void;
+}) {
   const client = useQueryClient();
   const fixedCustomer = invoice?.customerId ?? customerId ?? '';
   const form = useForm<PaymentValues>({ resolver: zodResolver(paymentSchema), defaultValues: { customerId: '', paidOn: '', mode: 'NEFT', reference: '', amount: '', notes: '', allocations: {} } });
   useEffect(() => {
-    if (open) form.reset({ customerId: fixedCustomer, paidOn: todayIso(), mode: 'NEFT', reference: '', amount: invoice?.balance ?? '', notes: '', allocations: invoice ? { [invoice.id]: invoice.balance } : {} });
+    if (open)
+      form.reset({
+        customerId: fixedCustomer,
+        paidOn: todayIso(),
+        mode: 'NEFT',
+        reference: '',
+        amount: invoice?.balance ?? '',
+        notes: '',
+        allocations: invoice ? { [invoice.id]: invoice.balance } : {},
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- load the form when the dialog opens
   }, [open, invoice?.id, fixedCustomer]);
   const chosen = form.watch('customerId');
   const e = form.formState.errors;
   const m = useMutation({
-    mutationFn: async (v: PaymentValues) => unwrap(await api.POST('/api/v1/payments', { body: { customerId: v.customerId, paidOn: v.paidOn, mode: v.mode, reference: v.reference.trim() || null, amount: v.amount.trim(), notes: v.notes.trim() || null, allocations: toAllocations(v.allocations) } })),
+    mutationFn: async (v: PaymentValues) =>
+      unwrap(
+        await api.POST('/api/v1/payments', {
+          body: {
+            customerId: v.customerId,
+            paidOn: v.paidOn,
+            mode: v.mode,
+            reference: v.reference.trim() || null,
+            amount: v.amount.trim(),
+            notes: v.notes.trim() || null,
+            allocations: toAllocations(v.allocations),
+          },
+        }),
+      ),
     onSuccess: (p) => {
       toast.success(`Payment ${p.paymentNo} recorded${Number(p.unapplied) > 0 ? `, ${formatINR(p.unapplied)} kept as an advance` : ''}`);
       refreshBilling(client);
@@ -151,7 +193,11 @@ export function RecordPaymentDialog({ open, onOpenChange, invoice, customerId, o
           <section className="space-y-1.5" aria-label="Allocation">
             <h3 className="text-[13px] font-semibold text-gray-900">Allocate to invoices</h3>
             <p className="text-xs text-gray-700">Anything you do not allocate stays on account as an advance, which you can apply later.</p>
-            <AllocationTable customerId={chosen} register={form.register} error={(e.allocations as { message?: string } | undefined)?.message ?? (e.allocations && 'Enter amounts such as 1250.50') ?? undefined} />
+            <AllocationTable
+              customerId={chosen}
+              register={form.register}
+              error={(e.allocations as { message?: string } | undefined)?.message ?? (e.allocations && 'Enter amounts such as 1250.50') ?? undefined}
+            />
           </section>
         )}
         <div className="flex justify-end gap-2">
@@ -195,7 +241,13 @@ export function ApplyAdvanceDialog({ payment, onClose }: { payment: Payment | nu
     },
   });
   return (
-    <Dialog open={!!payment} onOpenChange={(o) => !o && onClose()} title={`Apply advance from ${payment?.paymentNo ?? ''}`} description={payment ? `${formatINR(payment.unapplied)} is on account for ${payment.customerName}.` : undefined} wide>
+    <Dialog
+      open={!!payment}
+      onOpenChange={(o) => !o && onClose()}
+      title={`Apply advance from ${payment?.paymentNo ?? ''}`}
+      description={payment ? `${formatINR(payment.unapplied)} is on account for ${payment.customerName}.` : undefined}
+      wide
+    >
       {payment && (
         <form
           className="space-y-3"
@@ -245,7 +297,15 @@ export function ReminderDialog({ invoice, onClose }: { invoice: { id: string; in
   });
   if (whatsappFor) return <WhatsappDialog kind="reminder" entityId={whatsappFor.id} title={`a reminder for ${whatsappFor.invoiceNo ?? 'this invoice'}`} onClose={() => setWhatsappFor(null)} />;
   return (
-    <ConfirmDialog open={!!invoice} onOpenChange={(o) => !o && onClose()} title={`Send a reminder for ${invoice?.invoiceNo ?? ''}?`} description={`${invoice?.customerName ?? 'The customer'}'s contact receives it by email, and it is logged on the invoice.`} confirmLabel="Send reminder" loading={m.isPending} onConfirm={() => m.mutate()} >
+    <ConfirmDialog
+      open={!!invoice}
+      onOpenChange={(o) => !o && onClose()}
+      title={`Send a reminder for ${invoice?.invoiceNo ?? ''}?`}
+      description={`${invoice?.customerName ?? 'The customer'}'s contact receives it by email, and it is logged on the invoice.`}
+      confirmLabel="Send reminder"
+      loading={m.isPending}
+      onConfirm={() => m.mutate()}
+    >
       <Field label="Send to" htmlFor="reminder-to" hint="Leave empty to use the customer's contact email.">
         <Input id="reminder-to" type="email" value={to} onChange={(e) => setTo(e.target.value)} />
       </Field>
@@ -271,4 +331,3 @@ export function useBillingActions() {
   const { can } = useSession();
   return { canPay: can('payments.edit'), canRemind: can('reminders.send'), canEdit: can('invoices.edit') };
 }
-

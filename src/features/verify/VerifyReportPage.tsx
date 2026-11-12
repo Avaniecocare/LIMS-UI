@@ -96,7 +96,9 @@ function FileCheckSection({ v }: { v: Verification }) {
   return (
     <section className="space-y-2">
       <h2 className="text-base font-semibold text-gray-900">Check a PDF copy</h2>
-      <p className="text-sm text-gray-600">If you received this report as a PDF file, choose it here to confirm it is exactly the file the laboratory issued. The file is checked on your device and is not uploaded.</p>
+      <p className="text-sm text-gray-600">
+        If you received this report as a PDF file, choose it here to confirm it is exactly the file the laboratory issued. The file is checked on your device and is not uploaded.
+      </p>
       <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-gray-300 bg-surface px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 focus-within:ring-2 focus-within:ring-brand-focus">
         <FileCheck className="size-4" aria-hidden />
         Choose PDF file
@@ -120,7 +122,10 @@ function FileCheckSection({ v }: { v: Verification }) {
           {state.match ? (
             <>“{state.name}” is identical to the PDF issued by the laboratory.</>
           ) : (
-            <>“{state.name}” is not the file the laboratory issued. It may have been edited or it may be a different report. A printed or scanned copy will never match; compare the results above instead.</>
+            <>
+              “{state.name}” is not the file the laboratory issued. It may have been edited or it may be a different report. A printed or scanned copy will never match; compare the results above
+              instead.
+            </>
           )}
         </Banner>
       )}
@@ -171,7 +176,8 @@ export default function VerifyReportPage() {
               </Banner>
             ) : (
               <Banner tone="amber" icon={<CircleAlert />} title="This report has been replaced">
-                It was genuine, but {v.replacedByRevisionNo ? `revision ${v.replacedByRevisionNo}` : 'a newer revision'} replaced it{v.supersededAt ? ` on ${formatDate(v.supersededAt)}` : ''}. Ask the laboratory for the current version before relying on it.
+                It was genuine, but {v.replacedByRevisionNo ? `revision ${v.replacedByRevisionNo}` : 'a newer revision'} replaced it{v.supersededAt ? ` on ${formatDate(v.supersededAt)}` : ''}. Ask the
+                laboratory for the current version before relying on it.
               </Banner>
             )}
             <Details v={v} />

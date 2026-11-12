@@ -53,6 +53,10 @@ function subscribe(l: () => void) {
 /** The choice and what it resolves to, kept current for components (the theme menu, the toaster). */
 export function useTheme() {
   const preference = useSyncExternalStore(subscribe, themePreference, () => 'system' as const);
-  const theme = useSyncExternalStore(subscribe, () => resolvedTheme(), () => 'light' as const);
+  const theme = useSyncExternalStore(
+    subscribe,
+    () => resolvedTheme(),
+    () => 'light' as const,
+  );
   return { preference, theme, setPreference: setThemePreference };
 }

@@ -10,7 +10,26 @@ import { z } from 'zod';
 import type { components } from '@/api/schema';
 import { useSession } from '@/app/providers';
 import { EmailLogTable, HistoryList, reserveTab, ReasonDialog, StatusBadge, toastDocumentError } from '@/components/shared';
-import { Badge, Button, Card, CardHeader, Checkbox, Dialog, EmptyState, ErrorState, Field, Input, PageHeader, Select, Spinner, Tabs, TabsContent, TabsList, TabsTrigger, Textarea } from '@/components/ui/primitives';
+import {
+  Badge,
+  Button,
+  Card,
+  CardHeader,
+  Checkbox,
+  Dialog,
+  EmptyState,
+  ErrorState,
+  Field,
+  Input,
+  PageHeader,
+  Select,
+  Spinner,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Textarea,
+} from '@/components/ui/primitives';
 import { ApiError, api, unwrap } from '@/lib/api';
 import { ReportPhotos } from './ReportPhotos';
 import { cn, formatDateTime, humanize } from '@/lib/format';
@@ -22,7 +41,21 @@ type Rejection = Revision['rejections'][number];
 
 const REASON_MAX = 2000;
 
-function RejectDialog({ report, revision, open, onOpenChange, onDone, onConflict }: { report: Report; revision: Revision; open: boolean; onOpenChange: (o: boolean) => void; onDone: (r: Report) => void; onConflict: () => void }) {
+function RejectDialog({
+  report,
+  revision,
+  open,
+  onOpenChange,
+  onDone,
+  onConflict,
+}: {
+  report: Report;
+  revision: Revision;
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  onDone: (r: Report) => void;
+  onConflict: () => void;
+}) {
   const [reason, setReason] = useState('');
   const [action, setAction] = useState<'CORRECT' | 'RETEST'>('CORRECT');
   const [tests, setTests] = useState<string[]>([]);
@@ -34,7 +67,13 @@ function RejectDialog({ report, revision, open, onOpenChange, onDone, onConflict
     }
   }, [open]);
   const m = useMutation({
-    mutationFn: async () => unwrap(await api.POST('/api/v1/reports/{id}/reject', { params: { path: { id: report.id } }, body: { version: revision.version, reason: reason.trim(), action, ...(action === 'RETEST' ? { sampleTestIds: tests } : {}) } })),
+    mutationFn: async () =>
+      unwrap(
+        await api.POST('/api/v1/reports/{id}/reject', {
+          params: { path: { id: report.id } },
+          body: { version: revision.version, reason: reason.trim(), action, ...(action === 'RETEST' ? { sampleTestIds: tests } : {}) },
+        }),
+      ),
     onSuccess: (r) => {
       toast.success(action === 'RETEST' ? 'Report rejected and tests sent back' : 'Report rejected for correction');
       onDone(r);
@@ -76,7 +115,12 @@ function RejectDialog({ report, revision, open, onOpenChange, onDone, onConflict
             <legend className="text-[13px] font-medium text-gray-700">Tests to send back</legend>
             {report.tests.map((t) => (
               <div key={t.sampleTestId}>
-                <Checkbox id={`retest-${t.sampleTestId}`} label={`${t.testName} (${humanize(t.status)})`} checked={tests.includes(t.sampleTestId)} onCheckedChange={(v) => setTests((ids) => (v ? [...ids, t.sampleTestId] : ids.filter((x) => x !== t.sampleTestId)))} />
+                <Checkbox
+                  id={`retest-${t.sampleTestId}`}
+                  label={`${t.testName} (${humanize(t.status)})`}
+                  checked={tests.includes(t.sampleTestId)}
+                  onCheckedChange={(v) => setTests((ids) => (v ? [...ids, t.sampleTestId] : ids.filter((x) => x !== t.sampleTestId)))}
+                />
               </div>
             ))}
             {!tests.length && <p className="text-xs text-gray-600">Choose at least one test.</p>}
@@ -103,14 +147,46 @@ const correctSchema = z.object({
 });
 type CorrectValues = z.infer<typeof correctSchema>;
 
-function CorrectDialog({ report, revision, open, onOpenChange, onDone, onConflict }: { report: Report; revision: Revision; open: boolean; onOpenChange: (o: boolean) => void; onDone: (r: Report) => void; onConflict: () => void }) {
+function CorrectDialog({
+  report,
+  revision,
+  open,
+  onOpenChange,
+  onDone,
+  onConflict,
+}: {
+  report: Report;
+  revision: Revision;
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  onDone: (r: Report) => void;
+  onConflict: () => void;
+}) {
   const form = useForm<CorrectValues>({ resolver: zodResolver(correctSchema), defaultValues: { reportRemarks: '', sampleDescription: '', customerReference: '', kindAttention: '' } });
   useEffect(() => {
-    if (open) form.reset({ reportRemarks: report.reportRemarks ?? '', sampleDescription: report.sampleDescription, customerReference: report.customerReference ?? '', kindAttention: report.kindAttention ?? '' });
+    if (open)
+      form.reset({
+        reportRemarks: report.reportRemarks ?? '',
+        sampleDescription: report.sampleDescription,
+        customerReference: report.customerReference ?? '',
+        kindAttention: report.kindAttention ?? '',
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- load the form when the dialog opens
   }, [open]);
   const m = useMutation({
-    mutationFn: async (v: CorrectValues) => unwrap(await api.PATCH('/api/v1/reports/{id}/draft', { params: { path: { id: report.id } }, body: { version: revision.version, reportRemarks: v.reportRemarks.trim() || null, sampleDescription: v.sampleDescription, customerReference: v.customerReference.trim() || null, kindAttention: v.kindAttention.trim() || null } })),
+    mutationFn: async (v: CorrectValues) =>
+      unwrap(
+        await api.PATCH('/api/v1/reports/{id}/draft', {
+          params: { path: { id: report.id } },
+          body: {
+            version: revision.version,
+            reportRemarks: v.reportRemarks.trim() || null,
+            sampleDescription: v.sampleDescription,
+            customerReference: v.customerReference.trim() || null,
+            kindAttention: v.kindAttention.trim() || null,
+          },
+        }),
+      ),
     onSuccess: (r) => {
       toast.success('Draft corrected');
       onDone(r);
@@ -154,7 +230,21 @@ function CorrectDialog({ report, revision, open, onOpenChange, onDone, onConflic
   );
 }
 
-function ApproveDialog({ report, revision, open, onOpenChange, onDone, onConflict }: { report: Report; revision: Revision; open: boolean; onOpenChange: (o: boolean) => void; onDone: (r: Report) => void; onConflict: () => void }) {
+function ApproveDialog({
+  report,
+  revision,
+  open,
+  onOpenChange,
+  onDone,
+  onConflict,
+}: {
+  report: Report;
+  revision: Revision;
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  onDone: (r: Report) => void;
+  onConflict: () => void;
+}) {
   const { user } = useSession();
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -212,7 +302,21 @@ const emailSchema = z.object({ to: z.union([z.literal(''), z.email('Enter a vali
 type EmailValues = z.infer<typeof emailSchema>;
 
 /** Issue with an optional email, or email an issued report again. */
-function SendDialog({ report, mode, open, onOpenChange, onSubmit, loading }: { report: Report; mode: 'issue' | 'email'; open: boolean; onOpenChange: (o: boolean) => void; onSubmit: (v: EmailValues) => void; loading: boolean }) {
+function SendDialog({
+  report,
+  mode,
+  open,
+  onOpenChange,
+  onSubmit,
+  loading,
+}: {
+  report: Report;
+  mode: 'issue' | 'email';
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  onSubmit: (v: EmailValues) => void;
+  loading: boolean;
+}) {
   const form = useForm<EmailValues>({ resolver: zodResolver(emailSchema), defaultValues: { to: '', cc: '' } });
   useEffect(() => {
     if (open) form.reset({ to: report.customerEmail ?? '', cc: '' });
@@ -221,7 +325,12 @@ function SendDialog({ report, mode, open, onOpenChange, onSubmit, loading }: { r
   const issue = mode === 'issue';
   const e = form.formState.errors;
   return (
-    <Dialog open={open} onOpenChange={onOpenChange} title={issue ? `Issue ${report.reportNo}` : `Email ${report.reportNo} again`} description={issue ? 'Once issued, the report can only be changed by a new revision.' : 'The issued PDF is attached.'}>
+    <Dialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title={issue ? `Issue ${report.reportNo}` : `Email ${report.reportNo} again`}
+      description={issue ? 'Once issued, the report can only be changed by a new revision.' : 'The issued PDF is attached.'}
+    >
       <form
         className="space-y-3"
         onSubmit={form.handleSubmit((v) => {
@@ -290,8 +399,10 @@ function RevisionCard({ report, revision }: { report: Report; revision: Revision
               <Download aria-hidden />
               Download revision {revision.revisionNo}
             </Button>
+          ) : revision.status === 'APPROVED' ? (
+            <RegeneratePdf reportId={report.id} approvedAt={revision.approvedAt} />
           ) : (
-            revision.status === 'APPROVED' ? <RegeneratePdf reportId={report.id} approvedAt={revision.approvedAt} /> : <span className="text-[13px] text-gray-600">No PDF yet</span>
+            <span className="text-[13px] text-gray-600">No PDF yet</span>
           )
         }
       />
@@ -368,7 +479,11 @@ export default function ReportDetailPage() {
     enabled: !!report && shownNo !== undefined,
     queryFn: async () => unwrap(await api.GET('/api/v1/reports/{id}/preview', { params: { path: { id: id! }, query: { revisionNo: shownNo } } })),
   });
-  const history = useQuery({ queryKey: ['report-history', id], enabled: tab === 'history', queryFn: async () => unwrap(await api.GET('/api/v1/reports/{id}/history', { params: { path: { id: id! } } })) });
+  const history = useQuery({
+    queryKey: ['report-history', id],
+    enabled: tab === 'history',
+    queryFn: async () => unwrap(await api.GET('/api/v1/reports/{id}/history', { params: { path: { id: id! } } })),
+  });
   const emails = useQuery({
     queryKey: ['report-emails', id],
     enabled: tab === 'delivery',
@@ -397,7 +512,8 @@ export default function ReportDetailPage() {
   const submit = useMutation({ mutationFn: async (version: number) => unwrap(await api.POST('/api/v1/reports/{id}/submit', { ...path, body: { version } })), onSuccess: applied, onError: failed });
   const pass = useMutation({ mutationFn: async (version: number) => unwrap(await api.POST('/api/v1/reports/{id}/pass-review', { ...path, body: { version } })), onSuccess: applied, onError: failed });
   const issue = useMutation({
-    mutationFn: async (v: EmailValues) => unwrap(await api.POST('/api/v1/reports/{id}/issue', { ...path, body: { version: latest!.version, ...(v.to ? { emailTo: v.to } : {}), ...(v.cc ? { emailCc: v.cc } : {}) } })),
+    mutationFn: async (v: EmailValues) =>
+      unwrap(await api.POST('/api/v1/reports/{id}/issue', { ...path, body: { version: latest!.version, ...(v.to ? { emailTo: v.to } : {}), ...(v.cc ? { emailCc: v.cc } : {}) } })),
     onSuccess: (r, v) => {
       applied(r);
       toast.success(v.to ? 'Report issued and queued for email' : 'Report issued');
@@ -528,7 +644,9 @@ export default function ReportDetailPage() {
           </p>
         )}
         {status === 'APPROVED' && report.withheld && (
-          <p className="rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-amber-900">Release is withheld for this customer until payment is received, so this report cannot be issued yet.</p>
+          <p className="rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-amber-900">
+            Release is withheld for this customer until payment is received, so this report cannot be issued yet.
+          </p>
         )}
       </div>
       <Tabs value={tab} onValueChange={setTab}>
@@ -554,7 +672,14 @@ export default function ReportDetailPage() {
           </div>
           {preview.isLoading && <Spinner label="Preparing the preview" />}
           {preview.error && <ErrorState error={preview.error} onRetry={preview.refetch} />}
-          {preview.data && <iframe title={`Preview of ${report.reportNo} revision ${shownNo}`} sandbox="" srcDoc={preview.data.html} className={cn('h-[calc(100dvh-14rem)] min-h-[32rem] w-full rounded-lg border border-gray-200 bg-surface', preview.isFetching && 'opacity-70')} />}
+          {preview.data && (
+            <iframe
+              title={`Preview of ${report.reportNo} revision ${shownNo}`}
+              sandbox=""
+              srcDoc={preview.data.html}
+              className={cn('h-[calc(100dvh-14rem)] min-h-[32rem] w-full rounded-lg border border-gray-200 bg-surface', preview.isFetching && 'opacity-70')}
+            />
+          )}
         </TabsContent>
         <TabsContent value="photos">
           <ReportPhotos report={report} version={latest.version} editable={canCorrect} onSaved={applied} onConflict={reload} />
@@ -606,7 +731,15 @@ export default function ReportDetailPage() {
       <ApproveDialog report={report} revision={latest} open={dialog === 'approve'} onOpenChange={(o) => setDialog(o ? 'approve' : null)} onDone={applied} onConflict={reload} />
       <SendDialog report={report} mode="issue" open={dialog === 'issue'} onOpenChange={(o) => setDialog(o ? 'issue' : null)} onSubmit={(v) => issue.mutate(v)} loading={issue.isPending} />
       <SendDialog report={report} mode="email" open={dialog === 'email'} onOpenChange={(o) => setDialog(o ? 'email' : null)} onSubmit={(v) => email.mutate(v)} loading={email.isPending} />
-      <ReasonDialog open={dialog === 'revise'} onOpenChange={(o) => !o && setDialog(null)} title={`Revise ${report.reportNo}`} description="This starts a new revision, which goes through review and approval again. The issued revision stays valid until the new one is issued." confirmLabel="Start revision" loading={revise.isPending} onConfirm={(reason) => revise.mutate(reason)} />
+      <ReasonDialog
+        open={dialog === 'revise'}
+        onOpenChange={(o) => !o && setDialog(null)}
+        title={`Revise ${report.reportNo}`}
+        description="This starts a new revision, which goes through review and approval again. The issued revision stays valid until the new one is issued."
+        confirmLabel="Start revision"
+        loading={revise.isPending}
+        onConfirm={(reason) => revise.mutate(reason)}
+      />
     </>
   );
 }

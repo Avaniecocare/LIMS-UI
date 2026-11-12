@@ -72,7 +72,13 @@ export function CancelDialog({ target, onClose, onCancelled }: { target: CancelT
 
   const d = impact.data;
   return (
-    <Dialog open={open} onOpenChange={(o) => !o && onClose()} title={`Cancel ${target?.label ?? ''}`} description={step === 'effect' ? 'Check what this affects before going on.' : 'This cannot be undone.'} wide>
+    <Dialog
+      open={open}
+      onOpenChange={(o) => !o && onClose()}
+      title={`Cancel ${target?.label ?? ''}`}
+      description={step === 'effect' ? 'Check what this affects before going on.' : 'This cannot be undone.'}
+      wide
+    >
       {impact.isLoading && <Spinner label="Working out the effect" />}
       {impact.error && <ErrorState error={impact.error} onRetry={impact.refetch} />}
       {d && step === 'effect' && (
@@ -120,7 +126,9 @@ export function CancelDialog({ target, onClose, onCancelled }: { target: CancelT
               ))}
             </Effect>
           </div>
-          {d.canCancel && d.samples.length + d.tests.length + d.reports.length + d.draftInvoiceLines.length + d.issuedInvoiceLines.length === 0 && <p className="text-[13px] text-gray-700">Nothing else is affected.</p>}
+          {d.canCancel && d.samples.length + d.tests.length + d.reports.length + d.draftInvoiceLines.length + d.issuedInvoiceLines.length === 0 && (
+            <p className="text-[13px] text-gray-700">Nothing else is affected.</p>
+          )}
           <div className="flex justify-end gap-2">
             <Button variant="secondary" onClick={onClose}>
               Keep it

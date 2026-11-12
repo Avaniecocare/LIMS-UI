@@ -27,10 +27,30 @@ export function PrivacyTab() {
   const reqCols = useMemo<Col<Request>[]>(
     () => [
       { id: 'kind', header: 'Request', cell: ({ row }) => KIND[row.original.kind] },
-      { id: 'who', header: 'From', cell: ({ row }) => <span>{row.original.requesterName} <span className="text-gray-600">{row.original.requesterEmail}</span></span> },
+      {
+        id: 'who',
+        header: 'From',
+        cell: ({ row }) => (
+          <span>
+            {row.original.requesterName} <span className="text-gray-600">{row.original.requesterEmail}</span>
+          </span>
+        ),
+      },
       { id: 'received', header: 'Received', cell: ({ row }) => <span className="whitespace-nowrap">{formatDate(row.original.receivedOn)}</span> },
-      { id: 'due', header: 'Answer by', cell: ({ row }) => <span className={row.original.overdue ? 'font-medium whitespace-nowrap text-red-800' : 'whitespace-nowrap'}>{formatDate(row.original.dueOn)}</span> },
-      { id: 'status', header: 'Status', cell: ({ row }) => <Badge tone={row.original.status === 'OPEN' ? (row.original.overdue ? 'red' : 'amber') : row.original.status === 'DONE' ? 'green' : 'gray'}>{row.original.status === 'OPEN' ? (row.original.overdue ? 'Overdue' : 'Open') : row.original.status === 'DONE' ? 'Done' : 'Rejected'}</Badge> },
+      {
+        id: 'due',
+        header: 'Answer by',
+        cell: ({ row }) => <span className={row.original.overdue ? 'font-medium whitespace-nowrap text-red-800' : 'whitespace-nowrap'}>{formatDate(row.original.dueOn)}</span>,
+      },
+      {
+        id: 'status',
+        header: 'Status',
+        cell: ({ row }) => (
+          <Badge tone={row.original.status === 'OPEN' ? (row.original.overdue ? 'red' : 'amber') : row.original.status === 'DONE' ? 'green' : 'gray'}>
+            {row.original.status === 'OPEN' ? (row.original.overdue ? 'Overdue' : 'Open') : row.original.status === 'DONE' ? 'Done' : 'Rejected'}
+          </Badge>
+        ),
+      },
     ],
     [],
   );
@@ -38,7 +58,16 @@ export function PrivacyTab() {
     () => [
       { id: 'detected', header: 'Detected', cell: ({ row }) => <span className="whitespace-nowrap">{formatDateTime(row.original.detectedAt)}</span> },
       { id: 'what', header: 'What happened', cell: ({ row }) => <span className="line-clamp-2">{row.original.description}</span> },
-      { id: 'board', header: 'Board told', cell: ({ row }) => (row.original.reportedToBoardAt ? formatDateTime(row.original.reportedToBoardAt) : <span className={new Date(row.original.boardReportDueAt) < new Date() ? 'font-medium text-red-800' : 'text-amber-800'}>Due by {formatDateTime(row.original.boardReportDueAt)}</span>) },
+      {
+        id: 'board',
+        header: 'Board told',
+        cell: ({ row }) =>
+          row.original.reportedToBoardAt ? (
+            formatDateTime(row.original.reportedToBoardAt)
+          ) : (
+            <span className={new Date(row.original.boardReportDueAt) < new Date() ? 'font-medium text-red-800' : 'text-amber-800'}>Due by {formatDateTime(row.original.boardReportDueAt)}</span>
+          ),
+      },
       { id: 'people', header: 'People told', cell: ({ row }) => (row.original.notifiedPeopleAt ? formatDateTime(row.original.notifiedPeopleAt) : 'Not yet') },
       { id: 'status', header: 'Status', cell: ({ row }) => <Badge tone={row.original.closedAt ? 'green' : 'red'}>{row.original.closedAt ? 'Closed' : 'Open'}</Badge> },
     ],
@@ -50,14 +79,27 @@ export function PrivacyTab() {
         <div className="flex flex-wrap items-end justify-between gap-2">
           <div>
             <h2 className="text-base font-semibold text-gray-900">Privacy requests</h2>
-            <p className="text-[13px] text-gray-600">Requests to see, correct or erase personal data, withdrawals of consent, and grievances, from customers' contacts or staff. Set the privacy contact in Lab profile.</p>
+            <p className="text-[13px] text-gray-600">
+              Requests to see, correct or erase personal data, withdrawals of consent, and grievances, from customers' contacts or staff. Set the privacy contact in Lab profile.
+            </p>
           </div>
           <Button size="sm" onClick={() => setAdding('request')}>
             <Plus aria-hidden />
             Log a request
           </Button>
         </div>
-        <DataTable ariaLabel="Privacy requests" columns={reqCols} rows={requests.data} loading={requests.isLoading} error={requests.error} onRetry={requests.refetch} getRowId={(r) => r.id} onRowClick={setOpen} emptyTitle="No privacy requests" maxHeightClass="max-h-96" />
+        <DataTable
+          ariaLabel="Privacy requests"
+          columns={reqCols}
+          rows={requests.data}
+          loading={requests.isLoading}
+          error={requests.error}
+          onRetry={requests.refetch}
+          getRowId={(r) => r.id}
+          onRowClick={setOpen}
+          emptyTitle="No privacy requests"
+          maxHeightClass="max-h-96"
+        />
       </section>
       <section className="space-y-2">
         <div className="flex flex-wrap items-end justify-between gap-2">
@@ -70,7 +112,18 @@ export function PrivacyTab() {
             Log a breach
           </Button>
         </div>
-        <DataTable ariaLabel="Data breaches" columns={breachCols} rows={breaches.data} loading={breaches.isLoading} error={breaches.error} onRetry={breaches.refetch} getRowId={(r) => r.id} onRowClick={setBreach} emptyTitle="No breaches logged" maxHeightClass="max-h-72" />
+        <DataTable
+          ariaLabel="Data breaches"
+          columns={breachCols}
+          rows={breaches.data}
+          loading={breaches.isLoading}
+          error={breaches.error}
+          onRetry={breaches.refetch}
+          getRowId={(r) => r.id}
+          onRowClick={setBreach}
+          emptyTitle="No breaches logged"
+          maxHeightClass="max-h-72"
+        />
       </section>
       {adding === 'request' && <NewRequestDialog onClose={() => setAdding(null)} />}
       {adding === 'breach' && <NewBreachDialog onClose={() => setAdding(null)} />}
@@ -132,7 +185,10 @@ function NewRequestDialog({ onClose }: { onClose: () => void }) {
 function RequestDialog({ request, onClose }: { request: Request; onClose: () => void }) {
   const client = useQueryClient();
   const [resolution, setResolution] = useState('');
-  const data = useQuery({ queryKey: ['personal-data', request.requesterEmail], queryFn: async () => unwrap(await api.GET('/api/v1/privacy/personal-data', { params: { query: { email: request.requesterEmail } } })) });
+  const data = useQuery({
+    queryKey: ['personal-data', request.requesterEmail],
+    queryFn: async () => unwrap(await api.GET('/api/v1/privacy/personal-data', { params: { query: { email: request.requesterEmail } } })),
+  });
   const erase = useMutation({
     mutationFn: async () => unwrap(await api.POST('/api/v1/privacy/requests/{id}/erase', { params: { path: { id: request.id } } })),
     onSuccess: (r) => {
@@ -143,7 +199,8 @@ function RequestDialog({ request, onClose }: { request: Request; onClose: () => 
     onError: toastError,
   });
   const resolve = useMutation({
-    mutationFn: async (status: 'DONE' | 'REJECTED') => unwrap(await api.POST('/api/v1/privacy/requests/{id}/resolve', { params: { path: { id: request.id } }, body: { version: request.version, status, resolution } })),
+    mutationFn: async (status: 'DONE' | 'REJECTED') =>
+      unwrap(await api.POST('/api/v1/privacy/requests/{id}/resolve', { params: { path: { id: request.id } }, body: { version: request.version, status, resolution } })),
     onSuccess: () => {
       void client.invalidateQueries({ queryKey: ['privacy-requests'] });
       toast.success('Request answered');
@@ -154,7 +211,13 @@ function RequestDialog({ request, onClose }: { request: Request; onClose: () => 
   const open = request.status === 'OPEN';
   const canErase = open && (request.kind === 'ERASURE' || request.kind === 'CONSENT_WITHDRAWAL');
   return (
-    <Dialog open onOpenChange={(o) => !o && onClose()} title={`${KIND[request.kind]}: ${request.requesterName}`} description={`${request.requesterEmail} · received ${formatDate(request.receivedOn)} · answer by ${formatDate(request.dueOn)}`} wide>
+    <Dialog
+      open
+      onOpenChange={(o) => !o && onClose()}
+      title={`${KIND[request.kind]}: ${request.requesterName}`}
+      description={`${request.requesterEmail} · received ${formatDate(request.receivedOn)} · answer by ${formatDate(request.dueOn)}`}
+      wide
+    >
       <div className="space-y-3 text-[13px]">
         <p className="rounded-md bg-gray-50 px-3 py-2 whitespace-pre-line text-gray-800">{request.details}</p>
         <div>
@@ -208,7 +271,18 @@ function NewBreachDialog({ onClose }: { onClose: () => void }) {
   const client = useQueryClient();
   const [v, setV] = useState({ detectedAt: nowLocal(), description: '', dataAffected: '', peopleAffected: '', containment: '' });
   const m = useMutation({
-    mutationFn: async () => unwrap(await api.POST('/api/v1/privacy/breaches', { body: { detectedAt: new Date(v.detectedAt).toISOString(), description: v.description, dataAffected: v.dataAffected, peopleAffected: v.peopleAffected ? Number(v.peopleAffected) : null, containment: v.containment || null } })),
+    mutationFn: async () =>
+      unwrap(
+        await api.POST('/api/v1/privacy/breaches', {
+          body: {
+            detectedAt: new Date(v.detectedAt).toISOString(),
+            description: v.description,
+            dataAffected: v.dataAffected,
+            peopleAffected: v.peopleAffected ? Number(v.peopleAffected) : null,
+            containment: v.containment || null,
+          },
+        }),
+      ),
     onSuccess: (b) => {
       void client.invalidateQueries({ queryKey: ['privacy-breaches'] });
       toast.success(`Logged. The report to the Board is due by ${formatDateTime(b.boardReportDueAt)}.`);
@@ -250,10 +324,21 @@ function NewBreachDialog({ onClose }: { onClose: () => void }) {
 function BreachDialog({ breach, onClose }: { breach: Breach; onClose: () => void }) {
   const client = useQueryClient();
   const local = (d: string | null) => (d ? new Date(new Date(d).getTime() - new Date().getTimezoneOffset() * 60_000).toISOString().slice(0, 16) : '');
-  const [v, setV] = useState({ containment: breach.containment ?? '', reportedToBoardAt: local(breach.reportedToBoardAt as unknown as string), notifiedPeopleAt: local(breach.notifiedPeopleAt as unknown as string), closedAt: local(breach.closedAt as unknown as string) });
+  const [v, setV] = useState({
+    containment: breach.containment ?? '',
+    reportedToBoardAt: local(breach.reportedToBoardAt as unknown as string),
+    notifiedPeopleAt: local(breach.notifiedPeopleAt as unknown as string),
+    closedAt: local(breach.closedAt as unknown as string),
+  });
   const iso = (s: string) => (s ? new Date(s).toISOString() : null);
   const m = useMutation({
-    mutationFn: async () => unwrap(await api.PATCH('/api/v1/privacy/breaches/{id}', { params: { path: { id: breach.id } }, body: { version: breach.version, containment: v.containment || null, reportedToBoardAt: iso(v.reportedToBoardAt), notifiedPeopleAt: iso(v.notifiedPeopleAt), closedAt: iso(v.closedAt) } })),
+    mutationFn: async () =>
+      unwrap(
+        await api.PATCH('/api/v1/privacy/breaches/{id}', {
+          params: { path: { id: breach.id } },
+          body: { version: breach.version, containment: v.containment || null, reportedToBoardAt: iso(v.reportedToBoardAt), notifiedPeopleAt: iso(v.notifiedPeopleAt), closedAt: iso(v.closedAt) },
+        }),
+      ),
     onSuccess: () => {
       void client.invalidateQueries({ queryKey: ['privacy-breaches'] });
       toast.success('Breach updated');
@@ -262,7 +347,13 @@ function BreachDialog({ breach, onClose }: { breach: Breach; onClose: () => void
     onError: toastError,
   });
   return (
-    <Dialog open onOpenChange={(o) => !o && onClose()} title="Data breach" description={`Detected ${formatDateTime(breach.detectedAt)} · report to the Board due by ${formatDateTime(breach.boardReportDueAt)}`} wide>
+    <Dialog
+      open
+      onOpenChange={(o) => !o && onClose()}
+      title="Data breach"
+      description={`Detected ${formatDateTime(breach.detectedAt)} · report to the Board due by ${formatDateTime(breach.boardReportDueAt)}`}
+      wide
+    >
       <div className="space-y-3 text-[13px]">
         <p className="rounded-md bg-gray-50 px-3 py-2 whitespace-pre-line text-gray-800">{breach.description}</p>
         <p className="text-gray-700">

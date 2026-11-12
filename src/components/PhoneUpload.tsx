@@ -21,7 +21,19 @@ export function timeLeft(expiresAt: string, now: number): string {
  */
 type Purpose = components['schemas']['CreatePhoneUploadDto']['purpose'];
 
-export function PhoneUploadButton({ purpose, entityId, note, onReceived, disabled }: { purpose: Purpose; entityId?: string; note?: string; onReceived: (fileIds: string[]) => void; disabled?: boolean }) {
+export function PhoneUploadButton({
+  purpose,
+  entityId,
+  note,
+  onReceived,
+  disabled,
+}: {
+  purpose: Purpose;
+  entityId?: string;
+  note?: string;
+  onReceived: (fileIds: string[]) => void;
+  disabled?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const { moduleOn } = useSession();
   // Already on a phone: its own camera and files are right there (Use camera, Add file), so no QR code is needed.
@@ -39,7 +51,10 @@ export function PhoneUploadButton({ purpose, entityId, note, onReceived, disable
 }
 
 function PhoneUploadDialog({ purpose, entityId, note, onReceived, onClose }: { purpose: Purpose; entityId?: string; note?: string; onReceived: (fileIds: string[]) => void; onClose: () => void }) {
-  const create = useMutation({ mutationFn: async () => unwrap(await api.POST('/api/v1/phone-uploads', { body: { purpose, ...(entityId ? { entityId } : {}), ...(note ? { note } : {}) } })), onError: toastError });
+  const create = useMutation({
+    mutationFn: async () => unwrap(await api.POST('/api/v1/phone-uploads', { body: { purpose, ...(entityId ? { entityId } : {}), ...(note ? { note } : {}) } })),
+    onError: toastError,
+  });
   const link = create.data;
   const started = useRef(false);
   useEffect(() => {
@@ -79,7 +94,12 @@ function PhoneUploadDialog({ purpose, entityId, note, onReceived, onClose }: { p
   const expired = !!link && (new Date(link.expiresAt).getTime() <= now || status.data?.active === false);
 
   return (
-    <Dialog open onOpenChange={(o) => !o && close()} title="Send photos from your phone" description="Scan the code with the phone's camera. A camera page opens for this record only; no sign-in is needed on the phone.">
+    <Dialog
+      open
+      onOpenChange={(o) => !o && close()}
+      title="Send photos from your phone"
+      description="Scan the code with the phone's camera. A camera page opens for this record only; no sign-in is needed on the phone."
+    >
       <div className="space-y-3">
         {create.isPending && <Spinner label="Making a link" />}
         {create.isError && <ErrorState error={create.error as Error} onRetry={() => create.mutate()} />}

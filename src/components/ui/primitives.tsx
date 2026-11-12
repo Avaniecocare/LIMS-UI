@@ -7,7 +7,19 @@ import * as TabsPrimitive from '@radix-ui/react-tabs';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { ArrowLeft, Check, Inbox, Loader2, Share2, TriangleAlert, X, type LucideIcon } from 'lucide-react';
-import { Children, cloneElement, forwardRef, isValidElement, useEffect, useLayoutEffect, useRef, type ComponentProps, type PointerEvent as ReactPointerEvent, type ReactElement, type ReactNode } from 'react';
+import {
+  Children,
+  cloneElement,
+  forwardRef,
+  isValidElement,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  type ComponentProps,
+  type PointerEvent as ReactPointerEvent,
+  type ReactElement,
+  type ReactNode,
+} from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useBranding } from '@/app/providers';
 import { cn } from '@/lib/format';
@@ -53,9 +65,7 @@ export function Button({ className, variant, size, asChild, loading, children, d
 const fieldClass =
   'h-9 w-full rounded-md border border-gray-300 bg-surface px-2.5 text-sm text-gray-900 transition-[border-color] duration-(--motion-fast) placeholder:text-gray-500 hover:border-gray-400 focus-visible:border-brand-focus disabled:bg-gray-100 disabled:text-gray-600 aria-[invalid=true]:border-red-600 max-md:text-base pointer-coarse:h-11';
 
-export const Input = forwardRef<HTMLInputElement, ComponentProps<'input'>>(({ className, ...props }, ref) => (
-  <input ref={ref} className={cn(fieldClass, className)} {...props} />
-));
+export const Input = forwardRef<HTMLInputElement, ComponentProps<'input'>>(({ className, ...props }, ref) => <input ref={ref} className={cn(fieldClass, className)} {...props} />);
 Input.displayName = 'Input';
 
 export const Textarea = forwardRef<HTMLTextAreaElement, ComponentProps<'textarea'>>(({ className, ...props }, ref) => (
@@ -64,9 +74,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, ComponentProps<'textarea
 Textarea.displayName = 'Textarea';
 
 /** Native select: fast with long master lists, works with scanners and keyboards. */
-export const Select = forwardRef<HTMLSelectElement, ComponentProps<'select'>>(({ className, ...props }, ref) => (
-  <select ref={ref} className={cn(fieldClass, className)} {...props} />
-));
+export const Select = forwardRef<HTMLSelectElement, ComponentProps<'select'>>(({ className, ...props }, ref) => <select ref={ref} className={cn(fieldClass, className)} {...props} />);
 Select.displayName = 'Select';
 
 export function Label({ className, ...props }: ComponentProps<'label'>) {
@@ -80,7 +88,23 @@ type AriaProps = { id?: string; 'aria-describedby'?: string; 'aria-invalid'?: bo
  * gets `aria-describedby`, `aria-invalid` and `aria-required`, so a screen reader reads the reason again
  * whenever the field is focused (not just once when the error appears).
  */
-export function Field({ label, htmlFor, error, hint, required, className, children }: { label: string; htmlFor?: string; error?: string; hint?: string; required?: boolean; className?: string; children: ReactNode }) {
+export function Field({
+  label,
+  htmlFor,
+  error,
+  hint,
+  required,
+  className,
+  children,
+}: {
+  label: string;
+  htmlFor?: string;
+  error?: string;
+  hint?: string;
+  required?: boolean;
+  className?: string;
+  children: ReactNode;
+}) {
   const hintId = htmlFor && hint && !error ? `${htmlFor}-hint` : undefined;
   const errorId = htmlFor && error ? `${htmlFor}-error` : undefined;
   let control = children;
@@ -123,7 +147,14 @@ export function Field({ label, htmlFor, error, hint, required, className, childr
 export function Checkbox({ label, id, className, ...props }: ComponentProps<typeof CheckboxPrimitive.Root> & { label?: string }) {
   return (
     <span className="inline-flex items-center gap-2">
-      <CheckboxPrimitive.Root id={id} className={cn('flex size-4 shrink-0 items-center justify-center rounded border border-gray-400 bg-surface transition-colors duration-(--motion-fast) hover:border-gray-500 disabled:opacity-50 data-[state=checked]:border-brand data-[state=checked]:bg-brand data-[state=checked]:text-brand-fg', className)} {...props}>
+      <CheckboxPrimitive.Root
+        id={id}
+        className={cn(
+          'flex size-4 shrink-0 items-center justify-center rounded border border-gray-400 bg-surface transition-colors duration-(--motion-fast) hover:border-gray-500 disabled:opacity-50 data-[state=checked]:border-brand data-[state=checked]:bg-brand data-[state=checked]:text-brand-fg',
+          className,
+        )}
+        {...props}
+      >
         <CheckboxPrimitive.Indicator className="animate-check">
           <Check className="size-3" aria-hidden />
         </CheckboxPrimitive.Indicator>
@@ -212,27 +243,38 @@ function SheetHandle() {
   return <div aria-hidden className="mx-auto mt-2 h-1 w-10 rounded-full bg-gray-300 md:hidden" />;
 }
 
-export function Dialog({ open, onOpenChange, title, description, children, wide }: { open: boolean; onOpenChange: (open: boolean) => void; title: string; description?: string; children: ReactNode; wide?: boolean }) {
+export function Dialog({
+  open,
+  onOpenChange,
+  title,
+  description,
+  children,
+  wide,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  title: string;
+  description?: string;
+  children: ReactNode;
+  wide?: boolean;
+}) {
   const swipe = useSwipeToClose(() => onOpenChange(false));
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className={OVERLAY} />
-        <DialogPrimitive.Content
-          aria-describedby={description ? undefined : undefined}
-          className={cn(MODAL, 'max-h-[90dvh] overflow-y-auto', wide ? 'max-w-4xl' : 'max-w-lg')}
-        >
+        <DialogPrimitive.Content aria-describedby={description ? undefined : undefined} className={cn(MODAL, 'max-h-[90dvh] overflow-y-auto', wide ? 'max-w-4xl' : 'max-w-lg')}>
           <div {...swipe} className="sticky top-0 z-10 touch-pan-x bg-surface-raised max-md:rounded-t-lg">
-          <SheetHandle />
-          <div className="flex items-start justify-between border-b border-gray-200 px-5 py-3 max-md:px-4">
-            <div>
-              <DialogPrimitive.Title className="text-base font-semibold text-gray-900">{title}</DialogPrimitive.Title>
-              <DialogPrimitive.Description className={description ? 'mt-0.5 text-[13px] text-gray-600' : 'sr-only'}>{description ?? title}</DialogPrimitive.Description>
+            <SheetHandle />
+            <div className="flex items-start justify-between border-b border-gray-200 px-5 py-3 max-md:px-4">
+              <div>
+                <DialogPrimitive.Title className="text-base font-semibold text-gray-900">{title}</DialogPrimitive.Title>
+                <DialogPrimitive.Description className={description ? 'mt-0.5 text-[13px] text-gray-600' : 'sr-only'}>{description ?? title}</DialogPrimitive.Description>
+              </div>
+              <DialogPrimitive.Close className="rounded p-1 text-gray-600 transition-colors duration-(--motion-fast) hover:bg-gray-100 hover:text-gray-900 pointer-coarse:p-2.5" aria-label="Close">
+                <X className="size-4" aria-hidden />
+              </DialogPrimitive.Close>
             </div>
-            <DialogPrimitive.Close className="rounded p-1 text-gray-600 transition-colors duration-(--motion-fast) hover:bg-gray-100 hover:text-gray-900 pointer-coarse:p-2.5" aria-label="Close">
-              <X className="size-4" aria-hidden />
-            </DialogPrimitive.Close>
-          </div>
           </div>
           <div className="px-5 py-4 max-md:px-4">{children}</div>
         </DialogPrimitive.Content>
@@ -241,7 +283,27 @@ export function Dialog({ open, onOpenChange, title, description, children, wide 
   );
 }
 
-export function ConfirmDialog({ open, onOpenChange, title, description, confirmLabel = 'Confirm', danger, loading, onConfirm, children }: { open: boolean; onOpenChange: (open: boolean) => void; title: string; description?: ReactNode; confirmLabel?: string; danger?: boolean; loading?: boolean; onConfirm: () => void; children?: ReactNode }) {
+export function ConfirmDialog({
+  open,
+  onOpenChange,
+  title,
+  description,
+  confirmLabel = 'Confirm',
+  danger,
+  loading,
+  onConfirm,
+  children,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  title: string;
+  description?: ReactNode;
+  confirmLabel?: string;
+  danger?: boolean;
+  loading?: boolean;
+  onConfirm: () => void;
+  children?: ReactNode;
+}) {
   return (
     <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
       <AlertDialog.Portal>
@@ -304,12 +366,24 @@ export function TabsList({ className, children, ...props }: ComponentProps<typeo
   return (
     <TabsPrimitive.List ref={list} className={cn('relative flex gap-1 overflow-x-auto border-b border-gray-200', className)} {...props}>
       {children}
-      <span ref={bar} aria-hidden className="pointer-events-none absolute bottom-0 left-0 h-0.5 w-px origin-left bg-brand opacity-0 transition-transform duration-(--motion-base) ease-(--ease-standard)" />
+      <span
+        ref={bar}
+        aria-hidden
+        className="pointer-events-none absolute bottom-0 left-0 h-0.5 w-px origin-left bg-brand opacity-0 transition-transform duration-(--motion-base) ease-(--ease-standard)"
+      />
     </TabsPrimitive.List>
   );
 }
 export function TabsTrigger({ className, ...props }: ComponentProps<typeof TabsPrimitive.Trigger>) {
-  return <TabsPrimitive.Trigger className={cn('-mb-px border-b-2 border-transparent px-3 py-2 text-sm font-medium whitespace-nowrap text-gray-600 transition-colors duration-(--motion-fast) hover:text-gray-900 data-[state=active]:text-gray-900 pointer-coarse:min-h-11', className)} {...props} />;
+  return (
+    <TabsPrimitive.Trigger
+      className={cn(
+        '-mb-px border-b-2 border-transparent px-3 py-2 text-sm font-medium whitespace-nowrap text-gray-600 transition-colors duration-(--motion-fast) hover:text-gray-900 data-[state=active]:text-gray-900 pointer-coarse:min-h-11',
+        className,
+      )}
+      {...props}
+    />
+  );
 }
 export const TabsContent = TabsPrimitive.Content;
 
@@ -318,7 +392,15 @@ export const DropdownTrigger = DropdownPrimitive.Trigger;
 export function DropdownContent({ className, ...props }: ComponentProps<typeof DropdownPrimitive.Content>) {
   return (
     <DropdownPrimitive.Portal>
-      <DropdownPrimitive.Content sideOffset={4} align="end" className={cn('z-(--z-popover) min-w-44 origin-(--radix-dropdown-menu-content-transform-origin) rounded-md border border-gray-200 bg-surface-raised p-1 shadow-lg data-[state=open]:animate-pop-in data-[state=closed]:animate-pop-out', className)} {...props} />
+      <DropdownPrimitive.Content
+        sideOffset={4}
+        align="end"
+        className={cn(
+          'z-(--z-popover) min-w-44 origin-(--radix-dropdown-menu-content-transform-origin) rounded-md border border-gray-200 bg-surface-raised p-1 shadow-lg data-[state=open]:animate-pop-in data-[state=closed]:animate-pop-out',
+          className,
+        )}
+        {...props}
+      />
     </DropdownPrimitive.Portal>
   );
 }
@@ -331,7 +413,13 @@ export function DropdownSeparator({ className, ...props }: ComponentProps<typeof
 export const DropdownRadioGroup = DropdownPrimitive.RadioGroup;
 export function DropdownRadioItem({ className, children, ...props }: ComponentProps<typeof DropdownPrimitive.RadioItem>) {
   return (
-    <DropdownPrimitive.RadioItem className={cn('relative flex cursor-pointer items-center rounded py-1.5 pr-2 pl-7 text-sm text-gray-800 outline-none transition-colors duration-(--motion-fast) data-[highlighted]:bg-gray-100 pointer-coarse:py-3', className)} {...props}>
+    <DropdownPrimitive.RadioItem
+      className={cn(
+        'relative flex cursor-pointer items-center rounded py-1.5 pr-2 pl-7 text-sm text-gray-800 outline-none transition-colors duration-(--motion-fast) data-[highlighted]:bg-gray-100 pointer-coarse:py-3',
+        className,
+      )}
+      {...props}
+    >
       <DropdownPrimitive.ItemIndicator className="absolute left-2 animate-check">
         <Check className="size-3.5" aria-hidden />
       </DropdownPrimitive.ItemIndicator>
@@ -340,7 +428,15 @@ export function DropdownRadioItem({ className, children, ...props }: ComponentPr
   );
 }
 export function DropdownItem({ className, ...props }: ComponentProps<typeof DropdownPrimitive.Item>) {
-  return <DropdownPrimitive.Item className={cn('cursor-pointer rounded px-2 py-1.5 text-sm text-gray-800 outline-none transition-colors duration-(--motion-fast) data-[highlighted]:bg-gray-100 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 pointer-coarse:py-3', className)} {...props} />;
+  return (
+    <DropdownPrimitive.Item
+      className={cn(
+        'cursor-pointer rounded px-2 py-1.5 text-sm text-gray-800 outline-none transition-colors duration-(--motion-fast) data-[highlighted]:bg-gray-100 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 pointer-coarse:py-3',
+        className,
+      )}
+      {...props}
+    />
+  );
 }
 
 /**
@@ -453,14 +549,30 @@ export function BackButton() {
   if (pathname === '/') return null;
   const hasHistory = ((window.history.state as { idx?: number } | null)?.idx ?? 0) > 0;
   return (
-    <button type="button" className="inline-flex items-center gap-1 rounded-md py-0.5 pr-1.5 text-xs font-medium text-gray-700 hover:text-gray-900 hover:underline" onClick={() => (hasHistory ? navigate(-1) : navigate(parentPath(pathname)))}>
+    <button
+      type="button"
+      className="inline-flex items-center gap-1 rounded-md py-0.5 pr-1.5 text-xs font-medium text-gray-700 hover:text-gray-900 hover:underline"
+      onClick={() => (hasHistory ? navigate(-1) : navigate(parentPath(pathname)))}
+    >
       <ArrowLeft className="size-3.5" aria-hidden />
       Back
     </button>
   );
 }
 
-export function PageHeader({ title, description, actions, breadcrumb, pageTitle }: { title: ReactNode; description?: ReactNode; actions?: ReactNode; breadcrumb?: ReactNode; /** Tab title, when the heading text is not right for it. */ pageTitle?: string }) {
+export function PageHeader({
+  title,
+  description,
+  actions,
+  breadcrumb,
+  pageTitle,
+}: {
+  title: ReactNode;
+  description?: ReactNode;
+  actions?: ReactNode;
+  breadcrumb?: ReactNode;
+  /** Tab title, when the heading text is not right for it. */ pageTitle?: string;
+}) {
   const heading = useRef<HTMLHeadingElement>(null);
   usePageTitle(heading, pageTitle);
   useFocusOnNavigate(heading);
@@ -502,7 +614,10 @@ export function PageHeader({ title, description, actions, breadcrumb, pageTitle 
       </div>
       {/* On a phone the page's actions sit in a bar above the bottom navigation, within thumb reach. */}
       {actions && (
-        <div data-page-actions className="flex flex-wrap items-center gap-2 max-md:fixed max-md:inset-x-0 max-md:bottom-(--phone-bottom) max-md:z-20 max-md:flex-nowrap max-md:justify-end max-md:overflow-x-auto max-md:border-t max-md:border-gray-200 max-md:bg-surface/95 max-md:px-3 max-md:py-2 max-md:backdrop-blur max-md:[&>*]:shrink-0">
+        <div
+          data-page-actions
+          className="flex flex-wrap items-center gap-2 max-md:fixed max-md:inset-x-0 max-md:bottom-(--phone-bottom) max-md:z-20 max-md:flex-nowrap max-md:justify-end max-md:overflow-x-auto max-md:border-t max-md:border-gray-200 max-md:bg-surface/95 max-md:px-3 max-md:py-2 max-md:backdrop-blur max-md:[&>*]:shrink-0"
+        >
           {actions}
         </div>
       )}

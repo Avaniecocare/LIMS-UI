@@ -25,10 +25,21 @@ type Customer = components['schemas']['CustomerDto'];
 // Client-side checks give instant feedback; the backend validates the same rules, including the GSTIN check digit.
 const schema = z.object({
   name: z.string().trim().min(2, 'Enter the customer name'),
-  gstin: z.string().trim().toUpperCase().regex(/^$|^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/, 'That does not look like a GSTIN'),
-  pan: z.string().trim().toUpperCase().regex(/^$|^[A-Z]{5}[0-9]{4}[A-Z]$/, 'That does not look like a PAN'),
+  gstin: z
+    .string()
+    .trim()
+    .toUpperCase()
+    .regex(/^$|^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/, 'That does not look like a GSTIN'),
+  pan: z
+    .string()
+    .trim()
+    .toUpperCase()
+    .regex(/^$|^[A-Z]{5}[0-9]{4}[A-Z]$/, 'That does not look like a PAN'),
   stateName: z.string().trim().min(1, 'Enter the state'),
-  stateCode: z.string().trim().regex(/^[0-9]{2}$/, 'Two digits'),
+  stateCode: z
+    .string()
+    .trim()
+    .regex(/^[0-9]{2}$/, 'Two digits'),
   creditDays: z.coerce.number<number>().int().min(0, 'Cannot be negative').max(365),
   withholdReportUntilPaid: z.boolean(),
   notes: z.string(),
@@ -37,7 +48,10 @@ const schema = z.object({
     z.object({
       id: z.string().optional(),
       name: z.string().trim().min(1, 'Enter a name'),
-      email: z.string().trim().regex(/^$|^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Enter a valid email'),
+      email: z
+        .string()
+        .trim()
+        .regex(/^$|^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Enter a valid email'),
       phone: z.string(),
       designation: z.string(),
       isPrimary: z.boolean(),
@@ -51,8 +65,14 @@ const schema = z.object({
       line2: z.string(),
       city: z.string().trim().min(1, 'Enter the city'),
       stateName: z.string().trim().min(1, 'Enter the state'),
-      stateCode: z.string().trim().regex(/^[0-9]{2}$/, 'Two digits'),
-      pincode: z.string().trim().regex(/^$|^[0-9]{6}$/, 'Six digits'),
+      stateCode: z
+        .string()
+        .trim()
+        .regex(/^[0-9]{2}$/, 'Two digits'),
+      pincode: z
+        .string()
+        .trim()
+        .regex(/^$|^[0-9]{6}$/, 'Six digits'),
     }),
   ),
 });
@@ -97,7 +117,8 @@ function toForm(c: Customer | null): FormValues {
     notes: c?.notes ?? '',
     isActive: c?.isActive ?? true,
     contacts: c?.contacts.map((x) => ({ id: x.id, name: x.name, email: x.email ?? '', phone: x.phone ?? '', designation: x.designation ?? '', isPrimary: x.isPrimary })) ?? [],
-    addresses: c?.addresses.map((x) => ({ id: x.id, kind: x.kind, line1: x.line1, line2: x.line2 ?? '', city: x.city, stateName: x.stateName, stateCode: x.stateCode, pincode: x.pincode ?? '' })) ?? [],
+    addresses:
+      c?.addresses.map((x) => ({ id: x.id, kind: x.kind, line1: x.line1, line2: x.line2 ?? '', city: x.city, stateName: x.stateName, stateCode: x.stateCode, pincode: x.pincode ?? '' })) ?? [],
   };
 }
 
@@ -116,7 +137,15 @@ function toBody(v: FormValues) {
   };
 }
 
-export function CustomerForm({ customer, onSaved, initialName }: { customer: Customer | null; onSaved: (c: Customer) => void; /** a new customer's name, carried from the picker it was started in */ initialName?: string }) {
+export function CustomerForm({
+  customer,
+  onSaved,
+  initialName,
+}: {
+  customer: Customer | null;
+  onSaved: (c: Customer) => void;
+  /** a new customer's name, carried from the picker it was started in */ initialName?: string;
+}) {
   const { can } = useSession();
   const client = useQueryClient();
   const canEdit = can('customers.edit');
@@ -217,7 +246,11 @@ export function CustomerForm({ customer, onSaved, initialName }: { customer: Cus
             </Field>
             <div className="grid grid-cols-[1fr_5rem] gap-2">
               <Field label="State" htmlFor="c-state" required error={e.stateName?.message}>
-                <Controller control={form.control} name="stateName" render={({ field }) => <StatePicker id="c-state" value={field.value} invalid={!!e.stateName} onChange={(name) => setState('stateName', 'stateCode', name)} />} />
+                <Controller
+                  control={form.control}
+                  name="stateName"
+                  render={({ field }) => <StatePicker id="c-state" value={field.value} invalid={!!e.stateName} onChange={(name) => setState('stateName', 'stateCode', name)} />}
+                />
               </Field>
               <Field label="GST code" htmlFor="c-statecode" required error={e.stateCode?.message}>
                 <Input id="c-statecode" inputMode="numeric" maxLength={2} aria-invalid={!!e.stateCode} {...form.register('stateCode')} />
@@ -226,7 +259,12 @@ export function CustomerForm({ customer, onSaved, initialName }: { customer: Cus
             <Field label="Notes" htmlFor="c-notes" className="md:col-span-3">
               <Textarea id="c-notes" rows={2} {...form.register('notes')} />
             </Field>
-            <Checkbox id="c-withhold" label="Withhold report release until payment is received" checked={form.watch('withholdReportUntilPaid')} onCheckedChange={(v) => form.setValue('withholdReportUntilPaid', !!v)} />
+            <Checkbox
+              id="c-withhold"
+              label="Withhold report release until payment is received"
+              checked={form.watch('withholdReportUntilPaid')}
+              onCheckedChange={(v) => form.setValue('withholdReportUntilPaid', !!v)}
+            />
             {customer && <Checkbox id="c-active" label="Active" checked={form.watch('isActive')} onCheckedChange={(v) => form.setValue('isActive', !!v)} />}
           </div>
         </Card>
@@ -286,7 +324,24 @@ export function CustomerForm({ customer, onSaved, initialName }: { customer: Cus
                     Copy billing address
                   </Button>
                 )}
-                <Button variant="secondary" size="sm" onClick={() => addresses.append({ kind: addresses.fields.length === 0 ? 'BILLING' : 'REPORT', line1: '', line2: '', city: '', stateName: form.getValues('stateName'), stateCode: form.getValues('stateCode'), pincode: '' }, { focusName: `addresses.${addresses.fields.length}.pincode` })}>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() =>
+                    addresses.append(
+                      {
+                        kind: addresses.fields.length === 0 ? 'BILLING' : 'REPORT',
+                        line1: '',
+                        line2: '',
+                        city: '',
+                        stateName: form.getValues('stateName'),
+                        stateCode: form.getValues('stateCode'),
+                        pincode: '',
+                      },
+                      { focusName: `addresses.${addresses.fields.length}.pincode` },
+                    )
+                  }
+                >
                   <Plus aria-hidden />
                   Add address
                 </Button>
@@ -311,14 +366,27 @@ export function CustomerForm({ customer, onSaved, initialName }: { customer: Cus
                       maxLength={6}
                       inputMode="numeric"
                       placeholder="6 digits"
-                      {...form.register(`addresses.${i}.pincode`, { onChange: (ev) => (ev.target.value.length === 6 ? void onPincode(i, ev.target.value) : setPinStatus(({ [i]: _cleared, ...rest }) => rest)) })}
+                      {...form.register(`addresses.${i}.pincode`, {
+                        onChange: (ev) => (ev.target.value.length === 6 ? void onPincode(i, ev.target.value) : setPinStatus(({ [i]: _cleared, ...rest }) => rest)),
+                      })}
                     />
                   </Field>
                   <Field label="City" htmlFor={`ad-${i}-city`} required error={e.addresses?.[i]?.city?.message}>
                     <Input id={`ad-${i}-city`} {...form.register(`addresses.${i}.city`)} />
                   </Field>
                   <Field label="State" htmlFor={`ad-${i}-state`} required error={e.addresses?.[i]?.stateName?.message}>
-                    <Controller control={form.control} name={`addresses.${i}.stateName`} render={({ field }) => <StatePicker id={`ad-${i}-state`} value={field.value} invalid={!!e.addresses?.[i]?.stateName} onChange={(name) => setState(`addresses.${i}.stateName`, `addresses.${i}.stateCode`, name)} />} />
+                    <Controller
+                      control={form.control}
+                      name={`addresses.${i}.stateName`}
+                      render={({ field }) => (
+                        <StatePicker
+                          id={`ad-${i}-state`}
+                          value={field.value}
+                          invalid={!!e.addresses?.[i]?.stateName}
+                          onChange={(name) => setState(`addresses.${i}.stateName`, `addresses.${i}.stateCode`, name)}
+                        />
+                      )}
+                    />
                   </Field>
                   <Field label="GST code" htmlFor={`ad-${i}-code`} required error={e.addresses?.[i]?.stateCode?.message}>
                     <Input id={`ad-${i}-code`} maxLength={2} {...form.register(`addresses.${i}.stateCode`)} />
@@ -380,7 +448,11 @@ export function CustomerDetailPage() {
   const returnTo = isNew ? safeAppPath(params.get('returnTo')) : null;
   const q = useQuery({ queryKey: ['customer', id], enabled: !isNew, queryFn: async () => unwrap(await api.GET('/api/v1/customers/{id}', { params: { path: { id: id! } } })) });
   const [tab, setTab] = useState('overview');
-  const history = useQuery({ queryKey: ['customer-history', id], enabled: !isNew && tab === 'activity', queryFn: async () => unwrap(await api.GET('/api/v1/customers/{id}/history', { params: { path: { id: id! } } })) });
+  const history = useQuery({
+    queryKey: ['customer-history', id],
+    enabled: !isNew && tab === 'activity',
+    queryFn: async () => unwrap(await api.GET('/api/v1/customers/{id}/history', { params: { path: { id: id! } } })),
+  });
   if (!isNew && q.isLoading) return <Spinner />;
   if (!isNew && q.error) return <ErrorState error={q.error} onRetry={q.refetch} />;
   const customer = q.data ?? null;
@@ -400,7 +472,10 @@ export function CustomerDetailPage() {
     : [];
   return (
     <>
-      <PageHeader title={isNew ? 'New customer' : customer!.name} description={customer ? [customer.crn, customer.gstin && `GSTIN ${customer.gstin}`, customer.stateName].filter(Boolean).join(' · ') : undefined} />
+      <PageHeader
+        title={isNew ? 'New customer' : customer!.name}
+        description={customer ? [customer.crn, customer.gstin && `GSTIN ${customer.gstin}`, customer.stateName].filter(Boolean).join(' · ') : undefined}
+      />
       {isNew ? (
         <>
           {returnTo && (
@@ -427,17 +502,21 @@ export function CustomerDetailPage() {
       ) : (
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList className="mb-4 flex-wrap">
-            {tabs.filter((t) => t.show).map((t) => (
-              <TabsTrigger key={t.value} value={t.value}>
-                {t.label}
-              </TabsTrigger>
-            ))}
+            {tabs
+              .filter((t) => t.show)
+              .map((t) => (
+                <TabsTrigger key={t.value} value={t.value}>
+                  {t.label}
+                </TabsTrigger>
+              ))}
           </TabsList>
-          {tabs.filter((t) => t.show).map((t) => (
-            <TabsContent key={t.value} value={t.value}>
-              {tab === t.value && t.body()}
-            </TabsContent>
-          ))}
+          {tabs
+            .filter((t) => t.show)
+            .map((t) => (
+              <TabsContent key={t.value} value={t.value}>
+                {tab === t.value && t.body()}
+              </TabsContent>
+            ))}
         </Tabs>
       )}
     </>
@@ -481,14 +560,29 @@ export default function CustomersPage() {
         <div className="flex flex-wrap items-center gap-2">
           <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search name, CRN or GSTIN" label="Search customers" />
           <MobileFilters filters={list.filters} onClear={list.clearFilters}>
-          <Select aria-label="Status filter" className="w-32" value={list.filters.active ?? 'true'} onChange={(e) => list.setFilter('active', e.target.value === 'true' ? null : e.target.value)}>
-            <option value="true">Active</option>
-            <option value="false">Inactive</option>
-            <option value="all">All</option>
-          </Select>
+            <Select aria-label="Status filter" className="w-32" value={list.filters.active ?? 'true'} onChange={(e) => list.setFilter('active', e.target.value === 'true' ? null : e.target.value)}>
+              <option value="true">Active</option>
+              <option value="false">Inactive</option>
+              <option value="all">All</option>
+            </Select>
           </MobileFilters>
         </div>
-        <DataTable ariaLabel="Customers" columns={columns} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} sort={list.sort} onSortChange={list.setSort} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} onRowClick={(c) => navigate(`/customers/${c.id}`)} getRowId={(c) => c.id} emptyTitle="No customers found" />
+        <DataTable
+          ariaLabel="Customers"
+          columns={columns}
+          rows={q.data?.data}
+          meta={q.data?.meta}
+          loading={q.isLoading}
+          error={q.error}
+          onRetry={q.refetch}
+          sort={list.sort}
+          onSortChange={list.setSort}
+          onPageChange={list.setPage}
+          onPageSizeChange={list.setPageSize}
+          onRowClick={(c) => navigate(`/customers/${c.id}`)}
+          getRowId={(c) => c.id}
+          emptyTitle="No customers found"
+        />
       </div>
     </>
   );

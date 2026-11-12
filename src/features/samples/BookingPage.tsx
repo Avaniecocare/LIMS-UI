@@ -136,8 +136,26 @@ function BookFromQuotation() {
   return (
     <section aria-label="Book from an accepted quotation">
       <h2 className="mb-2 text-base font-semibold text-gray-900">Book from an accepted quotation</h2>
-      <DataTable ariaLabel="Accepted quotations ready to book" columns={columns} rows={q.data} loading={q.isLoading} error={q.error} onRetry={q.refetch} getRowId={(r) => r.id} emptyTitle="No accepted quotations are waiting to be booked" maxHeightClass="max-h-72" />
-      <ConfirmDialog open={!!chosen} onOpenChange={(o) => !o && setChosen(null)} title={`Book a job from ${chosen?.quotationNo ?? 'this quotation'}?`} description="This creates a job with the samples and tests on the quotation. It can only be done once." confirmLabel="Book job" loading={convert.isPending} onConfirm={() => chosen && convert.mutate(chosen.id)} />
+      <DataTable
+        ariaLabel="Accepted quotations ready to book"
+        columns={columns}
+        rows={q.data}
+        loading={q.isLoading}
+        error={q.error}
+        onRetry={q.refetch}
+        getRowId={(r) => r.id}
+        emptyTitle="No accepted quotations are waiting to be booked"
+        maxHeightClass="max-h-72"
+      />
+      <ConfirmDialog
+        open={!!chosen}
+        onOpenChange={(o) => !o && setChosen(null)}
+        title={`Book a job from ${chosen?.quotationNo ?? 'this quotation'}?`}
+        description="This creates a job with the samples and tests on the quotation. It can only be done once."
+        confirmLabel="Book job"
+        loading={convert.isPending}
+        onConfirm={() => chosen && convert.mutate(chosen.id)}
+      />
     </section>
   );
 }
@@ -147,7 +165,10 @@ function BookWithoutQuotation() {
   const client = useQueryClient();
   // A customer just created from the picker comes back as ?customerId=.
   const [params] = useSearchParams();
-  const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: { customerId: params.get('customerId') ?? '', noQuotationReason: '', ...emptyHeader, samples: [emptySample()], deviations: [] } });
+  const form = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { customerId: params.get('customerId') ?? '', noQuotationReason: '', ...emptyHeader, samples: [emptySample()], deviations: [] },
+  });
   const samples = useFieldArray({ control: form.control, name: 'samples' });
   const deviations = useFieldArray({ control: form.control, name: 'deviations' });
   const deviationTypes = useLookups('DEVIATION_TYPE');
@@ -155,7 +176,11 @@ function BookWithoutQuotation() {
   const [photos, setPhotos] = useState<Record<string, PendingPhoto[]>>({});
   const [emailAck, setEmailAck] = useState(true);
   const customerId = form.watch('customerId');
-  const customer = useQuery({ queryKey: ['customer', customerId], enabled: !!customerId, queryFn: async () => unwrap(await api.GET('/api/v1/customers/{id}', { params: { path: { id: customerId } } })) });
+  const customer = useQuery({
+    queryKey: ['customer', customerId],
+    enabled: !!customerId,
+    queryFn: async () => unwrap(await api.GET('/api/v1/customers/{id}', { params: { path: { id: customerId } } })),
+  });
   const guard = useLeaveGuard(form.formState.isDirty, 'This booking has not been saved. What you have entered will be lost if you leave this page.');
 
   const removeSample = (i: number) => {
@@ -192,13 +217,28 @@ function BookWithoutQuotation() {
             customerId: v.customerId,
             noQuotationReason: v.noQuotationReason,
             ...headerToBody(v, true),
-            samples: v.samples.map((s) => ({ description: s.description, condition: s.condition || null, quantity: s.quantity || null, size: s.size || null, returnable: s.returnable, attributes: s.attributes, testIds: s.testIds })),
+            samples: v.samples.map((s) => ({
+              description: s.description,
+              condition: s.condition || null,
+              quantity: s.quantity || null,
+              size: s.size || null,
+              returnable: s.returnable,
+              attributes: s.attributes,
+              testIds: s.testIds,
+            })),
             deviations: v.deviations.map((d) => ({ typeId: d.typeId, sampleIndex: d.sample === '' ? null : Number(d.sample), remark: d.remark || null })),
           },
         }),
       );
       // The job is booked now. Photos and the email follow; a failure there is reported, not a lost booking.
-      return { job, ...(await afterBooking(job, samples.fields.map((f) => photos[f.id] ?? []), emailAck && v.contactEmail ? v.contactEmail : null)) };
+      return {
+        job,
+        ...(await afterBooking(
+          job,
+          samples.fields.map((f) => photos[f.id] ?? []),
+          emailAck && v.contactEmail ? v.contactEmail : null,
+        )),
+      };
     },
     onSuccess: ({ job, uploaded, failed, emailed }) => {
       client.invalidateQueries({ queryKey: ['jobs'] });
@@ -227,7 +267,11 @@ function BookWithoutQuotation() {
           <div className="space-y-3 p-4">
             <div className="grid grid-cols-[minmax(0,1fr)] gap-3 md:grid-cols-3">
               <Field label="Customer" htmlFor="b-customer" required error={e.customerId?.message}>
-                <Controller control={form.control} name="customerId" render={({ field }) => <CustomerPicker id="b-customer" value={field.value} onChange={field.onChange} invalid={!!e.customerId} />} />
+                <Controller
+                  control={form.control}
+                  name="customerId"
+                  render={({ field }) => <CustomerPicker id="b-customer" value={field.value} onChange={field.onChange} invalid={!!e.customerId} />}
+                />
               </Field>
               <Field label="Reason for no quotation" htmlFor="b-reason" required error={e.noQuotationReason?.message} className="md:col-span-2">
                 <Textarea id="b-reason" rows={1} className="min-h-9" aria-invalid={!!e.noQuotationReason} {...form.register('noQuotationReason')} />
@@ -259,7 +303,11 @@ function BookWithoutQuotation() {
                   <SampleFields form={form} prefix={`samples.${i}.`} idPrefix={`b-s${i}`} />
                   <PendingPhotos label={`sample ${i + 1}`} items={photos[f.id] ?? []} onChange={(items) => setPhotos((all) => ({ ...all, [f.id]: items }))} />
                 </div>
-                <Controller control={form.control} name={`samples.${i}.testIds`} render={({ field }) => <TestMultiPicker id={`b-s${i}-tests`} label="Requested tests" value={field.value} onChange={field.onChange} />} />
+                <Controller
+                  control={form.control}
+                  name={`samples.${i}.testIds`}
+                  render={({ field }) => <TestMultiPicker id={`b-s${i}-tests`} label="Requested tests" value={field.value} onChange={field.onChange} />}
+                />
               </section>
             ))}
           </div>

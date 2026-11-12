@@ -83,7 +83,10 @@ test('while booking, a phone sends photos for a sample that does not exist yet, 
   const form = page.getByRole('region', { name: 'Book without a quotation' });
   await expect(async () => {
     await form.getByRole('combobox', { name: /^Customer/ }).fill('Contoso');
-    await page.getByRole('option', { name: /Contoso/ }).first().click({ timeout: 3_000 });
+    await page
+      .getByRole('option', { name: /Contoso/ })
+      .first()
+      .click({ timeout: 3_000 });
   }).toPass({ timeout: 20_000 });
   await form.getByLabel('Reason for no quotation').fill('Walk-in customer');
   const sample = form.getByRole('region', { name: 'Sample 1' });

@@ -59,7 +59,13 @@ export function PendingPhotos({ label, items, onChange }: { label: string; items
             const name = p.kind === 'local' ? p.file.name : `photo ${i + 1} from phone`;
             return (
               <li key={p.kind === 'local' ? `l-${i}-${p.file.name}` : p.fileId} className="relative">
-                {src ? <img src={src} alt={name} className="size-20 rounded border border-gray-200 object-cover" /> : <span className="flex size-20 items-center justify-center rounded border border-gray-200"><Spinner /></span>}
+                {src ? (
+                  <img src={src} alt={name} className="size-20 rounded border border-gray-200 object-cover" />
+                ) : (
+                  <span className="flex size-20 items-center justify-center rounded border border-gray-200">
+                    <Spinner />
+                  </span>
+                )}
                 {p.kind === 'phone' && <span className="absolute bottom-1 left-1 rounded bg-black/60 px-1 text-[10px] text-white">Phone</span>}
                 <button type="button" aria-label={`Remove ${name}`} className="absolute -top-2 -right-2 rounded-full border border-gray-300 bg-surface p-0.5 shadow-sm" onClick={() => remove(i)}>
                   <X className="size-3.5" aria-hidden />

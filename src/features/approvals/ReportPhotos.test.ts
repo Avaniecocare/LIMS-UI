@@ -8,7 +8,11 @@ describe('photoRows', () => {
       { fileId: 'c', caption: 'Fracture', widthMm: 120, heightMm: 90 },
       { fileId: 'a', caption: null, widthMm: 55, heightMm: 40 },
     ]);
-    expect(rows.map((r) => [r.fileId, r.selected])).toEqual([['c', true], ['a', true], ['b', false]]);
+    expect(rows.map((r) => [r.fileId, r.selected])).toEqual([
+      ['c', true],
+      ['a', true],
+      ['b', false],
+    ]);
     expect(rows[1].caption).toBe('');
     expect(rows[2]).toMatchObject({ widthMm: 85, heightMm: 64 });
   });

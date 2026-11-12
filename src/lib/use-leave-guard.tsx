@@ -13,7 +13,10 @@ import { ConfirmDialog } from '@/components/ui/primitives';
  *
  * React Router honours one blocker at a time, so use this once per screen.
  */
-export function useLeaveGuard(dirty: boolean, description = 'Your changes have not been saved. They will be lost if you leave this page.'): { dialog: ReactNode; leaveWithoutPrompt: (go: () => void) => void } {
+export function useLeaveGuard(
+  dirty: boolean,
+  description = 'Your changes have not been saved. They will be lost if you leave this page.',
+): { dialog: ReactNode; leaveWithoutPrompt: (go: () => void) => void } {
   const dirtyRef = useRef(dirty);
   dirtyRef.current = dirty;
   const skip = useRef(false);

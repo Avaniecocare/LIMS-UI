@@ -45,7 +45,12 @@ export function ReauthDialog() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={(o) => !o && finish(false)} title="Confirm your password" description="This action changes who can see or do what, or exports data in bulk, so it needs your password. You won't be asked again for ten minutes.">
+    <Dialog
+      open={open}
+      onOpenChange={(o) => !o && finish(false)}
+      title="Confirm your password"
+      description="This action changes who can see or do what, or exports data in bulk, so it needs your password. You won't be asked again for ten minutes."
+    >
       <form
         className="space-y-3"
         onSubmit={(e) => {

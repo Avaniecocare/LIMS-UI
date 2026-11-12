@@ -83,10 +83,22 @@ export function StatePicker({ id, value, onChange, invalid, disabled }: { id?: s
           }
         }}
       />
-      <button type="button" tabIndex={-1} aria-hidden className="absolute top-0 right-0 flex h-9 w-8 items-center justify-center text-gray-500" onClick={() => (open ? close() : (setOpen(true), input.current?.focus()))}>
+      <button
+        type="button"
+        tabIndex={-1}
+        aria-hidden
+        className="absolute top-0 right-0 flex h-9 w-8 items-center justify-center text-gray-500"
+        onClick={() => (open ? close() : (setOpen(true), input.current?.focus()))}
+      >
         <ChevronDown className={cn('size-4 transition-transform', open && 'rotate-180')} />
       </button>
-      <div id={listId} role="listbox" aria-label="States" hidden={!open} className="absolute top-full left-0 z-30 mt-1 max-h-64 w-full min-w-56 overflow-y-auto rounded-md border border-gray-200 bg-surface py-1 shadow-lg">
+      <div
+        id={listId}
+        role="listbox"
+        aria-label="States"
+        hidden={!open}
+        className="absolute top-full left-0 z-30 mt-1 max-h-64 w-full min-w-56 overflow-y-auto rounded-md border border-gray-200 bg-surface py-1 shadow-lg"
+      >
         {open &&
           items.map((s, i) => (
             <button

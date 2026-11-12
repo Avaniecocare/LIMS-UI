@@ -30,7 +30,15 @@ function refresh(client: ReturnType<typeof useQueryClient>) {
   for (const key of ['dispatch-pending', 'dispatches', 'returnables', 'job']) client.invalidateQueries({ queryKey: [key] });
 }
 
-const schema = z.object({ dispatchDate: z.string().min(1, 'Enter the date'), modeId: z.string().min(1, 'Choose how it is going'), courierName: z.string(), docketNo: z.string(), carrierName: z.string(), carrierContact: z.string(), remarks: z.string() });
+const schema = z.object({
+  dispatchDate: z.string().min(1, 'Enter the date'),
+  modeId: z.string().min(1, 'Choose how it is going'),
+  courierName: z.string(),
+  docketNo: z.string(),
+  carrierName: z.string(),
+  carrierContact: z.string(),
+  remarks: z.string(),
+});
 type Values = z.infer<typeof schema>;
 
 function RecordDialog({ job, onClose }: { job: Pending | null; onClose: () => void }) {
@@ -93,7 +101,13 @@ function RecordDialog({ job, onClose }: { job: Pending | null; onClose: () => vo
               {!job.reports.length && <p className="text-[13px] text-gray-700">No issued reports are waiting to go.</p>}
               {job.reports.map((r) => (
                 <div key={r.reportId}>
-                  <Checkbox id={`d-report-${r.reportId}`} label={`${r.reportNo}${r.revisionNo ? ` (revision ${r.revisionNo})` : ''}`} disabled={r.withheld} checked={reports.includes(r.reportId)} onCheckedChange={(v) => setReports((x) => (v ? [...x, r.reportId] : x.filter((id) => id !== r.reportId)))} />
+                  <Checkbox
+                    id={`d-report-${r.reportId}`}
+                    label={`${r.reportNo}${r.revisionNo ? ` (revision ${r.revisionNo})` : ''}`}
+                    disabled={r.withheld}
+                    checked={reports.includes(r.reportId)}
+                    onCheckedChange={(v) => setReports((x) => (v ? [...x, r.reportId] : x.filter((id) => id !== r.reportId)))}
+                  />
                   {r.withheld && <p className="ml-6 text-xs text-amber-900">{WITHHELD}</p>}
                 </div>
               ))}
@@ -103,7 +117,12 @@ function RecordDialog({ job, onClose }: { job: Pending | null; onClose: () => vo
               {!job.returnableSamples.length && <p className="text-[13px] text-gray-700">No samples are due back on this job.</p>}
               {job.returnableSamples.map((s) => (
                 <div key={s.sampleId}>
-                  <Checkbox id={`d-sample-${s.sampleId}`} label={`${s.sampleNo} — ${s.description}`} checked={samples.includes(s.sampleId)} onCheckedChange={(v) => setSamples((x) => (v ? [...x, s.sampleId] : x.filter((id) => id !== s.sampleId)))} />
+                  <Checkbox
+                    id={`d-sample-${s.sampleId}`}
+                    label={`${s.sampleNo} — ${s.description}`}
+                    checked={samples.includes(s.sampleId)}
+                    onCheckedChange={(v) => setSamples((x) => (v ? [...x, s.sampleId] : x.filter((id) => id !== s.sampleId)))}
+                  />
                 </div>
               ))}
             </fieldset>
@@ -120,11 +139,13 @@ function RecordDialog({ job, onClose }: { job: Pending | null; onClose: () => vo
             <Field label="Mode" htmlFor="d-mode" required error={e.modeId?.message}>
               <Select id="d-mode" aria-invalid={!!e.modeId} {...form.register('modeId')}>
                 <option value="">Choose…</option>
-                {modes.data?.filter((x) => x.isActive).map((x) => (
-                  <option key={x.id} value={x.id}>
-                    {x.label}
-                  </option>
-                ))}
+                {modes.data
+                  ?.filter((x) => x.isActive)
+                  .map((x) => (
+                    <option key={x.id} value={x.id}>
+                      {x.label}
+                    </option>
+                  ))}
               </Select>
             </Field>
             {code === 'COURIER' && (
@@ -174,7 +195,18 @@ function PendingTab() {
   const canEdit = can('dispatch.edit');
   const columns = useMemo<Col<Pending>[]>(
     () => [
-      { id: 'jobNo', header: 'Job', cell: ({ row: { original: j } }) => (can('jobs.view') ? <Link to={`/samples/jobs/${j.jobId}`} className="underline">{j.jobNo}</Link> : j.jobNo) },
+      {
+        id: 'jobNo',
+        header: 'Job',
+        cell: ({ row: { original: j } }) =>
+          can('jobs.view') ? (
+            <Link to={`/samples/jobs/${j.jobId}`} className="underline">
+              {j.jobNo}
+            </Link>
+          ) : (
+            j.jobNo
+          ),
+      },
       { id: 'customer', header: 'Customer', cell: ({ row }) => row.original.customerName ?? '—' },
       {
         id: 'reports',
@@ -229,10 +261,23 @@ function PendingTab() {
       <div className="flex flex-wrap items-center gap-2">
         <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search job" label="Search jobs waiting to go" />
         <MobileFilters filters={list.filters} onClear={list.clearFilters}>
-        <SavedFilters screen="dispatch-pending" current={list.allParams} onApply={list.applyFilters} />
+          <SavedFilters screen="dispatch-pending" current={list.allParams} onApply={list.applyFilters} />
         </MobileFilters>
       </div>
-      <DataTable ariaLabel="Jobs waiting to go" columns={columns} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} getRowId={(j) => j.jobId} renderExpanded={() => null} emptyTitle="Nothing is waiting to go out" />
+      <DataTable
+        ariaLabel="Jobs waiting to go"
+        columns={columns}
+        rows={q.data?.data}
+        meta={q.data?.meta}
+        loading={q.isLoading}
+        error={q.error}
+        onRetry={q.refetch}
+        onPageChange={list.setPage}
+        onPageSizeChange={list.setPageSize}
+        getRowId={(j) => j.jobId}
+        renderExpanded={() => null}
+        emptyTitle="Nothing is waiting to go out"
+      />
       <RecordDialog job={recording} onClose={() => setRecording(null)} />
     </div>
   );
@@ -247,7 +292,18 @@ function DispatchesTab() {
     () => [
       { accessorKey: 'dispatchNo', id: 'dispatchNo', header: 'Dispatch', enableSorting: true },
       { id: 'dispatchDate', header: 'Date', enableSorting: true, cell: ({ row }) => <span className="whitespace-nowrap">{formatDate(row.original.dispatchDate)}</span> },
-      { id: 'jobNo', header: 'Job', cell: ({ row: { original: d } }) => (can('jobs.view') ? <Link to={`/samples/jobs/${d.jobId}`} className="underline">{d.jobNo}</Link> : d.jobNo) },
+      {
+        id: 'jobNo',
+        header: 'Job',
+        cell: ({ row: { original: d } }) =>
+          can('jobs.view') ? (
+            <Link to={`/samples/jobs/${d.jobId}`} className="underline">
+              {d.jobNo}
+            </Link>
+          ) : (
+            d.jobNo
+          ),
+      },
       { id: 'customer', header: 'Customer', cell: ({ row }) => row.original.customerName ?? '—' },
       { accessorKey: 'modeLabel', id: 'mode', header: 'Mode' },
       {
@@ -285,11 +341,26 @@ function DispatchesTab() {
       <div className="flex flex-wrap items-center gap-2">
         <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search dispatch, docket or job" label="Search dispatches" />
         <MobileFilters filters={list.filters} onClear={list.clearFilters}>
-        <DateRangeFilter label="Dispatch date" from={list.filters.from ?? ''} to={list.filters.to ?? ''} onChange={list.setFilter} />
-        <SavedFilters screen="dispatches" current={list.allParams} onApply={list.applyFilters} />
+          <DateRangeFilter label="Dispatch date" from={list.filters.from ?? ''} to={list.filters.to ?? ''} onChange={list.setFilter} />
+          <SavedFilters screen="dispatches" current={list.allParams} onApply={list.applyFilters} />
         </MobileFilters>
       </div>
-      <DataTable ariaLabel="Dispatches" columns={columns} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} sort={list.sort} onSortChange={list.setSort} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} getRowId={(d) => d.id} renderExpanded={() => null} emptyTitle="No dispatches found" />
+      <DataTable
+        ariaLabel="Dispatches"
+        columns={columns}
+        rows={q.data?.data}
+        meta={q.data?.meta}
+        loading={q.isLoading}
+        error={q.error}
+        onRetry={q.refetch}
+        sort={list.sort}
+        onSortChange={list.setSort}
+        onPageChange={list.setPage}
+        onPageSizeChange={list.setPageSize}
+        getRowId={(d) => d.id}
+        renderExpanded={() => null}
+        emptyTitle="No dispatches found"
+      />
     </div>
   );
 }
@@ -306,7 +377,10 @@ function ReturnDialog({ sample, onClose }: { sample: Returnable | null; onClose:
   }, [sample?.id]);
   const e = form.formState.errors;
   const m = useMutation({
-    mutationFn: async (v: ReturnValues) => unwrap(await api.POST('/api/v1/dispatch/samples/{id}/return', { params: { path: { id: sample!.id } }, body: { version: sample!.version, returnedAt: v.returnedAt, returnStatus: v.returnStatus } })),
+    mutationFn: async (v: ReturnValues) =>
+      unwrap(
+        await api.POST('/api/v1/dispatch/samples/{id}/return', { params: { path: { id: sample!.id } }, body: { version: sample!.version, returnedAt: v.returnedAt, returnStatus: v.returnStatus } }),
+      ),
     onSuccess: () => {
       toast.success(`${sample?.sampleNo} marked returned`);
       refresh(client);
@@ -358,7 +432,16 @@ function DisposeDialog({ sample, onClose }: { sample: Returnable | null; onClose
     },
   });
   return (
-    <ConfirmDialog open={!!sample} onOpenChange={(o) => !o && onClose()} title={`Mark ${sample?.sampleNo ?? ''} disposed?`} description="This cannot be undone. A disposed sample cannot be returned to the customer." confirmLabel="Mark disposed" danger loading={m.isPending} onConfirm={() => date && m.mutate()}>
+    <ConfirmDialog
+      open={!!sample}
+      onOpenChange={(o) => !o && onClose()}
+      title={`Mark ${sample?.sampleNo ?? ''} disposed?`}
+      description="This cannot be undone. A disposed sample cannot be returned to the customer."
+      confirmLabel="Mark disposed"
+      danger
+      loading={m.isPending}
+      onConfirm={() => date && m.mutate()}
+    >
       <Field label="Date disposed" htmlFor="disp-date" required>
         <Input id="disp-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
       </Field>
@@ -385,12 +468,32 @@ function ReturnablesTab() {
     () => [
       { accessorKey: 'sampleNo', id: 'sampleNo', header: 'Sample', enableSorting: true },
       { accessorKey: 'description', id: 'description', header: 'Description' },
-      { id: 'jobNo', header: 'Job', cell: ({ row: { original: s } }) => (can('jobs.view') ? <Link to={`/samples/jobs/${s.jobId}`} className="underline">{s.jobNo}</Link> : s.jobNo) },
+      {
+        id: 'jobNo',
+        header: 'Job',
+        cell: ({ row: { original: s } }) =>
+          can('jobs.view') ? (
+            <Link to={`/samples/jobs/${s.jobId}`} className="underline">
+              {s.jobNo}
+            </Link>
+          ) : (
+            s.jobNo
+          ),
+      },
       { id: 'customer', header: 'Customer', cell: ({ row }) => row.original.customerName ?? '—' },
       {
         id: 'state',
         header: 'State',
-        cell: ({ row: { original: s } }) => (s.disposedAt ? <Badge>Disposed</Badge> : s.returnedAt ? <Badge tone="green">{s.returnStatus ?? 'Returned'}</Badge> : s.dueForDisposal ? <Badge tone="amber">Due for disposal</Badge> : <Badge tone="blue">{humanize(s.status)}</Badge>),
+        cell: ({ row: { original: s } }) =>
+          s.disposedAt ? (
+            <Badge>Disposed</Badge>
+          ) : s.returnedAt ? (
+            <Badge tone="green">{s.returnStatus ?? 'Returned'}</Badge>
+          ) : s.dueForDisposal ? (
+            <Badge tone="amber">Due for disposal</Badge>
+          ) : (
+            <Badge tone="blue">{humanize(s.status)}</Badge>
+          ),
       },
       { id: 'returnedAt', header: 'Returned', cell: ({ row }) => <span className="whitespace-nowrap">{formatDate(row.original.returnedAt)}</span> },
       { id: 'retentionUntil', header: 'Keep until', enableSorting: true, cell: ({ row }) => <span className="whitespace-nowrap">{formatDate(row.original.retentionUntil)}</span> },
@@ -425,17 +528,31 @@ function ReturnablesTab() {
       <div className="flex flex-wrap items-center gap-2">
         <SearchBox value={list.q} onChange={list.setSearch} placeholder="Search sample or job" label="Search returnable samples" />
         <MobileFilters filters={list.filters} onClear={list.clearFilters}>
-        <Select aria-label="Which samples" className="w-44" value={list.filters.view ?? 'pending'} onChange={(e) => list.setFilter('view', e.target.value === 'pending' ? null : e.target.value)}>
-          {VIEWS.map((v) => (
-            <option key={v.value} value={v.value}>
-              {v.label}
-            </option>
-          ))}
-        </Select>
-        <SavedFilters screen="dispatch-returnables" current={list.allParams} onApply={list.applyFilters} />
+          <Select aria-label="Which samples" className="w-44" value={list.filters.view ?? 'pending'} onChange={(e) => list.setFilter('view', e.target.value === 'pending' ? null : e.target.value)}>
+            {VIEWS.map((v) => (
+              <option key={v.value} value={v.value}>
+                {v.label}
+              </option>
+            ))}
+          </Select>
+          <SavedFilters screen="dispatch-returnables" current={list.allParams} onApply={list.applyFilters} />
         </MobileFilters>
       </div>
-      <DataTable ariaLabel="Returnable samples" columns={columns} rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.error} onRetry={q.refetch} sort={list.sort} onSortChange={list.setSort} onPageChange={list.setPage} onPageSizeChange={list.setPageSize} getRowId={(s) => s.id} emptyTitle="No samples here" />
+      <DataTable
+        ariaLabel="Returnable samples"
+        columns={columns}
+        rows={q.data?.data}
+        meta={q.data?.meta}
+        loading={q.isLoading}
+        error={q.error}
+        onRetry={q.refetch}
+        sort={list.sort}
+        onSortChange={list.setSort}
+        onPageChange={list.setPage}
+        onPageSizeChange={list.setPageSize}
+        getRowId={(s) => s.id}
+        emptyTitle="No samples here"
+      />
       <ReturnDialog sample={returning} onClose={() => setReturning(null)} />
       <DisposeDialog sample={disposing} onClose={() => setDisposing(null)} />
     </div>
@@ -463,9 +580,9 @@ export default function DispatchPage() {
           ))}
         </TabsList>
         <TabsContent value={tab}>
-      {tab === 'pending' && <PendingTab key="pending" />}
-      {tab === 'dispatches' && <DispatchesTab key="dispatches" />}
-      {tab === 'returnables' && <ReturnablesTab key="returnables" />}
+          {tab === 'pending' && <PendingTab key="pending" />}
+          {tab === 'dispatches' && <DispatchesTab key="dispatches" />}
+          {tab === 'returnables' && <ReturnablesTab key="returnables" />}
         </TabsContent>
       </Tabs>
     </>

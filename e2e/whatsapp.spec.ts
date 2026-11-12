@@ -45,7 +45,7 @@ test('reception sends the samples-received letter on WhatsApp from the job', asy
   expect((await reception.get(`/whatsapp/Job/${job.id}`)).messages[0].documentName).toMatch(/^Acknowledgement .*\.pdf$/);
 });
 
-test('the admin sees the connection, orders a template\'s values and sends a test', async ({ page }) => {
+test("the admin sees the connection, orders a template's values and sends a test", async ({ page }) => {
   const admin = await apiAs('admin');
   const before = await admin.get('/admin/lab/whatsapp');
   await signIn(page, 'admin');

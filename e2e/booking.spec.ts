@@ -10,7 +10,10 @@ async function pick(page: Page, label: RegExp, text: string) {
   // A failed submit moves focus to the first invalid field a moment later, which closes a picker opened in between.
   await expect(async () => {
     await page.getByRole('combobox', { name: label }).fill(text);
-    await page.getByRole('option', { name: new RegExp(text) }).first().click({ timeout: 3_000 });
+    await page
+      .getByRole('option', { name: new RegExp(text) })
+      .first()
+      .click({ timeout: 3_000 });
   }).toPass({ timeout: 20_000 });
 }
 
@@ -320,7 +323,9 @@ test('booking without a quotation, deviations, camera, letter and scanning', asy
   await expect(page.getByRole('button', { name: /^page-\d\.jpg$/ })).toHaveCount(2);
   await expectDocumentOpens(page, page.getByRole('button', { name: 'Combine pages into PDF' }));
   await expect(page.getByRole('button', { name: 'Customer letter.pdf', exact: true })).toBeVisible();
-  await page.locator('input[aria-label="Upload to Scanned letter (PDF)"]').setInputFiles({ name: 'scan.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF') });
+  await page
+    .locator('input[aria-label="Upload to Scanned letter (PDF)"]')
+    .setInputFiles({ name: 'scan.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF') });
   await expect(page.getByRole('button', { name: 'scan.pdf', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Email acknowledgement' }).click();
   await expect(page.getByRole('dialog').getByRole('textbox', { name: 'To', exact: true })).toHaveValue('rohan@contoso.example');
@@ -385,7 +390,14 @@ test('a planner never sees the customer', async ({ page }) => {
   await expect(page.getByText('Booked without a quotation: Impartiality check')).toBeVisible();
   const jobPath = new URL(page.url()).pathname;
   const jobId = jobPath.split('/').pop()!;
-  const sampleNo = (await page.getByRole('region', { name: /^Sample / }).first().locator('h3').first().innerText()).split(/\s/)[0];
+  const sampleNo = (
+    await page
+      .getByRole('region', { name: /^Sample / })
+      .first()
+      .locator('h3')
+      .first()
+      .innerText()
+  ).split(/\s/)[0];
 
   await signIn(page, 'planner');
   await expect(page.getByRole('link', { name: 'Customers' })).toHaveCount(0);
