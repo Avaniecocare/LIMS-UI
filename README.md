@@ -23,8 +23,12 @@ The API address comes from `public/config.js` in development. In the image, `doc
 | `npm test` | Vitest and React Testing Library |
 | `npm run test:e2e` | Playwright, against a running stack at `E2E_BASE_URL`; see below |
 | `npm run lint`, `npm run typecheck` | Static checks |
+| `npm run format`, `npm run format:check` | Apply or check Prettier formatting (`.prettierrc.json`) |
+| `npm run knip` | Fail on unused files, exports or dependencies (`knip.json` lists the entry points) |
 
 ## End-to-end tests
+
+A pre-commit hook (husky and lint-staged, installed by `npm install`) formats and lints the files being committed. CI runs the same checks on the whole repository.
 
 Playwright drives the real UI against a running backend, one worker at a time. Start the stack, then:
 

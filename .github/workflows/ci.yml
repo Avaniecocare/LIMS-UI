@@ -38,6 +38,9 @@ jobs:
       - name: Audit production dependencies
         run: npm audit --omit=dev --audit-level=high
       - run: npm run lint
+      - run: npm run format:check
+      - name: Unused files, exports and dependencies
+        run: npm run knip
       - run: npm run typecheck
       - run: npm run api:check
       - run: npm test
