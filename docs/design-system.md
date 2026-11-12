@@ -96,7 +96,7 @@ Every interactive component has default, hover, `focus-visible`, active (pressed
 
 `animate-enter`, `animate-fade-in`/`-out`, `animate-dialog-in`/`-out`, `animate-pop-in`/`-out`, `animate-check`, `animate-shake`, `animate-skeleton`, and the `.flash-new` class.
 
-From script: `MOTION` and `useCountUp` in [`src/lib/motion.ts`](../src/lib/motion.ts), and `prefersReducedMotion()`.
+From script: `useCountUp` in [`src/lib/motion.ts`](../src/lib/motion.ts), and `prefersReducedMotion()`.
 
 ### Rules
 

@@ -62,14 +62,13 @@ function PublicOnly() {
   return user ? <Navigate to={returnPath(location.state)} replace /> : <Outlet />;
 }
 
-// Lazy, so zod and the sign-in forms stay out of the bundle every signed-in visit loads.
-const auth = (name: 'LoginPage' | 'ForgotPasswordPage' | 'ResetPasswordPage' | 'SetupPage' | 'RequiredPasswordChangePage') =>
-  lazy(() => import('@/features/auth/AuthPages').then((m) => ({ default: m[name] })));
-const LoginPage = auth('LoginPage');
-const ForgotPasswordPage = auth('ForgotPasswordPage');
-const ResetPasswordPage = auth('ResetPasswordPage');
-const SetupPage = auth('SetupPage');
-const RequiredPasswordChangePage = auth('RequiredPasswordChangePage');
+// Lazy, so zod and the sign-in forms stay out of the bundle every signed-in visit loads. One chunk serves all five.
+const authPages = () => import('@/features/auth/AuthPages');
+const LoginPage = lazy(() => authPages().then((m) => ({ default: m.LoginPage })));
+const ForgotPasswordPage = lazy(() => authPages().then((m) => ({ default: m.ForgotPasswordPage })));
+const ResetPasswordPage = lazy(() => authPages().then((m) => ({ default: m.ResetPasswordPage })));
+const SetupPage = lazy(() => authPages().then((m) => ({ default: m.SetupPage })));
+const RequiredPasswordChangePage = lazy(() => authPages().then((m) => ({ default: m.RequiredPasswordChangePage })));
 const suspended = (Component: LazyExoticComponent<ComponentType>): ReactNode => (
   <Suspense fallback={<Spinner />}>
     <Component />

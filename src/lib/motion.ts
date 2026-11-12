@@ -1,8 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 
-/** Motion tokens for code that animates from script (the CSS tokens are in index.css). */
-export const MOTION = { fast: 140, base: 200, slow: 320, enter: 'cubic-bezier(0.16, 1, 0.3, 1)' } as const;
-
 export const prefersReducedMotion = () => typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
 // Each number counts up the first time it appears in a visit, not on every refresh or revisit.

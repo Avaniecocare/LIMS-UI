@@ -51,6 +51,7 @@ export function WebcamCapture({ title, buttonLabel = 'Use camera', accept = 'ima
     video.current = el;
     if (el && stream.current) {
       el.srcObject = stream.current;
+      // Autoplay of a muted preview is allowed; a refusal only means it starts on the first tap.
       void el.play()?.catch(() => undefined);
     }
   }, []);

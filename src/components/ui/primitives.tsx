@@ -491,6 +491,7 @@ export function PageHeader({ title, description, actions, breadcrumb, pageTitle 
               size="icon"
               className="-mt-0.5 shrink-0 md:hidden"
               aria-label="Share"
+              // Closing the share sheet rejects the promise; that is not an error.
               onClick={() => void navigator.share({ title: document.title, url: window.location.href }).catch(() => undefined)}
             >
               <Share2 aria-hidden />
