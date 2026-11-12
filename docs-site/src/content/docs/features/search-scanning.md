@@ -98,7 +98,7 @@ The QR code printed on a test report is a verification link for customers, not a
 
 **Who can do it**: everyone signed in.
 
-**Before you start**: your phone's browser must be able to read codes. Chrome on Android can; where the browser cannot, the **Scan a label** button does not appear. Allow camera access for the site when asked.
+**Before you start**: any phone browser that can use the camera works, including Safari, Chrome and Brave on an iPhone and Chrome on Android. Allow camera access for the site when asked. The first scan on a phone may take a second or two longer while the label reader loads.
 
 **Steps**
 
@@ -130,8 +130,7 @@ See [Using the LIMS on a phone](/help/guides/on-a-phone/).
 
 - Search finds records by number (and customers also by name and GSTIN). It does not search descriptions, contacts, test names or results.
 - Quotations, orders, dispatches and credit notes are not in the global search. Use the search on their own lists.
-- Camera scanning depends on the browser; on browsers without code reading (for example, many iPhone browsers), use a scanner or type the number.
-<!-- TODO(verify): which iPhone browsers support the BarcodeDetector API; the code only checks for it and names Chrome on Android as an example. -->
+- Camera scanning needs a browser that can use the camera, on a secure (`https://`) address. If the reader cannot start, the dialog says so; type the number in the search box instead.
 
 ## Related
 

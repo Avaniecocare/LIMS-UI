@@ -5,7 +5,7 @@ server {
   server_tokens off;
 
   # Strict CSP. No inline scripts: config.js is a same-origin file generated at start.
-  set $csp "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: ${API_URL} ${STORAGE_ORIGIN}; font-src 'self'; connect-src 'self' ${API_URL}; media-src 'self' blob:; frame-src ${API_URL} ${STORAGE_ORIGIN}; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'";
+  set $csp "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: ${API_URL} ${STORAGE_ORIGIN}; font-src 'self'; connect-src 'self' ${API_URL}; media-src 'self' blob:; frame-src ${API_URL} ${STORAGE_ORIGIN}; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'";
 
   # Server-level copy for responses no location handles (e.g. internal errors). Each location
   # below includes the same file, because a location's own add_header cancels inheritance.

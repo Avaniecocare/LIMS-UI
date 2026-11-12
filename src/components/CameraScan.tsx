@@ -3,14 +3,11 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Dialog } from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
+import { cameraAvailable, createDetector, type Detector } from '@/lib/barcode';
 import { toastError } from '@/lib/forms';
 
-type Detector = { detect: (source: HTMLVideoElement) => Promise<{ rawValue: string }[]> };
-type DetectorClass = new (options: { formats: string[] }) => Detector;
-const BarcodeDetectorClass = (globalThis as unknown as { BarcodeDetector?: DetectorClass }).BarcodeDetector;
-
-/** The phone's camera can read sample labels where the browser can decode codes (Chrome on Android, for example). */
-export const cameraScanSupported = () => !!BarcodeDetectorClass && !!navigator.mediaDevices?.getUserMedia;
+/** Any browser that can open the camera can scan: the browser's own reader, or the bundled one (iPhone). */
+export const cameraScanSupported = cameraAvailable;
 
 /** "Scan a label": points the camera at a sample label's QR code or barcode and opens what it belongs to. */
 export function CameraScanButton({ className }: { className?: string }) {
@@ -35,9 +32,9 @@ function ScanDialog({ onClose }: { onClose: () => void }) {
     let stream: MediaStream | null = null;
     let stopped = false;
     let frame = 0;
-    const detector = new BarcodeDetectorClass!({ formats: ['qr_code', 'code_128', 'code_39', 'ean_13', 'data_matrix'] });
+    let detector: Detector | null = null;
     const look = async () => {
-      if (stopped || !video.current) return;
+      if (stopped || !video.current || !detector) return;
       try {
         const [hit] = await detector.detect(video.current);
         if (hit?.rawValue) {
@@ -63,10 +60,17 @@ function ScanDialog({ onClose }: { onClose: () => void }) {
         if (stopped || !video.current) return stream.getTracks().forEach((t) => t.stop());
         video.current.srcObject = stream;
         await video.current.play();
-        void look();
       } catch {
         setMessage('The camera could not be opened. Allow camera access for this site and try again.');
+        return;
       }
+      try {
+        detector = await createDetector(['qr_code', 'code_128', 'code_39', 'ean_13', 'data_matrix']);
+      } catch {
+        setMessage('The label reader could not start. Reload the page and try again, or type the number in the search box.');
+        return;
+      }
+      void look();
     })();
     return () => {
       stopped = true;

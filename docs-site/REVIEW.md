@@ -28,7 +28,6 @@ Generated from the page sources. Each `TODO(verify)` is something a writer infer
 | /help/features/planning/ | 193 | the workflow allows Assigned → Planned with planning.edit, but no UI or endpoint for unassigning was found. |
 | /help/features/quality/ | 291 | notification links open /quality?tab=nc&id=…, but the Non-conformance tab does not read the id, so the person lands on the list rather than the record. |
 | /help/features/reports/ | 168 | confirm the intended way to change a result after issue is Revise, then reject the new revision at review with "Send tests back for re-testing" (the code allows it; no product text describes it). |
-| /help/features/search-scanning/ | 134 | which iPhone browsers support the BarcodeDetector API; the code only checks for it and names Chrome on Android as an example. |
 | /help/getting-started/system-requirements/ | 20 | minimum browser versions. The app uses Tailwind CSS 4 and React 19, which need recent browsers (roughly Chrome/Edge 111+, Safari 16.4+, Firefox 128+); no browserslist is set in the project. |
 | /help/getting-started/system-requirements/ | 47 | whether A4 printing of the 70 x 40 mm label PDF is a supported practice in the lab, or a label printer is required. |
 | /help/install/docker/ | 112 | for a new install the logo is set in the app's Branding page; confirm whether files in branding/ are used at all when there is no company.env. |
