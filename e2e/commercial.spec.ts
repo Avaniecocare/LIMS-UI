@@ -59,12 +59,18 @@ test('the menu shrinks to icons and expands with the hamburger', async ({ page }
   await signIn(page, 'admin');
   const samples = nav(page).getByRole('link', { name: 'Samples' });
   const label = samples.locator('span');
-  await expect(samples.locator('svg')).toBeVisible();
-  await expect(label).toHaveClass(/sr-only/);
+  const icon = samples.locator('svg');
+  await expect(icon).toBeVisible();
+  // Narrow: the label fades out but stays the link's name; the icon never moves between the two states.
+  await expect(label).toHaveCSS('opacity', '0');
+  await expect(samples).toHaveAccessibleName('Samples');
+  const x = (await icon.boundingBox())!.x;
   await page.getByRole('button', { name: 'Open menu' }).click();
-  await expect(label).not.toHaveClass(/sr-only/);
+  await expect(label).toHaveCSS('opacity', '1');
+  expect((await icon.boundingBox())!.x).toBe(x);
   await page.getByRole('button', { name: 'Close menu' }).click();
-  await expect(label).toHaveClass(/sr-only/);
+  await expect(label).toHaveCSS('opacity', '0');
+  expect((await icon.boundingBox())!.x).toBe(x);
   await samples.click();
   await expect(page).toHaveURL(/\/samples$/);
 });

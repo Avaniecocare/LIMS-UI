@@ -70,6 +70,9 @@ export function Layout() {
   }, []);
 
   const phone = useIsPhone();
+  // Menu labels stay in place (and with screen readers) when the menu is narrow; they fade out and the menu's edge
+  // clips them. On opening they fade in a moment after the width starts to grow.
+  const label = 'min-w-0 flex-1 overflow-hidden whitespace-nowrap transition-opacity duration-(--motion-fast)';
   const [searching, setSearching] = useState(false);
   // The phone's bottom bar: the four most useful places for this person, then More (the full menu as a drawer).
   const bottom = BOTTOM_NAV_PRIORITY.map((to) => items.find((i) => i.to === to))
@@ -88,7 +91,8 @@ export function Layout() {
       </a>
       {open && <div className="fixed inset-0 z-30 animate-fade-in bg-(--overlay) lg:hidden" onClick={() => setOpen(false)} aria-hidden />}
       {/* Keeps room for the icon strip, and on large screens for the expanded menu. Phones use the bottom bar instead. */}
-      <div className={cn('w-14 shrink-0 transition-[width] max-md:w-0', open && 'lg:w-56')}>
+      {/* Same duration and easing as the menu itself, so the page and the menu move as one. */}
+      <div className={cn('w-14 shrink-0 transition-[width] duration-(--motion-base) ease-(--ease-standard) max-md:w-0', open && 'lg:w-56')}>
         <aside
           className={cn(
             'fixed inset-y-0 left-0 z-40 flex flex-col overflow-hidden bg-nav text-nav-fg transition-[width,translate] duration-(--motion-base) ease-(--ease-standard) max-md:w-72 max-md:pt-[env(safe-area-inset-top)] max-md:pb-[env(safe-area-inset-bottom)]',
@@ -104,7 +108,9 @@ export function Layout() {
             <Button variant="ghost" size="icon" className="shrink-0 text-nav-fg hover:bg-nav-fg/15" aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open} onClick={() => setOpen(!open)}>
               {open ? <X className="size-5" aria-hidden /> : <Menu className="size-5" aria-hidden />}
             </Button>
-            {open && <span className="text-sm font-semibold">Menu</span>}
+            <span aria-hidden className={cn('text-sm font-semibold whitespace-nowrap transition-opacity duration-(--motion-fast)', open ? 'opacity-100 delay-75' : 'opacity-0')}>
+              Menu
+            </span>
           </div>
           <nav className="flex-1 space-y-0.5 overflow-x-hidden overflow-y-auto p-2" aria-label="Main">
             {items.map((item) => (
@@ -117,14 +123,15 @@ export function Layout() {
                 }}
                 className={({ isActive }) =>
                   cn(
-                    'flex h-10 items-center gap-2.5 rounded-md text-sm font-medium transition-colors duration-(--motion-fast) pointer-coarse:h-11',
-                    open ? 'px-2.5' : 'justify-center',
+                    // The icon stays put (10px in, centred in the 56px strip) whether the menu is open or not;
+                    // only the label fades, so nothing jumps while the width animates.
+                    'flex h-10 items-center gap-2.5 overflow-hidden rounded-md px-2.5 text-sm font-medium transition-colors duration-(--motion-fast) pointer-coarse:h-11',
                     isActive ? 'bg-brand text-brand-fg shadow-[inset_3px_0_0_var(--brand-accent)]' : 'text-nav-fg hover:bg-nav-fg/15',
                   )
                 }
               >
                 <item.icon className="size-5 shrink-0" aria-hidden />
-                <span className={open ? 'truncate' : 'sr-only'}>{item.label}</span>
+                <span className={cn(label, open ? 'opacity-100 delay-75' : 'opacity-0')}>{item.label}</span>
                 {phone && open && mobileRule(item.to).support === 'desktop' && <Monitor className="ml-auto size-4 shrink-0 opacity-60" aria-label="best on a computer" />}
               </NavLink>
             ))}
@@ -137,15 +144,14 @@ export function Layout() {
               rel="noopener"
               title={open ? undefined : 'Help and documentation'}
               className={cn(
-                'flex h-10 items-center gap-2.5 rounded-md text-sm font-medium text-nav-fg transition-colors duration-(--motion-fast) hover:bg-nav-fg/15 pointer-coarse:h-11',
-                open ? 'px-2.5' : 'justify-center',
+                'flex h-10 items-center gap-2.5 overflow-hidden rounded-md px-2.5 text-sm font-medium text-nav-fg transition-colors duration-(--motion-fast) hover:bg-nav-fg/15 pointer-coarse:h-11',
               )}
             >
               <BookOpen className="size-5 shrink-0" aria-hidden />
-              <span className={open ? 'truncate' : 'sr-only'}>
+              <span className={cn(label, open ? 'opacity-100 delay-75' : 'opacity-0')}>
                 Documentation<span className="sr-only"> and help (opens in a new tab)</span>
               </span>
-              {open && <ExternalLink className="ml-auto size-3.5 shrink-0 opacity-60" aria-hidden />}
+              <ExternalLink className={cn('ml-auto size-3.5 shrink-0 transition-opacity duration-(--motion-fast)', open ? 'opacity-60 delay-75' : 'opacity-0')} aria-hidden />
             </a>
           </div>
         </aside>
