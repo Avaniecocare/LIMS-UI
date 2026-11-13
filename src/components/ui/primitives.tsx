@@ -6,7 +6,7 @@ import * as DropdownPrimitive from '@radix-ui/react-dropdown-menu';
 import * as TabsPrimitive from '@radix-ui/react-tabs';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { ArrowLeft, Check, Inbox, Loader2, Share2, TriangleAlert, X, type LucideIcon } from 'lucide-react';
+import { ArrowLeft, Check, ChevronLeft, ChevronRight, Inbox, Loader2, Share2, TriangleAlert, X, type LucideIcon } from 'lucide-react';
 import {
   Children,
   cloneElement,
@@ -15,6 +15,7 @@ import {
   useEffect,
   useLayoutEffect,
   useRef,
+  useState,
   type ComponentProps,
   type PointerEvent as ReactPointerEvent,
   type ReactElement,
@@ -336,49 +337,87 @@ export const Tabs = TabsPrimitive.Root;
  * The tab row. One underline slides to the chosen tab (transform only), so the eye follows the change; it is
  * measured from the active tab and follows resizes and tabs appearing.
  */
+/**
+ * A row of tabs with a sliding underline. A row too long for the width scrolls sideways without a visible scrollbar
+ * (which would sit over the labels): arrow buttons and a fade appear at whichever end has more tabs, and the
+ * active tab is scrolled into view. Keyboard users move with the arrow keys, as in any tab list.
+ */
 export function TabsList({ className, children, ...props }: ComponentProps<typeof TabsPrimitive.List>) {
   const list = useRef<HTMLDivElement>(null);
   const bar = useRef<HTMLSpanElement>(null);
+  const [more, setMore] = useState({ left: false, right: false });
   useLayoutEffect(() => {
     const el = list.current;
     const line = bar.current;
     if (!el || !line) return;
     let placed = false;
+    let lastActive: HTMLElement | null = null;
+    const edges = () => {
+      const left = el.scrollLeft > 1;
+      const right = el.scrollLeft + el.clientWidth < el.scrollWidth - 1;
+      setMore((m) => (m.left === left && m.right === right ? m : { left, right }));
+    };
     const place = () => {
       const active = el.querySelector<HTMLElement>('[role="tab"][data-state="active"]');
+      edges();
       if (!active) return void (line.style.opacity = '0');
       // The first placement jumps; later ones slide.
       line.style.transition = placed ? '' : 'none';
       line.style.opacity = '1';
       line.style.transform = `translateX(${active.offsetLeft}px) scaleX(${active.offsetWidth})`;
+      // A newly chosen tab that is partly hidden is brought into view, with a little of its neighbour showing.
+      if (active !== lastActive) {
+        lastActive = active;
+        const pad = 32;
+        if (active.offsetLeft - pad < el.scrollLeft) el.scrollTo?.({ left: Math.max(0, active.offsetLeft - pad), behavior: placed ? 'smooth' : 'auto' });
+        else if (active.offsetLeft + active.offsetWidth + pad > el.scrollLeft + el.clientWidth)
+          el.scrollTo?.({ left: active.offsetLeft + active.offsetWidth + pad - el.clientWidth, behavior: placed ? 'smooth' : 'auto' });
+      }
       placed = true;
     };
     place();
+    el.addEventListener('scroll', edges, { passive: true });
     const mo = new MutationObserver(place);
     mo.observe(el, { subtree: true, attributes: true, attributeFilter: ['data-state'], childList: true });
     const ro = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(place);
     ro?.observe(el);
     return () => {
+      el.removeEventListener('scroll', edges);
       mo.disconnect();
       ro?.disconnect();
     };
   }, []);
+  const nudge = (dir: -1 | 1) => list.current?.scrollBy?.({ left: dir * Math.max(160, list.current.clientWidth * 0.6), behavior: 'smooth' });
+  const arrow = 'absolute top-0 bottom-px z-10 flex w-10 items-center text-gray-700 hover:text-gray-900';
   return (
-    <TabsPrimitive.List ref={list} className={cn('relative flex gap-1 overflow-x-auto border-b border-gray-200', className)} {...props}>
-      {children}
-      <span
-        ref={bar}
-        aria-hidden
-        className="pointer-events-none absolute bottom-0 left-0 h-0.5 w-px origin-left bg-brand opacity-0 transition-transform duration-(--motion-base) ease-(--ease-standard)"
-      />
-    </TabsPrimitive.List>
+    <div className={cn('relative', className)}>
+      <TabsPrimitive.List ref={list} className="no-scrollbar relative flex gap-1 overflow-x-auto overscroll-x-contain border-b border-gray-200" {...props}>
+        {children}
+        <span
+          ref={bar}
+          aria-hidden
+          className="pointer-events-none absolute bottom-0 left-0 h-0.5 w-px origin-left bg-brand opacity-0 transition-transform duration-(--motion-base) ease-(--ease-standard)"
+        />
+      </TabsPrimitive.List>
+      {/* Pointer aids only: the tab list itself is reachable and scrolls with the keyboard. */}
+      {more.left && (
+        <button type="button" tabIndex={-1} aria-hidden className={cn(arrow, 'left-0 justify-start bg-linear-to-r from-(--page-bg) from-55% to-transparent')} onClick={() => nudge(-1)}>
+          <ChevronLeft className="size-5" />
+        </button>
+      )}
+      {more.right && (
+        <button type="button" tabIndex={-1} aria-hidden className={cn(arrow, 'right-0 justify-end bg-linear-to-l from-(--page-bg) from-55% to-transparent')} onClick={() => nudge(1)}>
+          <ChevronRight className="size-5" />
+        </button>
+      )}
+    </div>
   );
 }
 export function TabsTrigger({ className, ...props }: ComponentProps<typeof TabsPrimitive.Trigger>) {
   return (
     <TabsPrimitive.Trigger
       className={cn(
-        '-mb-px border-b-2 border-transparent px-3 py-2 text-sm font-medium whitespace-nowrap text-gray-600 transition-colors duration-(--motion-fast) hover:text-gray-900 data-[state=active]:text-gray-900 pointer-coarse:min-h-11',
+        '-mb-px rounded-t-md border-b-2 border-transparent px-3 py-2 text-sm font-medium whitespace-nowrap text-gray-600 transition-colors duration-(--motion-fast) hover:text-gray-900 focus-visible:-outline-offset-2 data-[state=active]:text-gray-900 pointer-coarse:min-h-11',
         className,
       )}
       {...props}

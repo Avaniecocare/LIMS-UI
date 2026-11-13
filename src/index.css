@@ -345,3 +345,11 @@ textarea[aria-invalid='true'] {
 :root:not([data-theme='dark']) [data-sonner-toast][data-rich-colors='true'][data-type='info'] {
   color: #1e3a8a !important;
 }
+
+/* A sideways-scrolling row (tab lists) without a visible scrollbar, which would sit over its labels. */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

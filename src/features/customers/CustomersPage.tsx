@@ -501,7 +501,7 @@ export function CustomerDetailPage() {
         </>
       ) : (
         <Tabs value={tab} onValueChange={setTab}>
-          <TabsList className="mb-4 flex-wrap">
+          <TabsList className="mb-4">
             {tabs
               .filter((t) => t.show)
               .map((t) => (
