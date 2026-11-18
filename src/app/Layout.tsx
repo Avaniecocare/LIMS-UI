@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { BookOpen, ChevronDown, ExternalLink, LayoutGrid, Menu, Monitor, Search, X } from 'lucide-react';
+import { BookOpen, ChevronDown, ExternalLink, LayoutGrid, Moon, Sun, Menu, Monitor, Search, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate, useNavigationType } from 'react-router-dom';
 import { Button, DropdownContent, DropdownItem, DropdownLabel, DropdownMenu, DropdownRadioGroup, DropdownRadioItem, DropdownSeparator, DropdownTrigger } from '@/components/ui/primitives';
@@ -28,7 +28,7 @@ export function Layout() {
     },
   });
   const items = NAV.filter((n) => (!n.permissions || can(...n.permissions)) && (!n.module || moduleOn(n.module)));
-  const { preference, setPreference } = useTheme();
+  const { preference, theme, setPreference } = useTheme();
   const main = useRef<HTMLElement>(null);
   const location = useLocation();
   const { pathname } = location;
@@ -191,6 +191,18 @@ export function Layout() {
                 <Search className="size-5" aria-hidden />
               </Button>
             )}
+            {/* One click between light and dark; "System" (follow the device) stays in the user menu. */}
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+              title={theme === 'dark' ? 'Light theme' : 'Dark theme'}
+              onClick={() => setPreference(theme === 'dark' ? 'light' : 'dark')}
+            >
+              <span key={theme} className="inline-flex motion-safe:animate-[theme-turn_var(--motion-base)_var(--ease-standard)]">
+                {theme === 'dark' ? <Sun className="size-5" aria-hidden /> : <Moon className="size-5" aria-hidden />}
+              </span>
+            </Button>
             <NotificationBell />
             <DropdownMenu>
               <DropdownTrigger asChild>
