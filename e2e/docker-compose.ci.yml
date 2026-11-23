@@ -5,6 +5,8 @@ x-app: &app
   image: ${LIMS_IMAGE:?set LIMS_IMAGE to the backend image to test against}
   volumes:
     - ./branding:/app/e2e-branding:ro
+    # The assistant's index: build docs-site before starting this stack.
+    - ../docs-site/dist:/app/e2e-docs:ro
   environment: &env
     NODE_ENV: production
     PORT: '3000'
@@ -30,6 +32,11 @@ x-app: &app
     SMTP_FROM: lab@testhouse.example
     SMTP_TRANSPORT: json
     WHATSAPP_TRANSPORT: json
+    # Test IRNs and offline assistant answers: nothing leaves the machine.
+    EINVOICE_PROVIDER: mock
+    ENABLE_AI_ASSISTANT: 'true'
+    AI_PROVIDER: mock
+    HELP_INDEX_PATH: /app/e2e-docs/help-index.json
     LOG_LEVEL: info
     COMPANY_PRODUCT_NAME: 'Example Test House LIMS'
     COMPANY_NAME: 'Example Test House'
