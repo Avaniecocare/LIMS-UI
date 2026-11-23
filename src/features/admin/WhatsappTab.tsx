@@ -8,6 +8,7 @@ import { Badge, Button, Card, CardHeader, ErrorState, Field, Input, Select, Spin
 import { WhatsappStatus } from '@/features/whatsapp/WhatsappSend';
 import { api, unwrap } from '@/lib/api';
 import { isConflict, toastError } from '@/lib/forms';
+import { useReportDirty } from '@/lib/use-leave-guard';
 
 type Settings = components['schemas']['WhatsappSettingsDto'];
 type Template = Settings['templates'][number];
@@ -44,10 +45,11 @@ export function WhatsappTab() {
     onSuccess: () => toast.success('Test message sent. It should arrive on that WhatsApp in a few seconds.'),
     onError: toastError,
   });
+  const dirty = !!q.data && Object.keys(draft).length > 0 && q.data.templates.some((t) => !same(draft[t.key], t));
+  useReportDirty(dirty && canEdit);
   if (q.isLoading) return <Spinner />;
   if (q.error || !q.data) return <ErrorState error={q.error} onRetry={q.refetch} />;
   const s = q.data;
-  const dirty = s.templates.some((t) => !same(draft[t.key], t));
   const setValues = (key: string, values: string[]) => setDraft((d) => ({ ...d, [key]: { ...d[key], values } }));
 
   return (

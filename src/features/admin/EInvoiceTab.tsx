@@ -7,6 +7,7 @@ import { useSession } from '@/app/providers';
 import { Badge, Button, Card, CardHeader, Checkbox, ErrorState, Field, Input, Spinner } from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
 import { isConflict, toastError } from '@/lib/forms';
+import { useReportDirty } from '@/lib/use-leave-guard';
 
 type Settings = components['schemas']['EInvoiceSettingsDto'];
 type Seller = Settings['seller'];
@@ -43,10 +44,12 @@ export function EInvoiceTab() {
     onSuccess: () => toast.success('Signed in to the GST portal. The credentials work.'),
     onError: toastError,
   });
+  const saved = q.data;
+  const dirty = !!saved && (auto !== saved.autoOnIssue || (['line1', 'line2', 'city', 'pincode'] as const).some((k) => seller[k] !== saved.seller[k]));
+  useReportDirty(dirty && canEdit);
   if (q.isLoading) return <Spinner />;
   if (q.error || !q.data) return <ErrorState error={q.error} onRetry={q.refetch} />;
   const s = q.data;
-  const dirty = auto !== s.autoOnIssue || (['line1', 'line2', 'city', 'pincode'] as const).some((k) => seller[k] !== s.seller[k]);
   const pinOk = seller.pincode === '' || /^[1-9][0-9]{5}$/.test(seller.pincode);
   const target = !s.configured ? null : s.provider === 'mock' ? 'Test IRNs made on this server (not registered anywhere)' : `GST portal, ${s.environment === 'production' ? 'production' : 'sandbox'}`;
 

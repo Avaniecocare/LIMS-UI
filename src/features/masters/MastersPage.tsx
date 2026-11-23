@@ -314,7 +314,7 @@ function ImportButton({ cfg }: { cfg: MasterConfig }) {
   );
 }
 
-function Editor({ cfg, record, onDone, onDirtyChange }: { cfg: MasterConfig; record: Row | null; onDone: () => void; onDirtyChange: (dirty: boolean) => void }) {
+function Editor({ canEdit, cfg, record, onDone, onDirtyChange }: { canEdit: boolean; cfg: MasterConfig; record: Row | null; onDone: () => void; onDirtyChange: (dirty: boolean) => void }) {
   const [tab, setTab] = useState('details');
   const history = useQuery({
     queryKey: ['master-history', cfg.key, record?.id],
@@ -330,10 +330,12 @@ function Editor({ cfg, record, onDone, onDirtyChange }: { cfg: MasterConfig; rec
       </TabsList>
       {/* Kept mounted so typed changes (and the unsaved-changes warning) survive a look at History. */}
       <TabsContent value="details" forceMount className="data-[state=inactive]:hidden">
-        <MasterForm cfg={cfg} record={record} onDone={onDone} onDirtyChange={onDirtyChange} />
+        <fieldset disabled={!canEdit} className="contents">
+          <MasterForm cfg={cfg} record={record} onDone={onDone} onDirtyChange={onDirtyChange} />
+        </fieldset>
         {cfg.key === 'instruments' && (
           <div className="mt-4 border-t border-gray-200 pt-3">
-            <Attachments entity="Instrument" entityId={record.id} category="certificate" title="Calibration certificates" canEdit />
+            <Attachments entity="Instrument" entityId={record.id} category="certificate" title="Calibration certificates" canEdit={canEdit} />
           </div>
         )}
       </TabsContent>
@@ -441,9 +443,9 @@ function MasterScreen({ cfg }: { cfg: MasterConfig }) {
         onOpenChange={(o) => {
           if (!o) closeGuard.requestClose();
         }}
-        title={editing === 'new' ? `Add to ${cfg.label}` : `Edit ${String(editing?.code ?? editing?.name ?? '')}`}
+        title={editing === 'new' ? `Add to ${cfg.label}` : `${canEdit ? 'Edit ' : ''}${String(editing?.code ?? editing?.name ?? '')}`}
       >
-        {editing && <Editor key={editing === 'new' ? 'new' : editing.id} cfg={cfg} record={editing === 'new' ? null : editing} onDone={closeEditor} onDirtyChange={setDirty} />}
+        {editing && <Editor key={editing === 'new' ? 'new' : editing.id} canEdit={canEdit} cfg={cfg} record={editing === 'new' ? null : editing} onDone={closeEditor} onDirtyChange={setDirty} />}
       </Dialog>
       {closeGuard.dialog}
       {guard.dialog}

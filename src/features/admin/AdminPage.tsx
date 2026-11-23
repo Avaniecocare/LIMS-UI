@@ -431,6 +431,9 @@ function RolesTab() {
 }
 
 // ---------------------------------------------------------------- settings
+/** What was typed cannot be saved; the message says why. */
+class InputProblem extends Error {}
+
 function SettingRow({ setting }: { setting: Setting }) {
   const client = useQueryClient();
   const initial = typeof setting.value === 'object' ? JSON.stringify(setting.value, null, 2) : String(setting.value ?? '');
@@ -442,9 +445,18 @@ function SettingRow({ setting }: { setting: Setting }) {
   const m = useMutation({
     mutationFn: async () => {
       let value: unknown = text;
-      if (typeof setting.default === 'number') value = Number(text);
-      else if (typeof setting.default === 'boolean') value = text === 'true';
-      else if (typeof setting.default === 'object') value = JSON.parse(text);
+      if (typeof setting.default === 'number') {
+        // An emptied field would otherwise save as 0: a GST rate of nothing.
+        if (!text.trim() || !Number.isFinite(Number(text))) throw new InputProblem('Enter a number');
+        value = Number(text);
+      } else if (typeof setting.default === 'boolean') value = text === 'true';
+      else if (typeof setting.default === 'object') {
+        try {
+          value = JSON.parse(text);
+        } catch {
+          throw new InputProblem('That is not valid JSON');
+        }
+      }
       return unwrap(
         await api.PUT('/api/v1/admin/settings/{key}', {
           params: { path: { key: setting.key } },
@@ -457,7 +469,7 @@ function SettingRow({ setting }: { setting: Setting }) {
       client.invalidateQueries({ queryKey: ['settings'] });
       toast.success(`${setting.label} saved`);
     },
-    onError: (e) => toastError(e instanceof SyntaxError ? new Error('That is not valid JSON') : e),
+    onError: (e) => (e instanceof InputProblem ? toast.error(e.message) : toastError(e)),
   });
   const id = `s-${setting.key}`;
   return (

@@ -15,6 +15,7 @@ import { Button, Card, CardHeader, ErrorState, Field, Input, PageHeader, Select,
 import { api, unwrap } from '@/lib/api';
 import { cn, formatDate, formatINR, humanize, toDateInput, todayIso } from '@/lib/format';
 import { applyServerErrors } from '@/lib/forms';
+import { useLeaveGuard } from '@/lib/use-leave-guard';
 import { useListState } from '@/lib/use-list-state';
 
 type Order = components['schemas']['OrderDto'];
@@ -52,6 +53,7 @@ function OrderForm({ order, onSaved }: { order: Order | null; onSaved: (o: Order
   const preset = order ? '' : (params.get('customerId') ?? '');
   const form = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: toForm(order, preset) });
   useEffect(() => form.reset(toForm(order, preset)), [order, preset, form]);
+  const leave = useLeaveGuard(form.formState.isDirty && canEdit);
   const owners = useQuery({ queryKey: ['order-owners'], staleTime: 60_000, queryFn: async () => unwrap(await api.GET('/api/v1/orders/owners')) });
   // A native select shows nothing until its option exists, so re-apply the value once they load.
   useEffect(() => {
@@ -69,12 +71,13 @@ function OrderForm({ order, onSaved }: { order: Order | null; onSaved: (o: Order
       client.invalidateQueries({ queryKey: ['orders-pipeline'] });
       client.setQueryData(['order', o.id], o);
       toast.success('Order saved');
-      onSaved(o);
+      leave.leaveWithoutPrompt(() => onSaved(o));
     },
     onError: (err) => applyServerErrors(err, form.setError, ['customerId', 'source', 'reference', 'description', 'receivedOn', 'ownerId', 'stage']),
   });
   return (
     <form onSubmit={form.handleSubmit((v) => m.mutate(v))} noValidate>
+      {leave.dialog}
       <Card>
         <CardHeader title="Order details" />
         <fieldset disabled={!canEdit} className="grid grid-cols-[minmax(0,1fr)] gap-3 p-4 md:grid-cols-3">

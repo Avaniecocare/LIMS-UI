@@ -9,7 +9,7 @@ import { DataTable, type Col } from '@/components/DataTable';
 import { useTests } from '@/components/pickers';
 import { Badge, Button, Dialog, ErrorState, Field, Input, PageHeader, Select, Spinner, Tabs, TabsContent, TabsList, TabsTrigger, Textarea } from '@/components/ui/primitives';
 import { ApiError, api, unwrap } from '@/lib/api';
-import { formatDate } from '@/lib/format';
+import { formatDate, todayIso } from '@/lib/format';
 import { toastError } from '@/lib/forms';
 
 type Equipment = components['schemas']['EquipmentRowDto'];
@@ -17,7 +17,7 @@ type Nc = components['schemas']['NcDto'];
 type Authorisation = components['schemas']['AuthorisationDto'];
 type Training = components['schemas']['TrainingDto'];
 
-const today = () => new Date().toISOString().slice(0, 10);
+const today = todayIso;
 const EQUIPMENT_TONE = { OVERDUE: 'red', DUE_SOON: 'amber', OK: 'green', NOT_SCHEDULED: 'gray' } as const;
 const EQUIPMENT_LABEL = { OVERDUE: 'Overdue', DUE_SOON: 'Due soon', OK: 'In date', NOT_SCHEDULED: 'Not scheduled' } as const;
 const NC_LABEL = { OPEN: 'Open', ACTION: 'Action', VERIFICATION: 'Verification', CLOSED: 'Closed' } as const;

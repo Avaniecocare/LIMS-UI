@@ -200,16 +200,20 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setCsrfToken(data?.csrfToken ?? null);
   }, [data]);
 
+  // "Preview as role": an admin sees the screens as a role would. Only the interface changes; the server keeps
+  // checking the admin's own permissions, and the preview is never stored, so a reload ends it.
+  const [preview, setPreview] = useState<{ role: string; permissions: string[] } | null>(null);
+
   useEffect(() => {
     setUnauthenticatedHandler(() => {
       setCsrfToken(null);
       client.setQueryData(['session'], null);
+      // Whoever signs in next must not see this person's screens while theirs load.
+      client.removeQueries({ predicate: (q) => !['session', 'branding'].includes(q.queryKey[0] as string) });
+      setPreview(null);
     });
   }, [client]);
 
-  // "Preview as role": an admin sees the screens as a role would. Only the interface changes; the server keeps
-  // checking the admin's own permissions, and the preview is never stored, so a reload ends it.
-  const [preview, setPreview] = useState<{ role: string; permissions: string[] } | null>(null);
   const value = useMemo<SessionValue>(
     () => ({
       user: data ?? null,
@@ -221,6 +225,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       setUser: (user) => {
         setCsrfToken(user?.csrfToken ?? null);
         client.setQueryData(['session'], user);
+        setPreview(null);
         if (!user) client.removeQueries({ predicate: (q) => !['session', 'branding'].includes(q.queryKey[0] as string) });
       },
     }),

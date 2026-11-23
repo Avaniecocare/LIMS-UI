@@ -12,7 +12,7 @@ import { Button, Card, CardHeader, Checkbox, ErrorState, Field, Input, Spinner, 
 import { ApiError, api, unwrap, uploadFile } from '@/lib/api';
 import { lookupGstin } from '@/lib/autofill';
 import { isConflict, toastError } from '@/lib/forms';
-import { useLeaveGuard } from '@/lib/use-leave-guard';
+import { useReportDirty } from '@/lib/use-leave-guard';
 
 type Lab = components['schemas']['LabDetailsDto'];
 type Profile = Lab['profile'];
@@ -109,7 +109,7 @@ export function LabProfileForm({ lab, onSaved, submitLabel = 'Save lab profile' 
   const canEdit = can('admin.company.edit');
   const form = useForm<ProfileValues>({ resolver: zodResolver(profileSchema), defaultValues: toForm(lab.profile) });
   useEffect(() => form.reset(toForm(lab.profile)), [lab.profile, form]);
-  const guard = useLeaveGuard(form.formState.isDirty && canEdit);
+  useReportDirty(form.formState.isDirty && canEdit);
   const [gstinNote, setGstinNote] = useState('');
   const e = form.formState.errors;
   const save = useMutation({
@@ -155,7 +155,6 @@ export function LabProfileForm({ lab, onSaved, submitLabel = 'Save lab profile' 
   };
   return (
     <form className="space-y-4" noValidate onSubmit={form.handleSubmit((v) => save.mutate(v))}>
-      {guard.dialog}
       <fieldset disabled={!canEdit} className="space-y-4">
         <Section title="Laboratory" description="Printed on every report, quotation and invoice, and used in emails.">
           {text('companyName', 'Laboratory name', { required: true, hint: 'As people know it, e.g. on the letterhead' })}
@@ -421,8 +420,11 @@ export function BrandingForm({ lab, onSaved, submitLabel = 'Save branding' }: { 
     poweredBy: l.branding.poweredBy,
   });
   const form = useForm<BrandingValues>({ resolver: zodResolver(brandingSchema), defaultValues: start(lab) });
-  useEffect(() => form.reset(start(lab)), [lab, form]);
-  const guard = useLeaveGuard(form.formState.isDirty && canEdit);
+  // Only when the saved branding changes: uploading a picture also reloads `lab`, and must not undo colours being edited.
+  useEffect(() => {
+    form.reset(start(lab), { keepDirtyValues: true });
+  }, [lab, form]);
+  useReportDirty(form.formState.isDirty && canEdit);
   const v = form.watch();
   const e = form.formState.errors;
   // Live preview: the whole app takes the colours being edited, and goes back if they are not saved.
@@ -456,7 +458,6 @@ export function BrandingForm({ lab, onSaved, submitLabel = 'Save branding' }: { 
   return (
     <div className="space-y-4">
       <form className="space-y-4" noValidate onSubmit={form.handleSubmit((values) => save.mutate(values))}>
-        {guard.dialog}
         <fieldset disabled={!canEdit} className="space-y-4">
           <Card>
             <CardHeader title="Name and colours" description="The page previews your changes as you edit. Saving applies them for everyone, and to documents issued from then on." />

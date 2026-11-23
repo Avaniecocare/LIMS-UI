@@ -6,12 +6,12 @@ import type { components } from '@/api/schema';
 import { DataTable, type Col } from '@/components/DataTable';
 import { Badge, Button, Dialog, Field, Input, Select, Spinner, Textarea } from '@/components/ui/primitives';
 import { api, unwrap } from '@/lib/api';
-import { formatDate, formatDateTime } from '@/lib/format';
+import { formatDate, formatDateTime, todayIso } from '@/lib/format';
 import { toastError } from '@/lib/forms';
 
 type Request = components['schemas']['DataRequestDto'];
 type Breach = components['schemas']['BreachDto'];
-const today = () => new Date().toISOString().slice(0, 10);
+const today = todayIso;
 const KIND: Record<Request['kind'], string> = { ACCESS: 'Access to data', CORRECTION: 'Correction', ERASURE: 'Erasure', GRIEVANCE: 'Grievance', CONSENT_WITHDRAWAL: 'Consent withdrawn' };
 
 /**

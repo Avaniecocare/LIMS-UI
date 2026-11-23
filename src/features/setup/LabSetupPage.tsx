@@ -4,12 +4,13 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useSession } from '@/app/providers';
-import { Button, Card, CardHeader, Checkbox, ErrorState, Field, Input, PageHeader, Spinner } from '@/components/ui/primitives';
+import { Button, Card, CardHeader, Checkbox, ConfirmDialog, ErrorState, Field, Input, PageHeader, Spinner } from '@/components/ui/primitives';
 import { BrandingForm, LabProfileForm, useLab } from '@/features/admin/LabSettings';
 import { api, unwrap } from '@/lib/api';
 import { cn } from '@/lib/format';
 import { SETUP_KEY, useSetupStatus } from './setup-status';
 import { toastError } from '@/lib/forms';
+import { DirtyScope, useDirtyScope, useLeaveGuard } from '@/lib/use-leave-guard';
 
 const STEPS = [
   { id: 'profile', label: 'Lab profile' },
@@ -36,11 +37,29 @@ export default function LabSetupPage() {
     setStep(STEPS[Math.min(index + 1, STEPS.length - 1)].id);
     window.scrollTo({ top: 0 });
   };
+  // Moving to another step replaces the form, so unsaved details are asked about first.
+  const scope = useDirtyScope();
+  const guard = useLeaveGuard(scope.dirty);
+  const [pending, setPending] = useState<StepId | null>(null);
+  const go = (to: StepId) => (scope.dirty && to !== step ? setPending(to) : setStep(to));
   if (lab.isLoading || status.isLoading) return <Spinner />;
   if (lab.error || !lab.data) return <ErrorState error={lab.error} onRetry={lab.refetch} />;
   const done = status.data?.steps;
   return (
-    <>
+    <DirtyScope value={scope.report}>
+      {guard.dialog}
+      <ConfirmDialog
+        open={!!pending}
+        onOpenChange={(o) => !o && setPending(null)}
+        title="Discard your changes?"
+        description="Some details on this step have not been saved."
+        confirmLabel="Discard changes"
+        danger
+        onConfirm={() => {
+          if (pending) setStep(pending);
+          setPending(null);
+        }}
+      />
       <PageHeader title="Set up your laboratory" description="A few minutes now saves time on every report and invoice. You can change all of this later in Admin." />
       <ol className="mb-5 flex flex-wrap gap-2" aria-label="Setup steps">
         {STEPS.map((s, i) => {
@@ -50,7 +69,7 @@ export default function LabSetupPage() {
               <button
                 type="button"
                 aria-current={s.id === step ? 'step' : undefined}
-                onClick={() => setStep(s.id)}
+                onClick={() => go(s.id)}
                 className={cn(
                   'flex items-center gap-1.5 rounded-full border px-3 py-1 text-[13px]',
                   s.id === step ? 'border-brand bg-brand text-brand-fg' : 'border-gray-300 bg-surface text-gray-800 hover:border-gray-500',
@@ -74,14 +93,14 @@ export default function LabSetupPage() {
       {step === 'branding' && (
         <div className="space-y-3">
           <BrandingForm lab={lab.data} submitLabel="Save and continue" onSaved={next} />
-          <SkipRow onSkip={next} />
+          <SkipRow onSkip={() => go(STEPS[index + 1].id)} />
         </div>
       )}
       {step === 'catalogue' && <TemplatesStep onDone={next} />}
       {step === 'team' && <TeamStep onDone={next} />}
       {step === 'email' && <EmailStep onDone={next} />}
       {step === 'review' && <ReviewStep status={status.data} onGoTo={setStep} />}
-    </>
+    </DirtyScope>
   );
 }
 

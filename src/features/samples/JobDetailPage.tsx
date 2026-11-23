@@ -750,12 +750,16 @@ export default function JobDetailPage() {
               <CardHeader title="Documents" description="Each is produced in the background, then opens in a new tab." />
               <div className="space-y-4 p-4">
                 <div className="flex flex-wrap gap-2">
-                  <DocumentButton kind="job-srf" params={{ jobId: job.id }}>
-                    Sample request form
-                  </DocumentButton>
-                  <DocumentButton kind="job-acknowledgement" params={{ jobId: job.id }}>
-                    Acknowledgement
-                  </DocumentButton>
+                  {can('customers.view') && (
+                    <>
+                      <DocumentButton kind="job-srf" params={{ jobId: job.id }}>
+                        Sample request form
+                      </DocumentButton>
+                      <DocumentButton kind="job-acknowledgement" params={{ jobId: job.id }}>
+                        Acknowledgement
+                      </DocumentButton>
+                    </>
+                  )}
                   <DocumentButton kind="sample-labels" params={{ jobId: job.id }}>
                     All labels
                   </DocumentButton>
@@ -765,11 +769,15 @@ export default function JobDetailPage() {
                     </DocumentButton>
                   )}
                 </div>
-                <Attachments entity="Job" entityId={job.id} category="generated" title="Generated files" canEdit={false} />
+                {can('customers.view') && <Attachments entity="Job" entityId={job.id} category="generated" title="Generated files" canEdit={false} />}
               </div>
             </Card>
-            <Acknowledgement job={job} />
-            <CustomerLetter jobId={job.id} />
+            {can('customers.view') && (
+              <>
+                <Acknowledgement job={job} />
+                <CustomerLetter jobId={job.id} />
+              </>
+            )}
           </div>
         </TabsContent>
         <TabsContent value="timeline">

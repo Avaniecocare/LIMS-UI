@@ -9,7 +9,7 @@ import { ApiError, api, unwrap } from '@/lib/api';
 import { cn } from '@/lib/format';
 import { isConflict, toastError } from '@/lib/forms';
 import { useDebounced } from '@/lib/use-debounced';
-import { useLeaveGuard } from '@/lib/use-leave-guard';
+import { DirtyScope, useDirtyScope, useReportDirty } from '@/lib/use-leave-guard';
 
 // ---------------------------------------------------------------- modules
 
@@ -25,7 +25,7 @@ export function ModulesTab() {
     if (q.data) setDraft(Object.fromEntries(q.data.modules.map((m) => [m.key, m.enabled])));
   }, [q.data]);
   const dirty = !!q.data && q.data.modules.some((m) => draft[m.key] !== m.enabled);
-  const guard = useLeaveGuard(dirty);
+  useReportDirty(dirty);
   const save = useMutation({
     mutationFn: async (list: ModuleList) =>
       unwrap(
@@ -46,7 +46,6 @@ export function ModulesTab() {
   const canEdit = can('admin.company.edit');
   return (
     <Card>
-      {guard.dialog}
       <CardHeader
         title="Modules"
         description="Turn off what your laboratory does not use, to keep menus simple. Customers, booking, testing, approvals, reports and masters are always on. Turning a module off deletes nothing."
@@ -97,34 +96,51 @@ type Template = TemplateList['templates'][number];
 export function EmailTemplatesTab() {
   const q = useQuery({ queryKey: ['email-templates'], queryFn: async () => unwrap(await api.GET('/api/v1/admin/lab/email-templates')) });
   const [selected, setSelected] = useState<string>('acknowledgement');
+  // Choosing another email replaces the editor, so unsaved wording is asked about first.
+  const scope = useDirtyScope();
+  const [pending, setPending] = useState<string | null>(null);
   if (q.isLoading) return <Spinner />;
   if (q.error || !q.data) return <ErrorState error={q.error} onRetry={q.refetch} />;
   const current = q.data.templates.find((t) => t.key === selected) ?? q.data.templates[0];
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[15rem_1fr]">
-      <Card>
-        <CardHeader title="Emails" />
-        <ul className="p-1" aria-label="Email templates">
-          {q.data.templates.map((t) => (
-            <li key={t.key}>
-              <button
-                type="button"
-                aria-current={t.key === current.key ? 'true' : undefined}
-                onClick={() => setSelected(t.key)}
-                className={cn(
-                  'flex w-full items-center justify-between gap-2 rounded-md px-3 py-2 text-left text-[13px]',
-                  t.key === current.key ? 'bg-gray-100 font-medium text-gray-900' : 'text-gray-800 hover:bg-gray-50',
-                )}
-              >
-                {t.label}
-                {t.customized && <Badge tone="blue">Edited</Badge>}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </Card>
-      <TemplateEditor key={`${current.key}-${q.data.version}`} template={current} version={q.data.version} />
-    </div>
+    <DirtyScope value={scope.report}>
+      <ConfirmDialog
+        open={!!pending}
+        onOpenChange={(o) => !o && setPending(null)}
+        title="Discard your changes?"
+        description="The wording of this email has not been saved."
+        confirmLabel="Discard changes"
+        danger
+        onConfirm={() => {
+          if (pending) setSelected(pending);
+          setPending(null);
+        }}
+      />
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[15rem_1fr]">
+        <Card>
+          <CardHeader title="Emails" />
+          <ul className="p-1" aria-label="Email templates">
+            {q.data.templates.map((t) => (
+              <li key={t.key}>
+                <button
+                  type="button"
+                  aria-current={t.key === current.key ? 'true' : undefined}
+                  onClick={() => (scope.dirty && t.key !== current.key ? setPending(t.key) : setSelected(t.key))}
+                  className={cn(
+                    'flex w-full items-center justify-between gap-2 rounded-md px-3 py-2 text-left text-[13px]',
+                    t.key === current.key ? 'bg-gray-100 font-medium text-gray-900' : 'text-gray-800 hover:bg-gray-50',
+                  )}
+                >
+                  {t.label}
+                  {t.customized && <Badge tone="blue">Edited</Badge>}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </Card>
+        <TemplateEditor key={`${current.key}-${q.data.version}`} template={current} version={q.data.version} />
+      </div>
+    </DirtyScope>
   );
 }
 
@@ -140,7 +156,7 @@ function TemplateEditor({ template, version }: { template: Template; version: nu
   const subjectRef = useRef<HTMLInputElement>(null);
   const bodyRef = useRef<HTMLTextAreaElement>(null);
   const dirty = subject !== template.subject || body !== template.body;
-  const guard = useLeaveGuard(dirty && canEdit);
+  useReportDirty(dirty && canEdit);
 
   // Live preview, from the server, in the lab's branded layout.
   const debouncedSubject = useDebounced(subject, 400);
@@ -199,7 +215,6 @@ function TemplateEditor({ template, version }: { template: Template; version: nu
 
   return (
     <div className="space-y-4">
-      {guard.dialog}
       <Card>
         <CardHeader title={template.label} description={template.description} />
         <div className="grid grid-cols-[minmax(0,1fr)] gap-4 p-4 xl:grid-cols-2">
