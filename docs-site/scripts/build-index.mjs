@@ -132,7 +132,7 @@ if (process.env.EMBEDDING_PROVIDER === 'voyage' && process.env.EMBEDDING_API_KEY
 }
 
 const version = createHash('sha1')
-  .update(JSON.stringify(chunks.map((c) => [c.url, c.text])))
+  .update(JSON.stringify([embeddingModel, chunks]))
   .digest('hex')
   .slice(0, 12);
 mkdirSync(outDir, { recursive: true });

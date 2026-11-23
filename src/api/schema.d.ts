@@ -4319,7 +4319,7 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Streams the answer as server-sent events: `meta` (answer id and source pages), `delta` (text), `done`.
+         * Streams the answer as server-sent events: `meta` (answer id and source pages), `delta` (text), `replace` (the text so far is withdrawn), then `done` or `error`.
          *     Refusals (limits, captcha, invalid input, assistant off) are ordinary JSON errors before the stream starts.
          */
         post: operations["HelpController_ask"];
@@ -7758,7 +7758,8 @@ export interface components {
             notHelpful: number;
         };
         HelpAnalyticsDto: {
-            /** @description count per outcome: ANSWERED, CACHED, NOT_FOUND, OFF_TOPIC, BLOCKED, RATE_LIMITED, CAPTCHA_FAILED, BUDGET_REACHED, ERROR */
+            fallbackModel: string | null;
+            /** @description count per outcome: ANSWERED, CACHED, NOT_FOUND, OFF_TOPIC, BLOCKED, RATE_LIMITED, CAPTCHA_FAILED, BUDGET_REACHED, ERROR, CANCELLED (the visitor left), TRUNCATED, REFUSED */
             outcomes: {
                 [key: string]: number;
             };
@@ -7770,6 +7771,9 @@ export interface components {
             days: number;
             enabled: boolean;
             model: string;
+            /** @description US dollars spent or held for answers being written, as the limits count it */
+            spentToday: number;
+            spentThisMonth: number;
             dailyBudget: number;
             monthlyBudget: number;
         };

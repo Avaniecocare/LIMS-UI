@@ -14547,7 +14547,7 @@
             "description": ""
           }
         },
-        "summary": "Streams the answer as server-sent events: `meta` (answer id and source pages), `delta` (text), `done`.\nRefusals (limits, captcha, invalid input, assistant off) are ordinary JSON errors before the stream starts.",
+        "summary": "Streams the answer as server-sent events: `meta` (answer id and source pages), `delta` (text), `replace` (the text so far is withdrawn), then `done` or `error`.\nRefusals (limits, captcha, invalid input, assistant off) are ordinary JSON errors before the stream starts.",
         "tags": [
           "help"
         ]
@@ -28005,12 +28005,16 @@
       "HelpAnalyticsDto": {
         "type": "object",
         "properties": {
+          "fallbackModel": {
+            "type": "string",
+            "nullable": true
+          },
           "outcomes": {
             "type": "object",
             "additionalProperties": {
               "type": "number"
             },
-            "description": "count per outcome: ANSWERED, CACHED, NOT_FOUND, OFF_TOPIC, BLOCKED, RATE_LIMITED, CAPTCHA_FAILED, BUDGET_REACHED, ERROR"
+            "description": "count per outcome: ANSWERED, CACHED, NOT_FOUND, OFF_TOPIC, BLOCKED, RATE_LIMITED, CAPTCHA_FAILED, BUDGET_REACHED, ERROR, CANCELLED (the visitor left), TRUNCATED, REFUSED"
           },
           "daily": {
             "type": "array",
@@ -28051,6 +28055,13 @@
           "model": {
             "type": "string"
           },
+          "spentToday": {
+            "type": "number",
+            "description": "US dollars spent or held for answers being written, as the limits count it"
+          },
+          "spentThisMonth": {
+            "type": "number"
+          },
           "dailyBudget": {
             "type": "number"
           },
@@ -28059,6 +28070,7 @@
           }
         },
         "required": [
+          "fallbackModel",
           "outcomes",
           "daily",
           "topQuestions",
@@ -28068,6 +28080,8 @@
           "days",
           "enabled",
           "model",
+          "spentToday",
+          "spentThisMonth",
           "dailyBudget",
           "monthlyBudget"
         ]

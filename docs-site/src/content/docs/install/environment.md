@@ -128,7 +128,10 @@ The help site's **Ask AI** assistant answers questions from the published docume
 | Name | Required | Default | What it does |
 | --- | --- | --- | --- |
 | `ENABLE_AI_ASSISTANT` | No | `false` | `true` turns the assistant on, if a usable provider is set. Otherwise the help site offers search only. |
-| `AI_PROVIDER` | No | `anthropic` | Which AI service answers. `mock` gives an offline answer for development and tests. |
+| `AI_PROVIDER` | No | `anthropic` | Which AI service answers: `anthropic`, `openai-compatible` (any service with that interface, your own included) or `mock` (offline, for development and tests). Any other value stops the server. |
+| `AI_BASE_URL` | With `openai-compatible` | None | The service's address, for example `https://llm.example.com/v1`. |
+| `AI_PRICE_INPUT`, `AI_PRICE_OUTPUT` | For models the server does not know | Known Claude prices | US dollars per million tokens. Without a price the spending limits would mean nothing, so the assistant stays off. Use `0` for your own server. |
+| `AI_FALLBACK_PROVIDER` | No | None | A second service, asked when the first is busy, down or slow to start. Its settings are the same with `AI_FALLBACK_` in front: `_MODEL`, `_API_KEY`, `_BASE_URL`, `_PRICE_INPUT`, `_PRICE_OUTPUT`. |
 | `AI_API_KEY` | When on | None | API key for the AI provider. Without it (and without `mock`), the assistant stays off. |
 | `AI_MODEL` | No | `claude-haiku-5-5` | Model name to use. |
 | `EMBEDDING_PROVIDER` | No | `none` | `voyage` adds vector search of the docs (Voyage AI). `none` uses keyword search only, all on your server. |

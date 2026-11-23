@@ -55,7 +55,10 @@ All are environment variables on the API server. Only `ENABLE_AI_ASSISTANT` and 
 | Variable | Default | What it does |
 | --- | --- | --- |
 | `ENABLE_AI_ASSISTANT` | `false` | `true` turns the assistant on. It stays off, and the help site offers search only, unless the provider can be used. |
-| `AI_PROVIDER` | `anthropic` | `anthropic` (Claude), or `mock`: offline answers made from the matching excerpt, for development and tests. No other value is accepted; anything else means `anthropic`. |
+| `AI_PROVIDER` | `anthropic` | `anthropic` (Claude); `openai-compatible`: any service with that interface, your own model server included; or `mock`: offline answers made from the matching excerpt, for development and tests. Any other value stops the server. |
+| `AI_BASE_URL` | none | The address of an `openai-compatible` service, for example `https://llm.example.com/v1`. |
+| `AI_PRICE_INPUT`, `AI_PRICE_OUTPUT` | Claude's prices | US dollars per million tokens, needed for any model the server does not know. Without a price the limits would mean nothing, so the assistant stays off and the log says why. Use `0` for your own server. |
+| `AI_FALLBACK_PROVIDER` | none | A second service, asked only when the first is busy, down or slow to start, and has not begun its answer. Its settings are the same with `AI_FALLBACK_` in front. |
 | `AI_API_KEY` | none | The Anthropic API key. Server-side only. |
 | `AI_MODEL` | `claude-haiku-5-5` | The model. `claude-haiku-5-5` is low cost and enough for answers taken from given text; `claude-sonnet-5-5` writes better answers at about twenty times the cost. |
 | `EMBEDDING_PROVIDER` | `none` | `none`: keyword search only, everything on your server. `voyage`: adds vector search (better for questions worded differently from the docs). |
@@ -113,7 +116,7 @@ Visitors who are not signed in then pass an invisible check before each question
 - Logged per question: the scrubbed question text (not for blocked requests), the outcome, the source pages, tokens, cost, time taken, whether the person was signed in, and their 👍/👎. **Not logged:** IP address, account, browser or the answer text.
 - Addresses are used only as one-way-hashed counter keys in Redis that expire within a day.
 - Logs are deleted after `HELP_LOG_RETENTION_DAYS` (90 by default).
-- The question and the matching excerpts are sent to Anthropic to produce the answer. <!-- TODO(verify): Anthropic's data retention terms for your account (commercial terms apply to API use). -->
+- The question and the matching excerpts are sent to the AI service you set up (Anthropic unless you chose another, and the fallback service if it is asked) to produce the answer. <!-- TODO(verify): Anthropic's data retention terms for your account (commercial terms apply to API use). -->
 
 ## Rebuild the search index
 

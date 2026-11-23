@@ -14,6 +14,9 @@ const OUTCOMES: { key: string; label: string; tone: 'green' | 'blue' | 'amber' |
   { key: 'CAPTCHA_FAILED', label: 'Failed the human check', tone: 'red' },
   { key: 'BUDGET_REACHED', label: 'Paused: budget reached', tone: 'amber' },
   { key: 'ERROR', label: 'Error', tone: 'red' },
+  { key: 'TRUNCATED', label: 'Cut short', tone: 'amber' },
+  { key: 'REFUSED', label: 'Declined by the model', tone: 'gray' },
+  { key: 'CANCELLED', label: 'Visitor left', tone: 'gray' },
 ];
 const money = (n: number) => `$${n.toFixed(n < 1 ? 3 : 2)}`;
 
@@ -37,7 +40,7 @@ export function HelpAssistantTab() {
       <Card>
         <CardHeader
           title="Help assistant"
-          description={`Answers questions on the help site from the documentation only. Model ${a.model}; budget ${money(a.dailyBudget)} a day and ${money(a.monthlyBudget)} a month. It is set up with environment variables on the server.`}
+          description={`Answers questions on the help site from the documentation only. Model ${a.model}${a.fallbackModel ? `, then ${a.fallbackModel}` : ''}; spent ${money(a.spentToday)} of ${money(a.dailyBudget)} today and ${money(a.spentThisMonth)} of ${money(a.monthlyBudget)} this month. It is set up with environment variables on the server.`}
           actions={
             <div className="flex items-center gap-2">
               <Badge tone={a.enabled ? 'green' : 'gray'}>{a.enabled ? 'On' : 'Off'}</Badge>

@@ -114,6 +114,8 @@ export function mountAskAi() {
         execution: 'execute',
         callback: (t: string) => pendingToken?.(t),
         'error-callback': () => pendingToken?.(null),
+        'timeout-callback': () => pendingToken?.(null),
+        'expired-callback': () => pendingToken?.(null),
       });
     };
     if (window.turnstile) return render();
@@ -128,8 +130,11 @@ export function mountAskAi() {
   function captchaToken(): Promise<string | null> {
     if (!widgetId || !window.turnstile) return Promise.resolve(null);
     return new Promise((resolve) => {
+      // Never wait for ever: without an answer the server says what to do.
+      const timer = setTimeout(() => pendingToken?.(null), 20_000);
       pendingToken = (t) => {
         pendingToken = null;
+        clearTimeout(timer);
         resolve(t);
       };
       window.turnstile!.reset(widgetId!);
@@ -160,6 +165,7 @@ export function mountAskAi() {
     let text = '';
     let id: string | null = null;
     let sources: Source[] = [];
+    let finished = false;
     try {
       const token = await captchaToken();
       const res = await fetch(apiUrl('/help/ask'), {
@@ -193,9 +199,15 @@ export function mountAskAi() {
             text += payload.text;
             answerEl.innerHTML = renderAnswer(text, location.origin);
             log.scrollTop = log.scrollHeight;
-          } else if (event === 'error') throw new Error(payload.message);
+          } else if (event === 'replace') {
+            text = payload.text;
+            answerEl.innerHTML = renderAnswer(text, location.origin);
+          } else if (event === 'done') finished = true;
+          else if (event === 'error') throw new Error(payload.message);
         }
       }
+      // A connection that drops half-way is not an answer.
+      if (text && !finished) throw new Error('The answer was cut off. Try again, or use Search.');
       if (!text) throw new Error('No answer came back. Try rephrasing the question.');
       answerEl.innerHTML = renderAnswer(text, location.origin);
       history.push({ role: 'user', content: question }, { role: 'assistant', content: text });
