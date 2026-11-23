@@ -10,6 +10,7 @@ import { cn } from '@/lib/format';
 import { BOTTOM_NAV_PRIORITY, mobileRule, useIsPhone } from './device';
 import { GlobalSearch } from './GlobalSearch';
 import { NAV } from './nav';
+import { LicenceBanner } from './LicenceBanner';
 import { NotificationBell } from './Notifications';
 import { useBranding, useSession } from './providers';
 
@@ -245,6 +246,7 @@ export function Layout() {
           </div>
         </header>
         <SetupBanner />
+        <LicenceBanner />
         {preview && (
           <div role="status" className="flex flex-wrap items-center justify-center gap-3 bg-amber-100 px-4 py-1.5 text-[13px] text-amber-900">
             <span>

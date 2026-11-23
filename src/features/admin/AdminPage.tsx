@@ -36,6 +36,7 @@ import { PrivacyTab } from './PrivacyTab';
 import { WhatsappTab } from './WhatsappTab';
 import { EInvoiceTab } from './EInvoiceTab';
 import { HelpAssistantTab } from './HelpAssistantTab';
+import { LicenceTab } from './LicenceTab';
 import { BrandingTab, LabProfileTab } from './LabSettings';
 import { AccessRequestsTab, AccessReviewTab, PreviewRoleButton } from './SecurityTabs';
 import { useListState } from '@/lib/use-list-state';
@@ -740,6 +741,7 @@ const TABS = [
   { id: 'modules', label: 'Modules', perm: 'admin.company.view', body: ModulesTab },
   { id: 'whatsapp', label: 'WhatsApp', perm: 'admin.company.view', body: WhatsappTab },
   { id: 'einvoice', label: 'E-invoicing', perm: 'admin.company.view', body: EInvoiceTab },
+  { id: 'licence', label: 'Licence', perm: 'admin.settings', body: LicenceTab },
   { id: 'help', label: 'Help assistant', perm: 'admin.settings', body: HelpAssistantTab },
   { id: 'privacy', label: 'Privacy', perm: 'privacy.manage', body: PrivacyTab },
 ];

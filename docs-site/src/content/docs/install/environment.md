@@ -176,6 +176,12 @@ See [AI help assistant](/help/integrations/ai-assistant/).
 
 Versions before the admin panel read the lab's details from `COMPANY_*` variables (or a `company.env` file in the deployment). If they are present when the lab profile is still empty, they are checked and imported into the admin panel once, logo and favicon included, and the setup wizard is skipped. After that they are ignored and can be removed. A new install should not set them.
 
+## Licence
+
+| Name | Required | Default | What it does |
+| --- | --- | --- | --- |
+| `LICENCE` | No | None | Only for images built with a vendor's key: a licence used at the first start. Later ones are added in **Admin** → **Licence**. See [Licence and trials](/help/admin/licence/). |
+
 ## UI container
 
 The same UI image serves every company. It reads these when the container starts.

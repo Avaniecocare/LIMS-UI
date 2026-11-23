@@ -447,7 +447,6 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** First-run wizard. Refuses permanently once any user exists. */
         post: operations["PublicController_setup"];
         delete?: never;
         options?: never;
@@ -709,6 +708,39 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["AuthController_totpDisable"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/licence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** For the banner: polled, so it does not count as the person being active. */
+        get: operations["LicenceController_notice"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/licence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["LicenceController_details"];
+        put?: never;
+        post: operations["LicenceController_activate"];
         delete?: never;
         options?: never;
         head?: never;
@@ -4755,6 +4787,35 @@ export interface components {
         TotpDisableDto: {
             password: string;
             code?: string;
+        };
+        LicenceNoticeDto: {
+            /** @enum {string} */
+            state: "not-required" | "missing" | "active" | "ending" | "grace" | "expired";
+            kind: string | null;
+            /** Format: date-time */
+            readOnlyFrom: string | null;
+            daysLeft: number | null;
+            readOnly: boolean;
+        };
+        LicenceDto: {
+            /** @enum {string} */
+            state: "not-required" | "missing" | "active" | "ending" | "grace" | "expired";
+            kind: string | null;
+            customer: string | null;
+            licenceId: string | null;
+            /** @description quote this when asking for a licence */
+            installation: string | null;
+            /** Format: date-time */
+            startedAt: string | null;
+            /** Format: date-time */
+            endsAt: string | null;
+            /** Format: date-time */
+            readOnlyFrom: string | null;
+            daysLeft: number | null;
+            readOnly: boolean;
+        };
+        ActivateLicenceDto: {
+            licence: string;
         };
         CreateDocumentDto: {
             kind: string;
@@ -8903,6 +8964,67 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    LicenceController_notice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LicenceNoticeDto"];
+                };
+            };
+        };
+    };
+    LicenceController_details: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LicenceDto"];
+                };
+            };
+        };
+    };
+    LicenceController_activate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ActivateLicenceDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LicenceDto"];
                 };
             };
         };

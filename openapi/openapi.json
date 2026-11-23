@@ -1218,7 +1218,6 @@
             }
           }
         },
-        "summary": "First-run wizard. Refuses permanently once any user exists.",
         "tags": [
           "public"
         ]
@@ -1661,6 +1660,78 @@
         },
         "tags": [
           "auth"
+        ]
+      }
+    },
+    "/api/v1/licence": {
+      "get": {
+        "operationId": "LicenceController_notice",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LicenceNoticeDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "For the banner: polled, so it does not count as the person being active.",
+        "tags": [
+          "licence"
+        ]
+      }
+    },
+    "/api/v1/admin/licence": {
+      "get": {
+        "operationId": "LicenceController_details",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LicenceDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "licence"
+        ]
+      },
+      "post": {
+        "operationId": "LicenceController_activate",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActivateLicenceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LicenceDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "licence"
         ]
       }
     },
@@ -16129,6 +16200,125 @@
         },
         "required": [
           "password"
+        ]
+      },
+      "LicenceNoticeDto": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "not-required",
+              "missing",
+              "active",
+              "ending",
+              "grace",
+              "expired"
+            ]
+          },
+          "kind": {
+            "type": "string",
+            "nullable": true
+          },
+          "readOnlyFrom": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "daysLeft": {
+            "type": "number",
+            "nullable": true
+          },
+          "readOnly": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "state",
+          "kind",
+          "readOnlyFrom",
+          "daysLeft",
+          "readOnly"
+        ]
+      },
+      "LicenceDto": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "not-required",
+              "missing",
+              "active",
+              "ending",
+              "grace",
+              "expired"
+            ]
+          },
+          "kind": {
+            "type": "string",
+            "nullable": true
+          },
+          "customer": {
+            "type": "string",
+            "nullable": true
+          },
+          "licenceId": {
+            "type": "string",
+            "nullable": true
+          },
+          "installation": {
+            "type": "string",
+            "nullable": true,
+            "description": "quote this when asking for a licence"
+          },
+          "startedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "endsAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "readOnlyFrom": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "daysLeft": {
+            "type": "number",
+            "nullable": true
+          },
+          "readOnly": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "state",
+          "kind",
+          "customer",
+          "licenceId",
+          "installation",
+          "startedAt",
+          "endsAt",
+          "readOnlyFrom",
+          "daysLeft",
+          "readOnly"
+        ]
+      },
+      "ActivateLicenceDto": {
+        "type": "object",
+        "properties": {
+          "licence": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 8000
+          }
+        },
+        "required": [
+          "licence"
         ]
       },
       "CreateDocumentDto": {
