@@ -1,6 +1,6 @@
 server {
   listen 8080;
-  root /usr/share/nginx/html;
+  root /tmp/html;
   index index.html;
   server_tokens off;
 

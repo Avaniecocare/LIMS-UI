@@ -1,12 +1,17 @@
 #!/bin/sh
 # Runtime configuration: the same image serves every company.
 set -eu
+# The image's files are copied to /tmp and changed there, so the container can run with a read-only root filesystem.
+HTML=/tmp/html
+rm -rf "$HTML"
+cp -R /usr/share/nginx/html "$HTML"
+mkdir -p /tmp/conf.d
 : "${API_URL:?API_URL is required}"
 export STORAGE_ORIGIN="${STORAGE_ORIGIN:-}"
 case "$API_URL" in
   *\'*|*\\*|*\<*) echo "API_URL contains invalid characters" >&2; exit 78 ;;
 esac
-printf "window.__LIMS_CONFIG__ = { apiUrl: '%s' };\n" "$API_URL" > /usr/share/nginx/html/config.js
+printf "window.__LIMS_CONFIG__ = { apiUrl: '%s' };\n" "$API_URL" > "$HTML/config.js"
 # The help site is built once, with neutral branding. Give it this deployment's address and name. An image built with
 # its own DOCS_* values has none of these strings, so its branding stays. Safe to run again on a restart.
 HELP_SED=""
@@ -24,7 +29,7 @@ if [ -n "${APP_NAME:-}" ]; then
   HELP_SED="$HELP_SED s#| LIMS help</title>#| $HELP_NAME help</title>#; s#content=\"LIMS help\"#content=\"$HELP_NAME help\"#g; s#translate=\"no\">LIMS help<#translate=\"no\">$HELP_NAME help<#g;"
 fi
 if [ -n "$HELP_SED" ]; then
-  find /usr/share/nginx/html/help -type f \( -name '*.html' -o -name '*.xml' \) -exec sed -i "$HELP_SED" {} +
+  find "$HTML/help" -type f \( -name '*.html' -o -name '*.xml' \) -exec sed -i "$HELP_SED" {} +
 fi
 # The installed app's name: the lab's name when the deployment sets APP_NAME, otherwise a neutral one.
 APP_NAME="${APP_NAME:-Laboratory}"
@@ -34,6 +39,6 @@ esac
 SHORT_NAME=$(printf '%s' "$APP_NAME" | cut -c1-12)
 sed -e "s/\"name\": \"Laboratory\"/\"name\": \"$(printf '%s' "$APP_NAME" | sed 's/[&/]/\\&/g')\"/" \
     -e "s/\"short_name\": \"Laboratory\"/\"short_name\": \"$(printf '%s' "$SHORT_NAME" | sed 's/[&/]/\\&/g')\"/" \
-    /usr/share/nginx/html/manifest.webmanifest > /tmp/manifest.webmanifest && cat /tmp/manifest.webmanifest > /usr/share/nginx/html/manifest.webmanifest
-envsubst '${API_URL} ${STORAGE_ORIGIN}' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf
+    /usr/share/nginx/html/manifest.webmanifest > "$HTML/manifest.webmanifest"
+envsubst '${API_URL} ${STORAGE_ORIGIN}' < /etc/nginx/templates/default.conf.template > /tmp/conf.d/default.conf
 exec nginx -g 'daemon off;'
