@@ -96,7 +96,9 @@ The help site (these pages) is built with its own branding, from environment var
 
 The site is served at `/help/` on the app address. Its **Ask AI** panel reads the API address from the same runtime `config.js` the app uses.
 
-To build a lab's own copy, pass the `DOCS_*` values as build arguments to the UI image (`docker build --build-arg DOCS_PRODUCT_NAME="Acme LIMS" --build-arg DOCS_PRIMARY_COLOR="#0f4c81" …`). The image builds the site, checks its links, and serves it at `/help/`.
+The shared image needs no rebuild for its name and address: the UI container puts `APP_NAME` and `APP_URL` into the help site when it starts. Values set at build time win.
+
+To build a lab's own copy, with its own colour or logo, pass the `DOCS_*` values as build arguments to the UI image (`docker build --build-arg DOCS_PRODUCT_NAME="Acme LIMS" --build-arg DOCS_PRIMARY_COLOR="#0f4c81" …`). The image builds the site, checks its links, and serves it at `/help/`.
 
 ## Related
 

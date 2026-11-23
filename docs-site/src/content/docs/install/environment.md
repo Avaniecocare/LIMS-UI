@@ -181,7 +181,8 @@ The same UI image serves every company. It reads these when the container starts
 | --- | --- | --- | --- |
 | `API_URL` | **Yes** | None | The API address browsers call, for example `https://api.lims.example.com`. Written into the runtime `config.js` and allowed in the page's Content Security Policy. The container stops (exit 78) if it is missing or contains a quote, backslash or `<`. |
 | `STORAGE_ORIGIN` | No | Empty | The files domain, for example `https://files.lims.example.com`. Allowed in the Content Security Policy, so signed images and PDFs can show in the app. |
-| `APP_NAME` | No | `Laboratory` | The app's name when installed on a phone's home screen. The first 12 characters become the short name. The deployment sets it from `BRAND_NAME`. |
+| `APP_NAME` | No | `Laboratory` | The app's name when installed on a phone's home screen. The first 12 characters become the short name. The deployment sets it from `BRAND_NAME`. When set, it is also the name in the help site's title. |
+| `APP_URL` | No | None | The app's own address, for example `https://app.lims.example.com`. Used for the help site's page addresses and sitemap. The container stops (exit 78) if it is not a plain `http` or `https` address. |
 
 ## `deployment.env`
 
