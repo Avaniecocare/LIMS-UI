@@ -35,7 +35,6 @@ If someone else saved the same setting while you were editing, your save is refu
 
 Separation-of-duties and impartiality controls are **sensitive**: the server refuses to change them without a reason. They are marked **Yes** in the **Sensitive** column below.
 
-<!-- TODO(verify): the Settings tab shows the reason box only for keys starting "controls.allow" and for controls.impartiality. controls.requireAuthorisation is sensitive on the server too, so saving it from the tab may fail with "A reason is required" until the screen is fixed. -->
 
 ## Tax
 

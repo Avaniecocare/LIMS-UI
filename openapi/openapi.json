@@ -229,6 +229,36 @@
         ]
       }
     },
+    "/api/v1/admin/users/{id}/reset-2fa": {
+      "post": {
+        "operationId": "AdminController_resetTotp",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "admin"
+        ]
+      }
+    },
     "/api/v1/admin/users/{id}/signature": {
       "post": {
         "operationId": "AdminController_signature",
@@ -8192,6 +8222,7 @@
             }
           }
         },
+        "summary": "The header bell asks every minute.",
         "tags": [
           "notifications"
         ]
@@ -15016,6 +15047,10 @@
           },
           "version": {
             "type": "number"
+          },
+          "sensitive": {
+            "type": "boolean",
+            "description": "changing it needs a reason, which goes to the audit log"
           }
         },
         "required": [
@@ -15024,7 +15059,8 @@
           "group",
           "value",
           "default",
-          "version"
+          "version",
+          "sensitive"
         ]
       },
       "UpdateSettingDto": {

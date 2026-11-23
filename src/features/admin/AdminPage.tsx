@@ -107,6 +107,42 @@ function SignatureSection({ user, onChange }: { user: User; onChange: (user: Use
   );
 }
 
+/** For someone who lost their phone. */
+function TwoFactorSection({ user, onChange }: { user: User; onChange: (user: User) => void }) {
+  const client = useQueryClient();
+  const [asking, setAsking] = useState(false);
+  const reset = useMutation({
+    mutationFn: async () => unwrap(await api.POST('/api/v1/admin/users/{id}/reset-2fa', { params: { path: { id: user.id } } })),
+    onSuccess: () => {
+      setAsking(false);
+      onChange({ ...user, totpEnabled: false });
+      client.invalidateQueries({ queryKey: ['users'] });
+      toast.success('Two-factor sign-in turned off');
+    },
+    onError: toastError,
+  });
+  return (
+    <section aria-label="Two-factor sign-in" className="flex flex-wrap items-center gap-3 rounded-md border border-gray-200 p-3">
+      <div>
+        <h3 className="text-[13px] font-semibold text-gray-900">Two-factor sign-in is on</h3>
+        <p className="mt-0.5 text-xs text-gray-600">Turn it off only if this person has lost their phone. They can set it up again after signing in.</p>
+      </div>
+      <Button variant="secondary" size="sm" className="ml-auto" onClick={() => setAsking(true)}>
+        Turn off
+      </Button>
+      <ConfirmDialog
+        open={asking}
+        onOpenChange={setAsking}
+        title={`Turn off two-factor sign-in for ${user.name}?`}
+        description="They are signed out everywhere, and their password alone signs them in until they set it up again. Check that it is really them asking."
+        confirmLabel="Turn off"
+        danger
+        onConfirm={() => reset.mutate()}
+      />
+    </section>
+  );
+}
+
 function UserForm({ user, onDone, onChange }: { user: User | null; onDone: () => void; onChange: (user: User) => void }) {
   const roles = useRoles();
   const client = useQueryClient();
@@ -178,6 +214,7 @@ function UserForm({ user, onDone, onChange }: { user: User | null; onDone: () =>
       </fieldset>
       {user && <Checkbox id="u-active" label="Active" checked={isActive} onCheckedChange={(v) => setActive(!!v)} />}
       {user && <SignatureSection user={user} onChange={onChange} />}
+      {user?.totpEnabled && <TwoFactorSection user={user} onChange={onChange} />}
       <div className="flex justify-end">
         <Button type="submit" loading={m.isPending}>
           Save user
@@ -394,9 +431,6 @@ function RolesTab() {
 }
 
 // ---------------------------------------------------------------- settings
-const SENSITIVE_PREFIX = 'controls.allow';
-const isSensitive = (key: string) => key.startsWith(SENSITIVE_PREFIX) || key === 'controls.impartiality';
-
 function SettingRow({ setting }: { setting: Setting }) {
   const client = useQueryClient();
   const initial = typeof setting.value === 'object' ? JSON.stringify(setting.value, null, 2) : String(setting.value ?? '');
@@ -448,7 +482,7 @@ function SettingRow({ setting }: { setting: Setting }) {
         ) : (
           <Input id={id} type={typeof setting.default === 'number' ? 'number' : 'text'} value={text} onChange={(e) => setText(e.target.value)} />
         )}
-        {dirty && isSensitive(setting.key) && (
+        {dirty && setting.sensitive && (
           <Input aria-label="Reason for this change" placeholder="Reason for this change (required, written to the audit log)" value={reason} onChange={(e) => setReason(e.target.value)} />
         )}
       </div>

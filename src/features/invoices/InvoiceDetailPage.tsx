@@ -31,6 +31,7 @@ import {
 import { api, unwrap } from '@/lib/api';
 import { formatDate, formatDateTime, humanize } from '@/lib/format';
 import { applyServerErrors, toastError, writeError } from '@/lib/forms';
+import { DirtyScope, useDirtyScope, useLeaveGuard, useReportDirty } from '@/lib/use-leave-guard';
 import { AMOUNT, Money, RecordPaymentDialog, refreshBilling, ReminderDialog } from './billing';
 import { EInvoiceBadge, EInvoicePanel, IRN_CANCEL_REASONS } from './EInvoicePanel';
 
@@ -184,6 +185,7 @@ type DraftValues = z.infer<typeof draftSchema>;
 
 function DraftForm({ invoice, onSaved, onConflict }: { invoice: Invoice; onSaved: (i: Invoice) => void; onConflict: () => void }) {
   const form = useForm<DraftValues>({ resolver: zodResolver(draftSchema), defaultValues: { discountPct: '', notes: invoice.notes ?? '' } });
+  useReportDirty(form.formState.isDirty);
   useEffect(() => {
     form.reset({ discountPct: '', notes: invoice.notes ?? '' });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- reload when the saved invoice changes
@@ -474,6 +476,10 @@ export default function InvoiceDetailPage() {
     },
   });
 
+  // Issuing uses the saved draft, so a discount typed but not saved would be left off the issued invoice.
+  const unsaved = useDirtyScope();
+  const leave = useLeaveGuard(unsaved.dirty);
+
   if (q.isLoading) return <Spinner />;
   if (q.error || !q.data) return <ErrorState error={q.error ?? new Error('This invoice could not be loaded.')} onRetry={q.refetch} />;
   const i = q.data;
@@ -491,6 +497,7 @@ export default function InvoiceDetailPage() {
 
   return (
     <>
+      {leave.dialog}
       <PageHeader
         breadcrumb={
           <Link to="/invoices?tab=all" className="underline">
@@ -550,7 +557,11 @@ export default function InvoiceDetailPage() {
               </Button>
             )}
             {open && canPay && <Button onClick={() => setDialog('pay')}>Record payment</Button>}
-            {draft && canEdit && <Button onClick={() => setDialog('issue')}>Issue</Button>}
+            {draft && canEdit && (
+              <Button disabled={unsaved.dirty} title={unsaved.dirty ? 'Save the draft first' : undefined} onClick={() => setDialog('issue')}>
+                Issue
+              </Button>
+            )}
           </>
         }
       />
@@ -596,7 +607,14 @@ export default function InvoiceDetailPage() {
           {draft && canEdit && (
             <Card>
               <CardHeader title="Draft" description="Totals are worked out by the server each time you save." />
-              <DraftForm key={i.id} invoice={i} onSaved={saved} onConflict={() => void q.refetch()} />
+              <DirtyScope value={unsaved.report}>
+                <DraftForm key={i.id} invoice={i} onSaved={saved} onConflict={() => void q.refetch()} />
+              </DirtyScope>
+              {unsaved.dirty && (
+                <p role="status" className="px-4 pb-4 text-[13px] text-gray-800">
+                  Save the draft before issuing it.
+                </p>
+              )}
             </Card>
           )}
           <Card>

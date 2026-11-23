@@ -73,6 +73,22 @@ You cannot switch off your own account, and you cannot remove your own access to
 
 People can also reset their own password with **Forgot password** on the sign-in page. They get an email with a link that works for one hour.
 
+### Turn off two-factor sign-in for a lost phone
+
+**Goal**: let someone back in who has lost the phone that makes their codes.
+
+**Who can do it**: Admin (`admin.users`). You cannot do it for someone who holds permissions you don't have, unless you are a full administrator.
+
+**Steps**:
+
+1. Check that it is really the person asking.
+2. In **Admin** → **Users**, open the person.
+3. Under **Two-factor sign-in is on**, click **Turn off**, and confirm your own password if asked.
+
+**Result**: they are signed out everywhere and can sign in with their password alone. They should set two-factor up again from their account page. The change is in the audit log, and other administrators are told.
+
+If the only administrator loses their phone, whoever runs the server can do it: `node dist/recover.js reset-2fa <email>` in the API container.
+
 ### Upload a signature image
 
 **Goal**: print a person's signature on the reports they sign.

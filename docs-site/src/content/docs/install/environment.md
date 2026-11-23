@@ -30,7 +30,7 @@ Quote values that contain `#` or spaces, for example `SMTP_FROM="lab@example.com
 | `NODE_ENV` | No | `development` | Set `production` on servers. Production refuses the public example session secret and makes the cookie secure by default. |
 | `PORT` | No | `3000` | Port the API listens on. |
 | `LOG_LEVEL` | No | `info` | Log detail: `fatal`, `error`, `warn`, `info`, `debug` or `trace`. |
-| `TRUST_PROXY` | No | `false` | Set `true` behind a reverse proxy or load balancer, so client addresses and HTTPS are read correctly. The deployment scripts set `true`. |
+| `TRUST_PROXY` | No | `false` | So client addresses and HTTPS are read correctly behind a proxy: the number of proxies in front (`1` behind one load balancer), or their addresses. `true` believes every `X-Forwarded-For` entry, so use it only behind a proxy that replaces what the caller sent, as the Caddy set-up does. The deployment scripts set `true`. |
 | `FRONTEND_ORIGIN` | **Yes** | None | Where people open the app, for example `https://app.lims.example.com`. Used in emails, in the QR verification links printed on reports and in phone-upload links. Requests from any other origin are refused. |
 | `PUBLIC_API_URL` | No | `http://localhost:<PORT>` | Where browsers reach the API, for logos and file links. Meta's WhatsApp webhook also calls this address. |
 

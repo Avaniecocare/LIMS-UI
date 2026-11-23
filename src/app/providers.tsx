@@ -146,7 +146,8 @@ export function BrandingProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (data) applyBranding(data);
   }, [data]);
-  if (error) {
+  // Only before the first answer: a later refresh that fails must not take away what people are working on.
+  if (error && !data) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center" role="alert">
         <p className="text-sm text-gray-800">The service could not be reached.</p>

@@ -13,6 +13,7 @@ Every customer, quotation, job, sample, report, invoice and other document gets 
 | --- | --- | --- |
 | `{PREFIX}` | The **Document prefix** from the lab profile. | `SL` |
 | `{FY}` | The Indian financial year (April to March) of the document's date, as two two-digit years. | `26-27` |
+| `{YY}` | The calendar year, as two digits. Used in ULR numbers. | `26` |
 | `{SEQ:n}` | The next number in the series, padded with zeros to `n` digits. `{SEQ}` without a width is not padded. | `{SEQ:5}` gives `00012` |
 
 Everything else in the format is printed as typed, for example the slashes and `TR`.
@@ -41,7 +42,9 @@ The examples use `SL` as the prefix.
 
 ## When numbers restart
 
-- Every series restarts at 1 each financial year (1 April), except customer numbers.
+- A series whose format has `{FY}` restarts at 1 each financial year (1 April). All the standard formats do, except customer and ULR numbers.
+- A series whose format has `{YY}` instead restarts each calendar year (1 January).
+- A series with neither never restarts, because the same number would come round again.
 - Customer numbers (CRN) never restart: each is unique for life.
 - A number is taken only when the document is actually saved. If saving fails, the number is not used up, so there are no gaps from failed saves.
 
@@ -63,7 +66,7 @@ The examples use `SL` as the prefix.
    If you delete a series from the JSON, that series falls back to `{PREFIX}/<series name>/{FY}/{SEQ:5}`.
 3. Click **Save**.
 
-**Result**: new documents use the new format. Documents already numbered keep their numbers. The running count is not reset by a format change.
+**Result**: new documents use the new format. Documents already numbered keep their numbers. A format that keeps the same kind of year (`{FY}`, `{YY}` or none) carries on counting. One that drops the year carries on after the highest number so far.
 
 :::caution
 Changing a format in the middle of a financial year mixes two styles in one year's numbering. Check with your accountant before you change invoice or credit note formats.
@@ -75,9 +78,8 @@ To change only the start of the numbers, change the **Document prefix** in [Lab 
 
 A ULR (Unique Lab Report) number is printed on reports when **NABL mode** is on in the lab profile and the report includes at least one parameter in the accreditation scope. It is given when the report is approved.
 
-The ULR format is the **ULR format** field in the lab profile, not the `ULR` entry in the settings. It must contain `{SEQ:n}` and can use `{PREFIX}` and `{FY}`. The ULR series restarts each financial year like the others.
+The ULR format is the **ULR format** field in the lab profile, not the `ULR` entry in the settings. It must contain `{SEQ:n}` and can use `{PREFIX}`, `{FY}` (financial year) and `{YY}` (calendar year), for example `TC1234{YY}{SEQ:8}F`. The series restarts each calendar year when the format has `{YY}`, each financial year when it has `{FY}`, and never when it has neither. Check the format against your accreditation body's current rules.
 
-<!-- TODO(verify): the ULR format field's hint suggests "TC1234{YY}{SEQ:8}F", but the number builder only replaces {PREFIX}, {FY} and {SEQ:n}. A {YY} token would print as typed. Confirm before documenting {YY}. -->
 
 ## Related
 

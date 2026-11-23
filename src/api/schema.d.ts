@@ -52,6 +52,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/users/{id}/reset-2fa": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AdminController_resetTotp"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/users/{id}/signature": {
         parameters: {
             query?: never;
@@ -2234,6 +2250,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** The header bell asks every minute. */
         get: operations["NotificationsController_list"];
         put?: never;
         post?: never;
@@ -4462,6 +4479,8 @@ export interface components {
             value: Record<string, never>;
             default: Record<string, never>;
             version: number;
+            /** @description changing it needs a reason, which goes to the audit log */
+            sensitive: boolean;
         };
         UpdateSettingDto: {
             value: Record<string, never>;
@@ -7873,6 +7892,27 @@ export interface operations {
                 "application/json": components["schemas"]["AdminResetPasswordDto"];
             };
         };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OkDto"];
+                };
+            };
+        };
+    };
+    AdminController_resetTotp: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             200: {
                 headers: {

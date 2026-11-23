@@ -80,7 +80,7 @@ Printed on invoices for payment, and available to the payment reminder email.
 | **Certification line on reports** | For example "ISO/IEC 17025:2017 accredited laboratory". | No | Up to 300 characters. |
 | **NABL mode** | Prints the NABL details and a ULR number on reports of accredited tests. | No | |
 | **NABL certificate number** | Shown only when **NABL mode** is ticked. | Yes, in NABL mode | |
-| **ULR format** | The format of the ULR number. Shown only when **NABL mode** is ticked. | Yes, in NABL mode | Must contain `{SEQ:n}`. |
+| **ULR format** | The format of the ULR number. Shown only when **NABL mode** is ticked. | Yes, in NABL mode | Must contain `{SEQ:n}`; may use `{PREFIX}`, `{FY}` and `{YY}`. Anything else in braces is refused. |
 
 A ULR number is given when a report is approved, only if **NABL mode** is on and at least one parameter on the report is in the accreditation scope. See [Document numbers](/help/admin/numbering/#ulr-numbers) for how the format works.
 
