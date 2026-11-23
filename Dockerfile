@@ -21,7 +21,7 @@ RUN cd docs-site && npm ci
 COPY docs-site ./docs-site
 RUN cd docs-site && npm run build && npm run check:links
 
-FROM nginxinc/nginx-unprivileged:1.29-alpine
+FROM nginxinc/nginx-unprivileged:1.31-alpine
 USER root
 RUN apk add --no-cache gettext && mkdir -p /etc/nginx/templates && rm -f /etc/nginx/conf.d/default.conf \
   && chown -R nginx:nginx /usr/share/nginx/html /etc/nginx/conf.d
