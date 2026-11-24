@@ -4535,6 +4535,11 @@ export interface components {
         };
         UpdateUserDto: {
             version: number;
+            /**
+             * Format: email
+             * @description what they sign in with; changing it needs the password confirmed, and signs them out everywhere
+             */
+            email?: string;
             name?: string;
             designation?: string;
             phone?: string;

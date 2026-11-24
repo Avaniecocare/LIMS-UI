@@ -163,7 +163,15 @@ function UserForm({ user, onDone, onChange }: { user: User | null; onDone: () =>
         return unwrap(
           await api.PATCH('/api/v1/admin/users/{id}', {
             params: { path: { id: user.id } },
-            body: { version: user.version, name: v.name, designation: v.designation || undefined, phone: v.phone || undefined, isActive, roleIds },
+            body: {
+              version: user.version,
+              name: v.name,
+              ...(v.email.trim() !== user.email ? { email: v.email } : {}),
+              designation: v.designation || undefined,
+              phone: v.phone || undefined,
+              isActive,
+              roleIds,
+            },
           }),
         );
       }
@@ -185,8 +193,8 @@ function UserForm({ user, onDone, onChange }: { user: User | null; onDone: () =>
         <Field label="Name" htmlFor="u-name" error={e.name?.message} required>
           <Input id="u-name" {...form.register('name')} />
         </Field>
-        <Field label="Email" htmlFor="u-email" error={e.email?.message} required>
-          <Input id="u-email" type="email" disabled={!!user} {...form.register('email')} />
+        <Field label="Email" htmlFor="u-email" error={e.email?.message} hint={user ? 'Changing it signs them out, and tells both addresses.' : undefined} required>
+          <Input id="u-email" type="email" {...form.register('email')} />
         </Field>
         <Field label="Designation" htmlFor="u-designation" hint="Printed on signed reports." error={e.designation?.message}>
           <Input id="u-designation" {...form.register('designation')} />

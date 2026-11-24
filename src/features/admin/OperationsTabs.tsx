@@ -69,6 +69,7 @@ const KINDS: Record<string, string> = {
   acknowledgement: 'Acknowledgement',
   reminder: 'Payment reminder',
   'password-reset': 'Password reset',
+  'account-email-changed': 'Account notice',
 };
 const kindOf = (template: string) => KINDS[template] ?? (template.startsWith('notification:') ? 'Notification' : template);
 

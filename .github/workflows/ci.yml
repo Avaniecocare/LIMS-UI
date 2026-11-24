@@ -83,6 +83,11 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: On a build branch, use the backend built from the branch of the same name if there is one
+        if: startsWith(github.ref, 'refs/heads/build/') && vars.LIMS_PINNED_VERSION == ''
+        run: |
+          image="ghcr.io/avaniecocare/lims:${GITHUB_REF_NAME//\//-}"
+          if docker manifest inspect "$image" >/dev/null 2>&1; then echo "LIMS_IMAGE=$image" >> "$GITHUB_ENV"; fi
       - name: Pull the backend image
         run: |
           docker pull "$LIMS_IMAGE" || { echo "::error::Cannot pull $LIMS_IMAGE. Push LIMS to main (publishes :main) or set the LIMS_PINNED_VERSION repository variable to a published release."; exit 1; }
@@ -137,6 +142,7 @@ jobs:
           images: ghcr.io/avaniecocare/lims-ui
           tags: |
             type=semver,pattern={{version}}
+            type=ref,event=branch,enable=${{ startsWith(github.ref, 'refs/heads/build/') }}
             type=sha,format=long
       - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
         with:

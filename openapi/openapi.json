@@ -15124,6 +15124,12 @@
             "type": "number",
             "minimum": 1
           },
+          "email": {
+            "type": "string",
+            "description": "what they sign in with; changing it needs the password confirmed, and signs them out everywhere",
+            "maxLength": 254,
+            "format": "email"
+          },
           "name": {
             "type": "string",
             "minLength": 2,

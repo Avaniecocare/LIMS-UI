@@ -57,7 +57,7 @@ On a new installation the first administrator is taken to the [lab setup wizard]
 
 ## Changes that ask for your password
 
-Some changes ask you to **Confirm your password** before they go through: adding a user, changing someone's roles, switching an account off, resetting a password, creating a role or changing its permissions, approving an access request, saving the lab profile, erasing personal data, and bulk exports. After you confirm, you are not asked again for ten minutes. See [Security](/help/security/#re-confirming-your-password).
+Some changes ask you to **Confirm your password** before they go through: adding a user, changing someone's roles, changing someone's email, switching an account off, resetting a password, creating a role or changing its permissions, approving an access request, saving the lab profile, erasing personal data, and bulk exports. After you confirm, you are not asked again for ten minutes. See [Security](/help/security/#re-confirming-your-password).
 
 ## Related
 

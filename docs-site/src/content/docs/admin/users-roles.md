@@ -47,7 +47,7 @@ You can only give a role whose permissions you hold yourself, unless you hold bo
 **Steps**:
 
 1. In **Admin** → **Users**, click the person's row.
-2. Change **Name**, **Designation**, **Phone** or the ticked **Roles**. The email cannot be changed.
+2. Change **Name**, **Email**, **Designation**, **Phone** or the ticked **Roles**. A new email is what they sign in with from then on: they are signed out, and both addresses are told. Their password stays the same.
 3. To stop the person signing in, untick **Active**.
 4. Click **Save user**. Changing roles or switching an account off asks you to confirm your password.
 
