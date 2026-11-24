@@ -173,6 +173,12 @@ jobs:
           only-fixed: true
           severity-cutoff: high
           output-format: table
+      - name: It serves the app and the help site with a read-only filesystem and no privileges
+        run: |
+          docker run -d --name ui --read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges -p 127.0.0.1:8080:8080 -e API_URL=https://api.example.com lims-ui:scan
+          timeout 30 sh -c 'until curl -sf http://localhost:8080/healthz; do sleep 1; done' || { docker logs ui; exit 1; }
+          for p in / /help/ /config.js; do curl -sfo /dev/null "http://localhost:8080$p"; done
+          [ "$(docker exec ui id -u)" = 101 ]
       - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
         with:
           context: .

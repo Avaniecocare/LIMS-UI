@@ -21,11 +21,12 @@ RUN cd docs-site && npm ci
 COPY docs-site ./docs-site
 RUN cd docs-site && npm run build && npm run check:links
 
-FROM nginxinc/nginx-unprivileged:1.30-alpine
-USER root
-# The base image is rebuilt less often than Alpine fixes things.
+# nginx's own image: it is rebuilt when nginx is fixed, the unprivileged variant weeks later. What that one changes is here.
+FROM nginx:1.30-alpine
 RUN apk upgrade --no-cache && apk add --no-cache gettext && mkdir -p /etc/nginx/templates && rm -f /etc/nginx/conf.d/default.conf \
-  && sed -i 's#/etc/nginx/conf.d/\*.conf#/tmp/conf.d/*.conf#' /etc/nginx/nginx.conf && grep -q /tmp/conf.d /etc/nginx/nginx.conf
+  && sed -i -e '/^user /d' -e 's#^pid .*#pid /tmp/nginx.pid;#' -e 's#/etc/nginx/conf.d/\*.conf#/tmp/conf.d/*.conf#' \
+    -e 's#^http {#http {\n    client_body_temp_path /tmp/client_temp;\n    proxy_temp_path /tmp/proxy_temp;\n    fastcgi_temp_path /tmp/fastcgi_temp;\n    uwsgi_temp_path /tmp/uwsgi_temp;\n    scgi_temp_path /tmp/scgi_temp;#' /etc/nginx/nginx.conf \
+  && grep -q /tmp/conf.d /etc/nginx/nginx.conf && grep -q 'pid /tmp/nginx.pid' /etc/nginx/nginx.conf && grep -q /tmp/client_temp /etc/nginx/nginx.conf && ! grep -q '^user ' /etc/nginx/nginx.conf
 COPY --from=build /app/dist /usr/share/nginx/html
 COPY --from=docs /app/docs-site/dist /usr/share/nginx/html/help
 COPY docker/nginx.conf.template /etc/nginx/templates/default.conf.template
