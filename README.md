@@ -1,5 +1,7 @@
 # LIMS-UI
 
+By [Taravik](https://taravik.com).
+
 React single-page app for the white-label LIMS. It owns screens and interaction only; every business rule and calculation is on the backend (`LIMS`).
 
 ## Run

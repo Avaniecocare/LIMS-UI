@@ -2,10 +2,15 @@
 import Default from '@astrojs/starlight/components/Footer.astro';
 import AskAi from './AskAi.astro';
 import PageFeedback from './PageFeedback.astro';
+
+// An empty name leaves the line out.
+const vendorName = (process.env.DOCS_VENDOR_NAME ?? 'Taravik').trim();
+const vendorUrl = (process.env.DOCS_VENDOR_URL ?? (vendorName === 'Taravik' ? 'https://taravik.com' : '')).trim();
 ---
 
 <PageFeedback />
 <Default />
+{vendorName && <p class="vendor">By {/^https?:/.test(vendorUrl) ? <a href={vendorUrl} rel="noopener">{vendorName}</a> : vendorName}</p>}
 <AskAi />
 
 <script>
@@ -18,3 +23,11 @@ import PageFeedback from './PageFeedback.astro';
     await mermaid.run({ nodes: [...diagrams] });
   }
 </script>
+
+<style>
+  .vendor {
+    margin-top: 1.5rem;
+    font-size: var(--sl-text-xs);
+    color: var(--sl-color-gray-3);
+  }
+</style>

@@ -26,7 +26,6 @@ Editing the lab profile needs the password confirmed, because it prints on every
 `BRAND_NAME` is the only branding value outside the app. It is:
 
 - the name shown on a new install, before the administrator sets the lab's own name and app name;
-- the name used in the "Powered by" line;
 - in the deployment, also the default for the UI container's `APP_NAME`.
 
 A fresh install starts from `BRAND_NAME` with neutral colours and the lab's initials as its logo.

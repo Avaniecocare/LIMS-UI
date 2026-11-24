@@ -37,7 +37,7 @@ sidebar:
 | **Menu colour** | The side menu. Its text colour adjusts itself for contrast. | A colour like `#1a2b3c`. |
 | **Background colour** | Behind the pages. Keep it light. | A colour like `#1a2b3c`. |
 | **Sign-in page line** | Optional line on the sign-in page. | Up to 160 characters. |
-| **Show "Powered by" on the sign-in page** | Shows the product credit on the sign-in page. On by default. | |
+| **Show "Powered by" on the sign-in page** | Shows the supplier's name, with a link, on the sign-in page. It never appears on reports, invoices or emails. On by default. | |
 
 A new installation starts with neutral slate colours and the laboratory's initials as its logo.
 

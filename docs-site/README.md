@@ -30,7 +30,7 @@ With the API's `.env` set to `ENABLE_AI_ASSISTANT=true`, `AI_PROVIDER=mock` and 
 
 ## Branding
 
-Set at build time: `DOCS_PRODUCT_NAME`, `DOCS_PRIMARY_COLOR` (`#rrggbb`), `DOCS_LOGO` (a file path), `DOCS_SITE_URL`, `DOCS_INDEXABLE` (`true` lets search engines in; otherwise every page is `noindex`), `DOCS_LAST_UPDATED` (`false` when there is no git history). The UI's `Dockerfile` passes them as build arguments.
+Set at build time: `DOCS_PRODUCT_NAME`, `DOCS_PRIMARY_COLOR` (`#rrggbb`), `DOCS_LOGO` (a file path), `DOCS_SITE_URL`, `DOCS_VENDOR_NAME` and `DOCS_VENDOR_URL` (the supplier in the footer; Taravik unless set, an empty name leaves it out), `DOCS_INDEXABLE` (`true` lets search engines in; otherwise every page is `noindex`), `DOCS_LAST_UPDATED` (`false` when there is no git history). The UI's `Dockerfile` passes them as build arguments.
 
 ## Deploy and re-index
 

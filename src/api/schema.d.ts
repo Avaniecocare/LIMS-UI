@@ -4762,10 +4762,11 @@ export interface components {
             /** @description a picture beside the sign-in form, if the lab has set one */
             loginImageUrl: string | null;
             loginTagline: string | null;
-            /** @description show "Powered by" with the product's own name */
+            /** @description show "Powered by" with the supplier's name */
             poweredBy: boolean;
-            /** @description the product's own name (BRAND_NAME), for that line */
+            /** @description the supplier (VENDOR_NAME), for that line */
             poweredByName: string;
+            poweredByUrl: string | null;
             supportEmail: string | null;
             supportPhone: string | null;
             termsUrl: string | null;
@@ -4898,7 +4899,10 @@ export interface components {
             /** Format: date-time */
             readOnlyFrom: string | null;
             daysLeft: number | null;
+            vendorUrl: string | null;
             readOnly: boolean;
+            /** @description whom to ask for a licence */
+            vendorName: string;
         };
         ActivateLicenceDto: {
             licence: string;

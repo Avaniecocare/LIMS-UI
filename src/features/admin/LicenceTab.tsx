@@ -71,6 +71,17 @@ export function LicenceTab() {
       </Card>
       <Card>
         <CardHeader title="Add a licence" description="Paste the licence you were sent. To ask for one, quote the installation above. Your password is confirmed first." />
+        <p className="px-4 pt-3 text-[13px] text-gray-700">
+          Licences come from{' '}
+          {l.vendorUrl ? (
+            <a href={l.vendorUrl} className="font-medium underline" target="_blank" rel="noopener noreferrer">
+              {l.vendorName}
+            </a>
+          ) : (
+            l.vendorName
+          )}
+          .
+        </p>
         <form
           className="space-y-3 p-4"
           onSubmit={(e) => {

@@ -13,7 +13,9 @@ ARG DOCS_PRODUCT_NAME=LIMS
 ARG DOCS_PRIMARY_COLOR=#1f4e79
 ARG DOCS_SITE_URL=https://lims.example.com
 ARG DOCS_INDEXABLE=false
-ENV DOCS_PRODUCT_NAME=$DOCS_PRODUCT_NAME DOCS_PRIMARY_COLOR=$DOCS_PRIMARY_COLOR DOCS_SITE_URL=$DOCS_SITE_URL DOCS_INDEXABLE=$DOCS_INDEXABLE DOCS_LAST_UPDATED=false
+ARG DOCS_VENDOR_NAME=Taravik
+ARG DOCS_VENDOR_URL=https://taravik.com
+ENV DOCS_PRODUCT_NAME=$DOCS_PRODUCT_NAME DOCS_PRIMARY_COLOR=$DOCS_PRIMARY_COLOR DOCS_SITE_URL=$DOCS_SITE_URL DOCS_INDEXABLE=$DOCS_INDEXABLE DOCS_VENDOR_NAME=$DOCS_VENDOR_NAME DOCS_VENDOR_URL=$DOCS_VENDOR_URL DOCS_LAST_UPDATED=false
 WORKDIR /app
 COPY openapi ./openapi
 COPY docs-site/package*.json ./docs-site/
@@ -32,6 +34,8 @@ COPY --from=docs /app/docs-site/dist /usr/share/nginx/html/help
 COPY docker/nginx.conf.template /etc/nginx/templates/default.conf.template
 COPY docker/security-headers.conf /etc/nginx/snippets/security-headers.conf
 COPY docker/entrypoint.sh /entrypoint.sh
+# Who makes it; what it is and which commit come from the build.
+LABEL org.opencontainers.image.vendor="Taravik" org.opencontainers.image.url="https://taravik.com"
 # nginx, by number: Kubernetes checks runAsNonRoot against a number.
 USER 101:101
 EXPOSE 8080

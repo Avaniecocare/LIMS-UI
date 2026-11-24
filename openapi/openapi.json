@@ -15991,11 +15991,15 @@
           },
           "poweredBy": {
             "type": "boolean",
-            "description": "show \"Powered by\" with the product's own name"
+            "description": "show \"Powered by\" with the supplier's name"
           },
           "poweredByName": {
             "type": "string",
-            "description": "the product's own name (BRAND_NAME), for that line"
+            "description": "the supplier (VENDOR_NAME), for that line"
+          },
+          "poweredByUrl": {
+            "type": "string",
+            "nullable": true
           },
           "supportEmail": {
             "type": "string",
@@ -16040,6 +16044,7 @@
           "loginTagline",
           "poweredBy",
           "poweredByName",
+          "poweredByUrl",
           "supportEmail",
           "supportPhone",
           "termsUrl",
@@ -16516,8 +16521,16 @@
             "type": "number",
             "nullable": true
           },
+          "vendorUrl": {
+            "type": "string",
+            "nullable": true
+          },
           "readOnly": {
             "type": "boolean"
+          },
+          "vendorName": {
+            "type": "string",
+            "description": "whom to ask for a licence"
           }
         },
         "required": [
@@ -16530,7 +16543,9 @@
           "endsAt",
           "readOnlyFrom",
           "daysLeft",
-          "readOnly"
+          "vendorUrl",
+          "readOnly",
+          "vendorName"
         ]
       },
       "ActivateLicenceDto": {

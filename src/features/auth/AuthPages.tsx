@@ -49,7 +49,18 @@ function AuthShell({ title, children, wide }: { title: string; children: ReactNo
                   ))}
                 </p>
               )}
-              {showPoweredBy && <p>Powered by {branding!.poweredByName}</p>}
+              {showPoweredBy && (
+                <p>
+                  Powered by{' '}
+                  {branding!.poweredByUrl ? (
+                    <a href={branding!.poweredByUrl} className="underline" target="_blank" rel="noopener noreferrer">
+                      {branding!.poweredByName}
+                    </a>
+                  ) : (
+                    branding!.poweredByName
+                  )}
+                </p>
+              )}
             </div>
           )}
         </div>
