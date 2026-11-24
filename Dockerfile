@@ -21,9 +21,10 @@ RUN cd docs-site && npm ci
 COPY docs-site ./docs-site
 RUN cd docs-site && npm run build && npm run check:links
 
-FROM nginxinc/nginx-unprivileged:1.29-alpine
+FROM nginxinc/nginx-unprivileged:1.30-alpine
 USER root
-RUN apk add --no-cache gettext && mkdir -p /etc/nginx/templates && rm -f /etc/nginx/conf.d/default.conf \
+# The base image is rebuilt less often than Alpine fixes things.
+RUN apk upgrade --no-cache && apk add --no-cache gettext && mkdir -p /etc/nginx/templates && rm -f /etc/nginx/conf.d/default.conf \
   && sed -i 's#/etc/nginx/conf.d/\*.conf#/tmp/conf.d/*.conf#' /etc/nginx/nginx.conf && grep -q /tmp/conf.d /etc/nginx/nginx.conf
 COPY --from=build /app/dist /usr/share/nginx/html
 COPY --from=docs /app/docs-site/dist /usr/share/nginx/html/help
