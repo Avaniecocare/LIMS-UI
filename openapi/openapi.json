@@ -14717,6 +14717,225 @@
           "admin"
         ]
       }
+    },
+    "/api/v1/admin/status": {
+      "get": {
+        "operationId": "OperationsController_status",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemStatusDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "operations"
+        ]
+      }
+    },
+    "/api/v1/admin/emails": {
+      "get": {
+        "operationId": "OperationsController_emails",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "QUEUED",
+                "SENT",
+                "FAILED"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 200,
+              "default": 25,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 120,
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 200,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailPageDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "operations"
+        ]
+      }
+    },
+    "/api/v1/admin/emails/{id}/resend": {
+      "post": {
+        "operationId": "OperationsController_resend",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "operations"
+        ]
+      }
+    },
+    "/api/v1/admin/data-exports": {
+      "get": {
+        "operationId": "OperationsController_listExports",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DataExportDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "operations"
+        ]
+      },
+      "post": {
+        "operationId": "OperationsController_requestExport",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataExportDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "operations"
+        ]
+      }
+    },
+    "/api/v1/admin/data-exports/{id}/parts/{part}/download": {
+      "post": {
+        "operationId": "OperationsController_download",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "part",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DownloadDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "POST, because each download is recorded.",
+        "tags": [
+          "operations"
+        ]
+      }
     }
   },
   "info": {
@@ -28274,6 +28493,278 @@
           "spentThisMonth",
           "dailyBudget",
           "monthlyBudget"
+        ]
+      },
+      "CheckDto": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "description": "OFF: not set up, and not a fault",
+            "enum": [
+              "OK",
+              "OFF",
+              "WARNING",
+              "PROBLEM"
+            ]
+          },
+          "detail": {
+            "type": "string"
+          },
+          "ms": {
+            "type": "number",
+            "description": "how long it took to answer"
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "state",
+          "detail",
+          "ms"
+        ]
+      },
+      "SystemStatusDto": {
+        "type": "object",
+        "properties": {
+          "checkedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "version": {
+            "type": "string",
+            "nullable": true
+          },
+          "checks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CheckDto"
+            }
+          }
+        },
+        "required": [
+          "checkedAt",
+          "version",
+          "checks"
+        ]
+      },
+      "EmailDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "toAddress": {
+            "type": "string"
+          },
+          "ccAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "subject": {
+            "type": "string"
+          },
+          "template": {
+            "type": "string"
+          },
+          "attachments": {
+            "type": "number"
+          },
+          "entity": {
+            "type": "string",
+            "nullable": true
+          },
+          "entityId": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "enum": [
+              "FAILED",
+              "QUEUED",
+              "SENT"
+            ],
+            "type": "string"
+          },
+          "attempts": {
+            "type": "number"
+          },
+          "lastError": {
+            "type": "string",
+            "nullable": true
+          },
+          "sentAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "sentBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "retrying": {
+            "type": "boolean",
+            "description": "failed, and will be tried again by itself"
+          },
+          "canResend": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "toAddress",
+          "ccAddress",
+          "subject",
+          "template",
+          "attachments",
+          "entity",
+          "entityId",
+          "status",
+          "attempts",
+          "lastError",
+          "sentAt",
+          "sentBy",
+          "createdAt",
+          "retrying",
+          "canResend"
+        ]
+      },
+      "EmailPageDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EmailDto"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PageMetaDto"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
+      },
+      "DataExportPartDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "sizeBytes": {
+            "type": "number"
+          },
+          "sha256": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "sizeBytes",
+          "sha256"
+        ]
+      },
+      "DataExportDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "FAILED",
+              "QUEUED",
+              "RUNNING",
+              "DONE"
+            ],
+            "type": "string"
+          },
+          "parts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DataExportPartDto"
+            }
+          },
+          "tables": {
+            "type": "number"
+          },
+          "rows": {
+            "type": "number"
+          },
+          "files": {
+            "type": "number"
+          },
+          "missingFiles": {
+            "type": "number"
+          },
+          "error": {
+            "type": "string",
+            "nullable": true
+          },
+          "requestedByName": {
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "finishedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "expiresAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "removedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "parts",
+          "tables",
+          "rows",
+          "files",
+          "missingFiles",
+          "error",
+          "requestedByName",
+          "createdAt",
+          "finishedAt",
+          "expiresAt",
+          "removedAt"
+        ]
+      },
+      "DownloadDto": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "expiresInSeconds": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "url",
+          "expiresInSeconds"
         ]
       }
     }

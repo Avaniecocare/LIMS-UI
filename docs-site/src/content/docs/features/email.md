@@ -78,7 +78,7 @@ If nothing has been sent, the log says **Nothing sent yet.**
 
 ## Send an email again
 
-There is no resend button on a failed row. Send the document again from the record instead; this writes a new row to the log.
+To the same address, an administrator can send it again from **Admin** → **Emails**. See [Emails](/help/admin/emails/). To another address, send the document again from its record; this writes a new row to the log.
 
 **Goal:** send a document again, to the same or another address.
 

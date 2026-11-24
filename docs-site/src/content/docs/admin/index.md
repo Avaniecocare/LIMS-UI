@@ -23,6 +23,9 @@ You see only the tabs your roles allow. If you hold none of the permissions belo
 | **Terms** | Terms and conditions printed on quotations, invoices and reports. | `admin.settings` |
 | **Holidays** | Days that due dates skip. | `admin.settings` |
 | **Audit log** | Every recorded change, with who, when and why. | `admin.audit` |
+| **System status** | Whether each part is working. See [System status](/help/admin/system-status/). | `admin.settings` |
+| **Emails** | Every email sent and failed, and sending one again. See [Emails](/help/admin/emails/). | `admin.emails` |
+| **Data export** | A copy of all records and files. See [Export all data](/help/admin/data-export/). | `admin.dataExport` |
 | **Lab profile** | Names, addresses, GSTIN, bank account, accreditation, document prefix, privacy contact. | `admin.company.view` to see, `admin.company.edit` to change |
 | **Branding** | App name, colours, logo, browser tab icon, sign-in picture. | `admin.company.view` to see, `admin.company.edit` to change |
 | **Email templates** | The wording of emails to customers. | `admin.company.view` to see, `admin.company.edit` to change |

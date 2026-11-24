@@ -19,6 +19,8 @@ The **Area** column is the group heading you see when you edit a role.
 | `admin.roles` | Admin | Manage roles and permissions |
 | `admin.settings` | Admin | Change lab operating settings |
 | `admin.audit` | Admin | View the audit log |
+| `admin.emails` | Admin | View sent and failed emails, and send them again |
+| `admin.dataExport` | Admin | Export all of the lab’s data and files |
 | `admin.company.view` | Admin | View company details |
 | `quality.view` | Quality | View equipment status, authorisations, training and non-conformances |
 | `quality.manage` | Quality | Record calibration and maintenance, authorise staff, and work non-conformances |
@@ -96,7 +98,7 @@ A new installation creates these roles once. After that the roles belong to you:
 
 ## Which role has which permission
 
-This is the matrix on a new installation, including the permissions that later versions added to built-in roles (file library, quality and privacy). Your installation may differ if an administrator has changed the roles.
+This is the matrix on a new installation, including the permissions that later versions added to built-in roles (file library, quality, privacy, emails and data export). Your installation may differ if an administrator has changed the roles.
 
 | Permission | Adm | QM | DC | Sales | Rec | Plan | Tech | HoD | Rev | Sig | Disp | Acc | Mgmt |
 | --- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
@@ -104,6 +106,8 @@ This is the matrix on a new installation, including the permissions that later v
 | `admin.roles` | ✓ |  |  |  |  |  |  |  |  |  |  |  |  |
 | `admin.settings` | ✓ |  |  |  |  |  |  |  |  |  |  |  |  |
 | `admin.audit` | ✓ |  |  |  |  |  |  |  |  |  |  |  |  |
+| `admin.emails` | ✓ |  |  |  |  |  |  |  |  |  |  |  |  |
+| `admin.dataExport` | ✓ |  |  |  |  |  |  |  |  |  |  |  |  |
 | `admin.company.view` | ✓ |  |  |  |  |  |  |  |  |  |  |  |  |
 | `quality.view` | ✓ | ✓ |  |  |  | ✓ |  | ✓ |  |  |  |  | ✓ |
 | `quality.manage` | ✓ | ✓ |  |  |  |  |  |  |  |  |  |  |  |

@@ -4409,6 +4409,87 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["OperationsController_status"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/emails": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["OperationsController_emails"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/emails/{id}/resend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["OperationsController_resend"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/data-exports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["OperationsController_listExports"];
+        put?: never;
+        post: operations["OperationsController_requestExport"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/data-exports/{id}/parts/{part}/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** POST, because each download is recorded. */
+        post: operations["OperationsController_download"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -7837,6 +7918,79 @@ export interface components {
             spentThisMonth: number;
             dailyBudget: number;
             monthlyBudget: number;
+        };
+        CheckDto: {
+            key: string;
+            label: string;
+            /**
+             * @description OFF: not set up, and not a fault
+             * @enum {string}
+             */
+            state: "OK" | "OFF" | "WARNING" | "PROBLEM";
+            detail: string;
+            /** @description how long it took to answer */
+            ms: number;
+        };
+        SystemStatusDto: {
+            /** Format: date-time */
+            checkedAt: string;
+            version: string | null;
+            checks: components["schemas"]["CheckDto"][];
+        };
+        EmailDto: {
+            id: string;
+            toAddress: string;
+            ccAddress: string | null;
+            subject: string;
+            template: string;
+            attachments: number;
+            entity: string | null;
+            entityId: string | null;
+            /** @enum {string} */
+            status: "FAILED" | "QUEUED" | "SENT";
+            attempts: number;
+            lastError: string | null;
+            /** Format: date-time */
+            sentAt: string | null;
+            sentBy: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** @description failed, and will be tried again by itself */
+            retrying: boolean;
+            canResend: boolean;
+        };
+        EmailPageDto: {
+            data: components["schemas"]["EmailDto"][];
+            meta: components["schemas"]["PageMetaDto"];
+        };
+        DataExportPartDto: {
+            name: string;
+            sizeBytes: number;
+            sha256: string;
+        };
+        DataExportDto: {
+            id: string;
+            /** @enum {string} */
+            status: "FAILED" | "QUEUED" | "RUNNING" | "DONE";
+            parts: components["schemas"]["DataExportPartDto"][];
+            tables: number;
+            rows: number;
+            files: number;
+            missingFiles: number;
+            error: string | null;
+            requestedByName: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            finishedAt: string | null;
+            /** Format: date-time */
+            expiresAt: string | null;
+            /** Format: date-time */
+            removedAt: string | null;
+        };
+        DownloadDto: {
+            url: string;
+            expiresInSeconds: number;
         };
     };
     responses: never;
@@ -16140,6 +16294,132 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HelpAnalyticsDto"];
+                };
+            };
+        };
+    };
+    OperationsController_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SystemStatusDto"];
+                };
+            };
+        };
+    };
+    OperationsController_emails: {
+        parameters: {
+            query?: {
+                status?: "QUEUED" | "SENT" | "FAILED";
+                page?: number;
+                pageSize?: number;
+                sort?: string;
+                order?: "asc" | "desc";
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmailPageDto"];
+                };
+            };
+        };
+    };
+    OperationsController_resend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmailDto"];
+                };
+            };
+        };
+    };
+    OperationsController_listExports: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataExportDto"][];
+                };
+            };
+        };
+    };
+    OperationsController_requestExport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataExportDto"];
+                };
+            };
+        };
+    };
+    OperationsController_download: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                part: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DownloadDto"];
                 };
             };
         };

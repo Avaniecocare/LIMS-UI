@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import type { components } from '@/api/schema';
 import { useSession } from '@/app/providers';
 import { DataTable, useDebounced, type Col } from '@/components/DataTable';
-import { uploadEntityFile } from '@/components/shared';
+import { DocumentButton, SearchBox, uploadEntityFile } from '@/components/shared';
 import {
   Badge,
   Button,
@@ -37,6 +37,7 @@ import { WhatsappTab } from './WhatsappTab';
 import { EInvoiceTab } from './EInvoiceTab';
 import { HelpAssistantTab } from './HelpAssistantTab';
 import { LicenceTab } from './LicenceTab';
+import { DataExportTab, OutboxTab, StatusTab } from './OperationsTabs';
 import { BrandingTab, LabProfileTab } from './LabSettings';
 import { AccessRequestsTab, AccessReviewTab, PreviewRoleButton } from './SecurityTabs';
 import { useListState } from '@/lib/use-list-state';
@@ -676,6 +677,7 @@ function AuditTab() {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-end gap-2">
+        <SearchBox label="Search the audit log" placeholder="Search person, record or reason" value={list.q} onChange={list.setSearch} />
         <Field label="Record type" htmlFor="a-entity">
           <Input id="a-entity" className="w-40" defaultValue={list.filters.entity ?? ''} onBlur={(e) => list.setFilter('entity', e.target.value)} />
         </Field>
@@ -688,6 +690,9 @@ function AuditTab() {
         <Field label="To" htmlFor="a-to">
           <Input id="a-to" type="date" defaultValue={list.filters.to ?? ''} onChange={(e) => list.setFilter('to', e.target.value)} />
         </Field>
+        <DocumentButton kind="audit-export" params={{ ...list.filters, ...(list.q ? { q: list.q } : {}) }}>
+          Export Excel
+        </DocumentButton>
       </div>
       <DataTable
         ariaLabel="Audit log"
@@ -735,6 +740,9 @@ const TABS = [
   { id: 'terms', label: 'Terms', perm: 'admin.settings', body: TermsTab },
   { id: 'holidays', label: 'Holidays', perm: 'admin.settings', body: HolidaysTab },
   { id: 'audit', label: 'Audit log', perm: 'admin.audit', body: AuditTab },
+  { id: 'status', label: 'System status', perm: 'admin.settings', body: StatusTab },
+  { id: 'outbox', label: 'Emails', perm: 'admin.emails', body: OutboxTab },
+  { id: 'data', label: 'Data export', perm: 'admin.dataExport', body: DataExportTab },
   { id: 'company', label: 'Lab profile', perm: 'admin.company.view', body: LabProfileTab },
   { id: 'branding', label: 'Branding', perm: 'admin.company.view', body: BrandingTab },
   { id: 'emails', label: 'Email templates', perm: 'admin.company.view', body: EmailTemplatesTab },

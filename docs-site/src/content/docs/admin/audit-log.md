@@ -43,13 +43,17 @@ Passwords, password hashes, two-factor secrets and token hashes are removed befo
 **Steps**:
 
 1. Open **Admin** → **Audit log**. The newest entries are first.
-2. To narrow the list, fill in any of:
+2. To narrow the list, search for a person, record or reason, or fill in any of:
    - **Record type**: the exact kind of record, for example `Setting` or `User`.
    - **Action starts with**: the start of the action, for example `auth.` for all sign-in events or `user.` for user changes.
    - **From** and **To**: a date range.
 3. Click an entry to see **Before** and **After**.
 
 **Result**: the list shows only matching entries, in pages.
+
+## Export entries
+
+Click **Export Excel** for the entries the filters show, with the values before and after. Your password is confirmed first, and administrators are told. One file holds up to 20,000 entries: for more, choose shorter periods, or [export all data](/help/admin/data-export/), which holds the whole log.
 
 :::tip
 Every record with a **History** tab (master records, jobs, reports, invoices and others) shows its own audit entries, so you can often start from the record instead.
@@ -73,7 +77,7 @@ Some events also notify everyone with `admin.users`, with a link to the audit lo
 
 - someone's access widens (a role given, permissions added to a role),
 - a person is refused 20 times in ten minutes,
-- a bulk export of all customers and contacts, or of all due invoices.
+- a bulk export of all customers and contacts, of all due invoices, of the audit log, or of all the lab's data.
 
 ## Related
 

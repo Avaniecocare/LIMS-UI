@@ -149,7 +149,7 @@ export const router = createBrowserRouter([
               { path: '/analytics', element: page(Analytics, ['analytics.operations', 'analytics.quality', 'analytics.people', 'analytics.commercial'], 'analytics') },
               { path: '/account', element: page(Account) },
               { path: '/setup/lab', element: page(LabSetup, ['admin.company.edit']) },
-              { path: '/admin', element: page(Admin, ['admin.users', 'admin.roles', 'admin.settings', 'admin.audit', 'admin.company.view', 'privacy.manage']) },
+              { path: '/admin', element: page(Admin, ['admin.users', 'admin.roles', 'admin.settings', 'admin.audit', 'admin.emails', 'admin.dataExport', 'admin.company.view', 'privacy.manage']) },
               { path: '/files', element: page(Files, ['files.view'], 'files') },
               { path: '/quality', element: page(Quality, ['quality.view'], 'quality') },
               { path: '/masters', element: page(Masters, ['masters.view', 'rates.view']) },

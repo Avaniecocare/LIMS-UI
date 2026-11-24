@@ -51,6 +51,6 @@ export const NAV: NavItem[] = [
     label: 'Admin',
     to: '/admin',
     icon: Settings,
-    permissions: ['admin.users', 'admin.roles', 'admin.settings', 'admin.audit', 'admin.company.view', 'privacy.manage'],
+    permissions: ['admin.users', 'admin.roles', 'admin.settings', 'admin.audit', 'admin.emails', 'admin.dataExport', 'admin.company.view', 'privacy.manage'],
   },
 ];

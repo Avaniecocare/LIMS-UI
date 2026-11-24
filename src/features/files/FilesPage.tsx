@@ -10,15 +10,13 @@ import { ReasonDialog, SearchBox } from '@/components/shared';
 import { Button, Card, Dialog, Field, Input, PageHeader, Select, Tabs, TabsList, TabsTrigger, Textarea } from '@/components/ui/primitives';
 import { api, unwrap, uploadFile } from '@/lib/api';
 import { toastError } from '@/lib/forms';
-import { cn, formatDateTime } from '@/lib/format';
+import { cn, formatBytes, formatDateTime } from '@/lib/format';
 
 type FileRow = components['schemas']['LibraryFileDto'];
 type FolderRow = components['schemas']['FolderDto'];
 type Link = { entity: 'Customer' | 'Job'; entityId: string };
 
 const ACCEPT = 'application/pdf,image/png,image/jpeg,image/webp,.docx,.xlsx,.csv';
-
-export const formatBytes = (n: number) => (n < 1024 ? `${n} B` : n < 1024 * 1024 ? `${(n / 1024).toFixed(0)} KB` : `${(n / 1024 / 1024).toFixed(1)} MB`);
 
 function FileIcon({ mime }: { mime: string }) {
   const Icon = mime === 'application/pdf' ? FileText : mime.startsWith('image/') ? Image : /sheet|csv/.test(mime) ? FileSpreadsheet : File;

@@ -27,7 +27,8 @@ const decimal = (message: string) =>
 const schema = z.object({
   customerId: z.string().min(1, 'Choose a customer'),
   orderId: z.string(),
-  documentTitle: z.enum(['Quotation', 'Proforma Invoice']),
+  // Empty on a new quotation: the lab's default title.
+  documentTitle: z.enum(['', 'Quotation', 'Proforma Invoice']),
   validUntil: z.string(),
   estimatedDays: z
     .string()
@@ -69,7 +70,7 @@ function toForm(q: Quotation | null, preset: { customerId: string; orderId: stri
   return {
     customerId: q?.customerId ?? preset.customerId,
     orderId: q?.orderId ?? preset.orderId,
-    documentTitle: (v?.documentTitle as FormValues['documentTitle']) ?? 'Quotation',
+    documentTitle: (v?.documentTitle as FormValues['documentTitle']) ?? '',
     validUntil: toDateInput(v?.validUntil),
     estimatedDays: v?.estimatedDays === null || v?.estimatedDays === undefined ? '' : String(v.estimatedDays),
     paymentTerms: v?.paymentTerms ?? '',
@@ -95,7 +96,7 @@ function toBody(v: FormValues) {
   return {
     customerId: v.customerId,
     orderId: v.orderId || null,
-    documentTitle: v.documentTitle,
+    ...(v.documentTitle ? { documentTitle: v.documentTitle } : {}),
     ...(v.validUntil ? { validUntil: v.validUntil } : {}),
     estimatedDays: v.estimatedDays === '' ? null : Number(v.estimatedDays),
     paymentTerms: v.paymentTerms || null,
@@ -227,6 +228,7 @@ function Editor({ quotation, preset }: { quotation: Quotation | null; preset: { 
           </Field>
           <Field label="Document title" htmlFor="q-title" error={e.documentTitle?.message}>
             <Select id="q-title" {...form.register('documentTitle')}>
+              {!quotation && <option value="">Lab’s default</option>}
               <option value="Quotation">Quotation</option>
               <option value="Proforma Invoice">Proforma Invoice</option>
             </Select>

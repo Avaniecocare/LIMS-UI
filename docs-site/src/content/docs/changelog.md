@@ -7,6 +7,12 @@ sidebar:
 
 The LIMS is made of three parts that are released together: the server (API and worker), the web app, and the deployment scripts. These notes summarise their changes by milestone, newest first. The current version of the server and the web app is **0.1.0**.
 
+## Looking after the system (November 2026)
+
+- **Admin** has three new tabs: **System status** (is each part working), **Emails** (every email sent and failed, with **Try again**) and **Data export** (a copy of all records and files, for seven days).
+- When an email fails for good, whoever sent it and the administrators are notified.
+- The audit log can be searched by person, record or reason, and exported to Excel.
+
 ## Quality pass (12 November 2026)
 
 No change to how the app works. Behind the scenes:

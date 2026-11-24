@@ -39,7 +39,7 @@ The list shows **CRN**, **Customer**, **GSTIN**, **State**, **Credit days**, **P
 1. In **Customers**, select **New customer**.
 2. Under **Customer details**, enter the **Name**.
 3. Enter the **GSTIN** if the customer has one. The **State**, **GST code** and **PAN** fill in by themselves.
-4. Check **Credit days**. The form starts at 30.
+4. Fill in **Credit days**, or leave it empty for the lab's default.
 5. Under **Contacts**, select **Add contact** and fill in the person's details. Tick **Primary** for the main contact.
 6. Under **Addresses**, select **Add address**. The first address is a **Billing** address. Type the **PIN code** first: the city, state, GST code and area choices fill in.
 7. To use the same address for reports, select **Copy billing address**. The copy is added with the type **Report**.
@@ -64,7 +64,7 @@ You do not have to leave a quotation, order or booking to add a customer. In any
 | Field | What it means | Required |
 | --- | --- | --- |
 | **Name** | The customer's registered name, for example "Contoso Forgings Ltd". 2 to 200 characters. | Yes |
-| **Credit days** | Days the customer has to pay. An invoice's due date is its invoice date plus these days. 0 to 365. | No (starts at 30) |
+| **Credit days** | Days the customer has to pay. An invoice's due date is its invoice date plus these days. 0 to 365. | No (empty uses the lab's default) |
 | **GSTIN** | The customer's 15-character GST number. The system checks its format and check digit, and that its first two digits match the **GST code**. | No |
 | **PAN** | 10-character PAN. Filled from the GSTIN if empty. | No |
 | **State** | The customer's state. Choose or type a state name; choosing an official state also sets the **GST code**. | Yes |
@@ -182,7 +182,7 @@ To bring the customer back, set the list filter to **Inactive**, open the custom
 
 ## Settings that affect customers
 
-- [`credit.defaultDays`](/help/admin/settings/#credit.defaultDays): the credit days a customer gets when none are given. The form in the app always starts at 30 and sends that value, so set **Credit days** on the form to what you agreed. <!-- TODO(verify): confirm with product whether the New customer form should start from credit.defaultDays instead of 30 -->
+- [`credit.defaultDays`](/help/admin/settings/#credit.defaultDays): the credit days a customer gets when **Credit days** is left empty.
 - [`numbering.formats`](/help/admin/settings/#numbering.formats): the format of the CRN (default `CRN-{SEQ:5}`). Customer numbers do not reset each financial year.
 
 ## Tips

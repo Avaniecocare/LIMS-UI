@@ -40,7 +40,12 @@ const schema = z.object({
     .string()
     .trim()
     .regex(/^[0-9]{2}$/, 'Two digits'),
-  creditDays: z.coerce.number<number>().int().min(0, 'Cannot be negative').max(365),
+  // Empty on a new customer: the lab's default credit days.
+  creditDays: z
+    .string()
+    .trim()
+    .regex(/^$|^\d{1,3}$/, 'Whole days, 0 to 365')
+    .refine((v) => Number(v) <= 365, 'Whole days, 0 to 365'),
   withholdReportUntilPaid: z.boolean(),
   notes: z.string(),
   isActive: z.boolean(),
@@ -112,7 +117,7 @@ function toForm(c: Customer | null): FormValues {
     pan: c?.pan ?? '',
     stateName: c?.stateName ?? '',
     stateCode: c?.stateCode ?? '',
-    creditDays: c?.creditDays ?? 30,
+    creditDays: c ? String(c.creditDays) : '',
     withholdReportUntilPaid: c?.withholdReportUntilPaid ?? false,
     notes: c?.notes ?? '',
     isActive: c?.isActive ?? true,
@@ -129,7 +134,7 @@ function toBody(v: FormValues) {
     pan: v.pan || null,
     stateName: v.stateName,
     stateCode: v.stateCode,
-    creditDays: v.creditDays,
+    ...(v.creditDays === '' ? {} : { creditDays: Number(v.creditDays) }),
     withholdReportUntilPaid: v.withholdReportUntilPaid,
     notes: v.notes || null,
     contacts: v.contacts.map((c) => ({ ...c, email: c.email || null, phone: c.phone || null, designation: c.designation || null })),
@@ -236,7 +241,7 @@ export function CustomerForm({
               <Input id="c-name" aria-invalid={!!e.name} {...form.register('name')} />
             </Field>
             <Field label="Credit days" htmlFor="c-credit" error={e.creditDays?.message}>
-              <Input id="c-credit" type="number" {...form.register('creditDays')} />
+              <Input id="c-credit" inputMode="numeric" placeholder={customer ? String(customer.creditDays) : 'Lab’s default'} {...form.register('creditDays')} />
             </Field>
             <Field label="GSTIN" htmlFor="c-gstin" error={e.gstin?.message} hint={filled ?? 'Enter the GSTIN to fill the state and PAN automatically'}>
               <Input id="c-gstin" className="uppercase" aria-invalid={!!e.gstin} {...form.register('gstin', { onChange: (ev) => void onGstin(ev.target.value) })} />
