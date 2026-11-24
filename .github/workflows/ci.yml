@@ -8,9 +8,8 @@ permissions:
   contents: read
 env:
   # Backend image the end-to-end test runs against: the repository variable LIMS_PINNED_VERSION
-  # (an exact release, e.g. 0.1.0) when set, otherwise :main, which LIMS CI publishes on every
-  # push to its main branch.
-  LIMS_IMAGE: ghcr.io/avaniecocare/lims:${{ vars.LIMS_PINNED_VERSION || 'main' }}
+  # (an exact release, e.g. 0.1.0) when set, otherwise one built here from the branch of the same name, or main.
+  LIMS_IMAGE: ghcr.io/avaniecocare/lims:${{ vars.LIMS_PINNED_VERSION || 'from-source' }}
 jobs:
   gitleaks:
     runs-on: ubuntu-latest
@@ -83,14 +82,31 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: On a build branch, use the backend built from the branch of the same name if there is one
-        if: startsWith(github.ref, 'refs/heads/build/') && vars.LIMS_PINNED_VERSION == ''
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+      # The backend's packages are private to its own repository, but its source is not.
+      - name: The branch of the backend to test against
+        id: backend
+        if: vars.LIMS_PINNED_VERSION == ''
         run: |
-          image="ghcr.io/avaniecocare/lims:${GITHUB_REF_NAME//\//-}"
-          if docker manifest inspect "$image" >/dev/null 2>&1; then echo "LIMS_IMAGE=$image" >> "$GITHUB_ENV"; fi
+          url="https://github.com/$GITHUB_REPOSITORY_OWNER/LIMS.git"; ref=main
+          for r in "$GITHUB_HEAD_REF" "$GITHUB_REF_NAME"; do
+            if [ -n "$r" ] && git ls-remote --exit-code --heads "$url" "$r" >/dev/null; then ref="$r"; break; fi
+          done
+          echo "ref=$ref" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        if: vars.LIMS_PINNED_VERSION == ''
+        with: { repository: '${{ github.repository_owner }}/LIMS', ref: '${{ steps.backend.outputs.ref }}', path: .backend }
+      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
+        if: vars.LIMS_PINNED_VERSION == ''
+        with:
+          context: .backend
+          load: true
+          tags: ${{ env.LIMS_IMAGE }}
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
       - name: Pull the backend image
-        run: |
-          docker pull "$LIMS_IMAGE" || { echo "::error::Cannot pull $LIMS_IMAGE. Push LIMS to main (publishes :main) or set the LIMS_PINNED_VERSION repository variable to a published release."; exit 1; }
+        if: vars.LIMS_PINNED_VERSION != ''
+        run: docker pull "$LIMS_IMAGE"
       - name: Build the help site
         run: npm ci && npm run build
         working-directory: docs-site
