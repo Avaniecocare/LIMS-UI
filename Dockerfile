@@ -6,6 +6,8 @@ COPY package*.json ./
 RUN npm ci
 COPY . .
 RUN npm run build
+# The notices that open-source licences ask for, at /third-party-notices.txt.
+RUN node scripts/third-party.mjs dist/third-party-notices.txt .
 
 # The help site, built into /help. DOCS_* build arguments brand it; the API reference comes from openapi/openapi.json.
 FROM --platform=$BUILDPLATFORM node:24-alpine AS docs
@@ -21,7 +23,8 @@ COPY openapi ./openapi
 COPY docs-site/package*.json ./docs-site/
 RUN cd docs-site && npm ci
 COPY docs-site ./docs-site
-RUN cd docs-site && npm run build && npm run check:links
+COPY scripts/third-party.mjs ./scripts/third-party.mjs
+RUN cd docs-site && npm run build && npm run check:links && node ../scripts/third-party.mjs dist/third-party-notices.txt .
 
 # nginx's own image: it is rebuilt when nginx is fixed, the unprivileged variant weeks later. What that one changes is here.
 FROM nginx:1.30-alpine

@@ -87,15 +87,17 @@ jobs:
       - name: The branch of the backend to test against
         id: backend
         if: vars.LIMS_PINNED_VERSION == ''
+        # Needed only if the repositories are private: a token that can read LIMS.
+        env: { TOKEN: '${{ secrets.LIMS_READ_TOKEN || github.token }}' }
         run: |
-          url="https://github.com/$GITHUB_REPOSITORY_OWNER/LIMS.git"; ref=main
+          url="https://x-access-token:$TOKEN@github.com/$GITHUB_REPOSITORY_OWNER/LIMS.git"; ref=main
           for r in "$GITHUB_HEAD_REF" "$GITHUB_REF_NAME"; do
             if [ -n "$r" ] && git ls-remote --exit-code --heads "$url" "$r" >/dev/null; then ref="$r"; break; fi
           done
           echo "ref=$ref" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         if: vars.LIMS_PINNED_VERSION == ''
-        with: { repository: '${{ github.repository_owner }}/LIMS', ref: '${{ steps.backend.outputs.ref }}', path: .backend }
+        with: { repository: '${{ github.repository_owner }}/LIMS', ref: '${{ steps.backend.outputs.ref }}', path: .backend, token: '${{ secrets.LIMS_READ_TOKEN || github.token }}' }
       - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
         if: vars.LIMS_PINNED_VERSION == ''
         with:
@@ -177,13 +179,16 @@ jobs:
         run: |
           docker run -d --name ui --read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges -p 127.0.0.1:8080:8080 -e API_URL=https://api.example.com lims-ui:scan
           timeout 30 sh -c 'until curl -sf http://localhost:8080/healthz; do sleep 1; done' || { docker logs ui; exit 1; }
-          for p in / /help/ /config.js; do curl -sfo /dev/null "http://localhost:8080$p"; done
+          for p in / /help/ /config.js /third-party-notices.txt /help/third-party-notices.txt; do curl -sfo /dev/null "http://localhost:8080$p"; done
           [ "$(docker exec ui id -u)" = 101 ]
       - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
         with:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
+          # What is inside and how it was built, kept with the image.
+          sbom: true
+          provenance: mode=max
           tags: ${{ steps.meta.outputs.tags }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
