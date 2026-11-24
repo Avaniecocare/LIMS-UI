@@ -39,7 +39,7 @@ COPY docker/nginx.conf.template /etc/nginx/templates/default.conf.template
 COPY docker/security-headers.conf /etc/nginx/snippets/security-headers.conf
 COPY docker/entrypoint.sh /entrypoint.sh
 # Who makes it; what it is and which commit come from the build.
-LABEL org.opencontainers.image.vendor="Taravik" org.opencontainers.image.url="https://taravik.com" org.opencontainers.image.licenses="LicenseRef-Taravik-Proprietary"
+LABEL org.opencontainers.image.vendor="Taravik Private Limited" org.opencontainers.image.url="https://taravik.com" org.opencontainers.image.licenses="LicenseRef-Taravik-Proprietary"
 # nginx, by number: Kubernetes checks runAsNonRoot against a number.
 USER 101:101
 EXPOSE 8080
