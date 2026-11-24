@@ -94,7 +94,7 @@ services:
   # roles the API creates on first start, so CI runs it afterwards with `docker compose exec`.
   api:
     <<: *app
-    command: ['sh', '-c', 'npx prisma migrate deploy && exec node dist/main.js api']
+    command: ['sh', '-c', 'node_modules/.bin/prisma migrate deploy && exec node dist/main.js api']
     ports: ['3000:3000']
     depends_on:
       postgres: { condition: service_healthy }
