@@ -98,7 +98,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         if: vars.LIMS_PINNED_VERSION == ''
         with: { repository: '${{ github.repository_owner }}/LIMS', ref: '${{ steps.backend.outputs.ref }}', path: .backend, token: '${{ secrets.LIMS_READ_TOKEN || github.token }}' }
-      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         if: vars.LIMS_PINNED_VERSION == ''
         with:
           context: .backend
@@ -163,7 +163,7 @@ jobs:
             type=ref,event=branch,enable=${{ startsWith(github.ref, 'refs/heads/build/') }}
             type=sha,format=long
       # Known vulnerabilities, of high severity or worse, that have a fix. Nothing is published until it passes.
-      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
           load: true
@@ -181,7 +181,7 @@ jobs:
           timeout 30 sh -c 'until curl -sf http://localhost:8080/healthz; do sleep 1; done' || { docker logs ui; exit 1; }
           for p in / /help/ /config.js /third-party-notices.txt /help/third-party-notices.txt; do curl -sfo /dev/null "http://localhost:8080$p"; done
           [ "$(docker exec ui id -u)" = 101 ]
-      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
           platforms: linux/amd64,linux/arm64
